@@ -138,6 +138,25 @@ namespace GFunc_Space{
 		return cond(params);
 	}
 
+	bool GetFactionRelation(const RE::Actor *a_actor, const RE::Actor *a_target, float a_comparison_value)
+	{
+		static RE::TESConditionItem cond;
+		static std::once_flag flag;
+		std::call_once(flag, [&]()
+					   {
+        cond.data.functionData.function = RE::FUNCTION_DATA::FunctionID::kGetFactionRelation;
+        cond.data.flags.opCode          = RE::CONDITION_ITEM_DATA::OpCode::kEqualTo;
+        cond.data.comparisonValue.f     = a_comparison_value; });
+
+		ConditionParam cond_param;
+		cond_param.form = const_cast<RE::TESObjectREFR *>(a_target->As<RE::TESObjectREFR>());
+		cond.data.functionData.params[0] = std::bit_cast<void *>(cond_param);
+
+		RE::ConditionCheckParams params(const_cast<RE::TESObjectREFR *>(a_actor->As<RE::TESObjectREFR>()),
+										const_cast<RE::TESObjectREFR *>(a_target->As<RE::TESObjectREFR>()));
+		return cond(params);
+	}
+
 	bool GFunc::GetBoolVariable(RE::Actor *a_actor, std::string a_string)
 	{
 		auto result = false;

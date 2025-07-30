@@ -94,28 +94,77 @@ namespace Events_Space
 		}
 
 		RE::BSEventNotifyControl ProcessEvent(const RE::TESCombatEvent* event, RE::BSTEventSource<RE::TESCombatEvent>*){
-			auto a_actor = event->actor->As<RE::Actor>();
+			
+			auto Protagonist = event->actor->As<RE::Actor>();
 
-			if (!a_actor || !a_actor->Is(RE::FormType::ActorCharacter)) {
+			if (!Protagonist || Protagonist->IsPlayerRef())
+			{
 				return RE::BSEventNotifyControl::kContinue;
 			}
+			if (Protagonist->IsPlayerTeammate() || (Protagonist->IsCommandedActor() && ((Protagonist->GetCommandingActor().get() == RE::PlayerCharacter::GetSingleton()) || (Protagonist->GetCommandingActor().get()->IsPlayerTeammate()))))
+			{
 
-			switch (event->newState.get()) {
-			case RE::ACTOR_COMBAT_STATE::kCombat:
-				a_actor->SetGraphVariableBool("bNUB_IsinCombat", true);
-				
-				break;
-			case RE::ACTOR_COMBAT_STATE::kSearching:
-				a_actor->SetGraphVariableBool("bNUB_IsinCombat", false);
-				break;
+				if (auto CombatTarget = Protagonist->GetActorRuntimeData().currentCombatTarget.get().get())
+				{
+					if (CombatTarget->IsPlayerTeammate() || (CombatTarget->IsCommandedActor() && ((CombatTarget->GetCommandingActor().get() == RE::PlayerCharacter::GetSingleton()) || (CombatTarget->GetCommandingActor().get()->IsPlayerTeammate()))))
+					{
+						if (const auto Evaluate = RE::TESForm::LookupByEditorID<RE::MagicItem>("CFRs_CalmSpell"))
+						{
+							const auto caster = Protagonist->GetMagicCaster(RE::MagicSystem::CastingSource::kInstant);
+							const auto caster2 = CombatTarget->GetMagicCaster(RE::MagicSystem::CastingSource::kInstant);
+							caster->CastSpellImmediate(Evaluate, true, Protagonist, 1, false, 100.0, Protagonist);
+							caster2->CastSpellImmediate(Evaluate, true, CombatTarget, 1, false, 100.0, CombatTarget);
+						}
+					}
+				}
+			}
+			auto HdSingle = RE::TESDataHandler::GetSingleton();
+			if (const auto CFRs_Enable = skyrim_cast<RE::TESGlobal *>(HdSingle->LookupForm(0x801, "Coherent Fight Reactions.esp")))
+			{
+				if (CFRs_Enable->value == 1.0f)
+				{
+					return RE::BSEventNotifyControl::kContinue;
+				}
 
-			case RE::ACTOR_COMBAT_STATE::kNone:
-				a_actor->SetGraphVariableBool("bNUB_IsinCombat", false);
-				
-				break;
+				switch (event->newState.get())
+				{
+				case RE::ACTOR_COMBAT_STATE::kCombat:
+					if (auto CombatTarget = Protagonist->GetActorRuntimeData().currentCombatTarget.get().get())
+					{
+						if (CombatTarget->IsPlayerRef() || CombatTarget->IsPlayerTeammate())
+						{
+							if (CFRs_Enable->value != 1.0f)
+							{
+								CFRs_Enable->value = 1.0f;
+								break;
+							}
+						}
+					}
+					if (const auto combatGroup = Protagonist->GetCombatGroup())
+					{
+						for (auto &targetData : combatGroup->targets)
+						{
+							auto target = targetData.targetHandle.get();
+							if (target && target.get() == RE::PlayerCharacter::GetSingleton())
+							{
+								if (CFRs_Enable->value != 1.0f)
+								{
+									CFRs_Enable->value = 1.0f;
+									break;
+								}
+							}
+						}
+					}
+					break;
+				case RE::ACTOR_COMBAT_STATE::kSearching:
+					break;
 
-			default:
-				break;
+				case RE::ACTOR_COMBAT_STATE::kNone:
+					break;
+
+				default:
+					break;
+				}
 			}
 
 			return RE::BSEventNotifyControl::kContinue;
@@ -135,64 +184,23 @@ namespace Events_Space
 
 		RE::BSEventNotifyControl ProcessEvent(const RE::TESHitEvent *event, RE::BSTEventSource<RE::TESHitEvent> *)
 		{
-			auto a_actor = event->target->As<RE::Actor>();
-
-			if (!a_actor)
+			if (const auto enemyhandle = event->cause.get(); enemyhandle)
 			{
-				return RE::BSEventNotifyControl::kContinue;
-			}
-
-			if (a_actor->HasKeywordString("ActorTypeNPC"))
-			{
-				if (!GFunc_Space::GFunc::GetBoolVariable(a_actor, "bNUB_IsinCombat"))
+				if (enemyhandle->Is(RE::FormType::ActorCharacter))
 				{
-					return RE::BSEventNotifyControl::kContinue;
-				}
-
-				if (const auto enemyhandle = event->cause.get(); enemyhandle)
-				{
-					if (enemyhandle->Is(RE::FormType::ActorCharacter))
+					RE::Actor *a_actor = enemyhandle->As<RE::Actor>();
+					if (a_actor->IsPlayerTeammate() || (a_actor->IsCommandedActor() && ((a_actor->GetCommandingActor().get() == RE::PlayerCharacter::GetSingleton()) || (a_actor->GetCommandingActor().get()->IsPlayerTeammate()))))
 					{
-						RE::Actor *enemy = enemyhandle->As<RE::Actor>();
-						if (enemy->IsHostileToActor(a_actor))
+						if (auto CombatTarget = a_actor->GetActorRuntimeData().currentCombatTarget.get().get())
 						{
-							
-						}
-					}
-				}
-			}else{
-				if (const auto enemyhandle = event->cause.get(); enemyhandle)
-				{
-					if (enemyhandle->Is(RE::FormType::ActorCharacter))
-					{
-						RE::Actor* enemy = enemyhandle->As<RE::Actor>();
-						if (GFunc_Space::GFunc::GetBoolVariable(enemy, "bNUB_IsinCombat") && enemy->IsHostileToActor(a_actor))
-						{
-							if (auto form = RE::TESForm::LookupByID<RE::TESForm>(event->source))
+							if (CombatTarget->IsPlayerTeammate() || (CombatTarget->IsCommandedActor() && ((CombatTarget->GetCommandingActor().get() == RE::PlayerCharacter::GetSingleton()) || (CombatTarget->GetCommandingActor().get()->IsPlayerTeammate()))))
 							{
-								if (form)
+								if (const auto Evaluate = RE::TESForm::LookupByEditorID<RE::MagicItem>("CFRs_CalmSpell"))
 								{
-									switch (form->GetFormType())
-									{
-									case RE::FormType::Spell:
-										if (auto a_spell = form->As<RE::SpellItem>())
-										{
-											std::string Lsht = (clib_util::editorID::get_editorID(a_spell));
-											switch (hash(Lsht.c_str(), Lsht.size()))
-											{
-											case "Null"_h:
-												
-												break;
-
-											default:
-												break;
-											}
-										}
-										break;
-
-									default:
-										break;
-									}
+									const auto caster = a_actor->GetMagicCaster(RE::MagicSystem::CastingSource::kInstant);
+									const auto caster2 = CombatTarget->GetMagicCaster(RE::MagicSystem::CastingSource::kInstant);
+									caster->CastSpellImmediate(Evaluate, true, a_actor, 1, false, 100.0, a_actor);
+									caster2->CastSpellImmediate(Evaluate, true, CombatTarget, 1, false, 100.0, CombatTarget);
 								}
 							}
 						}
@@ -303,31 +311,55 @@ namespace Events_Space
 		auto H = RE::TESDataHandler::GetSingleton();
 		RE::Actor* a_actor = const_cast<RE::TESObjectREFR*>(a_event.holder)->As<RE::Actor>();
 		switch (hash(a_event.tag.c_str(), a_event.tag.size())) {
-		case "AnimObjLoad"_h:
-			if (a_actor->Is3DLoaded() && a_actor->GetParentCell() && a_actor->GetParentCell()->cellState == RE::TESObjectCELL::CellState::kAttached && a_actor->IsInCombat())
+		case "MLh_SpellFire_Event"_h:
+		case "MRh_SpellFire_Event"_h:
+		case "Voice_SpellFire_Event"_h:
+		case "PowerAttack_Start_end"_h:
+		case "NextAttackInitiate"_h:
+		case "preHitFrame"_h:
+		case "BowFullDrawn"_h:
+			if (a_actor->IsPlayerRef())
 			{
-				if (a_event.payload == "AnimObjectDrinkPotion")
+				if (const auto CFRs_Enable = skyrim_cast<RE::TESGlobal *>(H->LookupForm(0x801, "Coherent Fight Reactions.esp")))
 				{
-					if (const auto potionSafety = RE::TESForm::LookupByEditorID<RE::MagicItem>("UAPNG_Potion_Safety"); potionSafety)
+					if (a_actor->IsSneaking() && !a_actor->IsInCombat())
 					{
-						if (const auto caster = a_actor->GetMagicCaster(RE::MagicSystem::CastingSource::kInstant); caster)
+						if (CFRs_Enable->value != 0.0f)
 						{
-							caster->CastSpellImmediate(potionSafety, true, a_actor, 1, false, 999.0, a_actor);
+							CFRs_Enable->value = 0.0f;
 						}
 					}
-				}
-				else if (GFunc_Space::GFunc::GetBoolVariable(a_actor, "bEasState"))
-				{
-					if (const auto eatingSafety = RE::TESForm::LookupByEditorID<RE::MagicItem>("UAPNG_Eating_Safety"); eatingSafety)
+					else
 					{
-						if (const auto caster = a_actor->GetMagicCaster(RE::MagicSystem::CastingSource::kInstant); caster)
+						if (CFRs_Enable->value != 1.0f)
 						{
-							caster->CastSpellImmediate(eatingSafety, true, a_actor, 1, false, 999.0, a_actor);
+							CFRs_Enable->value = 1.0f;
 						}
 					}
 				}
 			}
-			
+			break;
+
+		case "BeginCastLeft"_h:
+		case "BeginCastRight"_h:
+		case "BeginCastVoice"_h:
+
+			if (a_actor->IsPlayerTeammate() || (a_actor->IsCommandedActor() && ((a_actor->GetCommandingActor().get() == RE::PlayerCharacter::GetSingleton()) || (a_actor->GetCommandingActor().get()->IsPlayerTeammate()))))
+			{
+				if (auto CombatTarget = a_actor->GetActorRuntimeData().currentCombatTarget.get().get())
+				{
+					if (CombatTarget->IsPlayerTeammate() || (CombatTarget->IsCommandedActor() && ((CombatTarget->GetCommandingActor().get() == RE::PlayerCharacter::GetSingleton()) || (CombatTarget->GetCommandingActor().get()->IsPlayerTeammate()))))
+					{
+						if (const auto Evaluate = RE::TESForm::LookupByEditorID<RE::MagicItem>("CFRs_CalmSpell"))
+						{
+							const auto caster = a_actor->GetMagicCaster(RE::MagicSystem::CastingSource::kInstant);
+							const auto caster2 = CombatTarget->GetMagicCaster(RE::MagicSystem::CastingSource::kInstant);
+							caster->CastSpellImmediate(Evaluate, true, a_actor, 1, false, 100.0, a_actor);
+							caster2->CastSpellImmediate(Evaluate, true, CombatTarget, 1, false, 100.0, CombatTarget);
+						}
+					}
+				}
+			}
 			break;
 
 		default:
@@ -335,6 +367,84 @@ namespace Events_Space
 		}
 
 		return fn ? (this->*fn)(a_event, src) : RE::BSEventNotifyControl::kContinue;
+	}
+
+	void HitEventHandler::PreProcessHit(RE::Actor *target, RE::HitData *hitData)
+	{
+		auto aggressor = hitData->aggressor ? hitData->aggressor.get().get() : nullptr;
+
+		auto HdSingle = RE::TESDataHandler::GetSingleton();
+
+		bool ignoredamage = false;
+
+		const auto CurrentFollowerFaction = RE::TESForm::LookupByEditorID<RE::TESFaction>("CurrentFollowerFaction");
+		const auto CFRs_PlayerAlliesFaction = RE::TESForm::LookupByEditorID<RE::TESFaction>("CFRs_PlayerAlliesFaction");
+		const auto CFRs_PlayerFriendsFaction = RE::TESForm::LookupByEditorID<RE::TESFaction>("CFRs_PlayerFriendsFaction");
+
+		if (const auto CFRs_Currentfollow_Glob = skyrim_cast<RE::TESGlobal *>(HdSingle->LookupForm(0x805, "Coherent Fight Reactions.esp")); CFRs_Currentfollow_Glob && CFRs_Currentfollow_Glob->value == 0.0f)
+		{
+			CurrentFollowerFaction->SetAlly(CurrentFollowerFaction);
+			CFRs_Currentfollow_Glob->value == 1.0f;
+		}
+
+		if (aggressor && target)
+		{
+
+			if (GFunc_Space::GetFactionRelation(target, aggressor, 0.0f))
+			{
+
+				if (!target->IsHostileToActor(aggressor) && target->AsActorValueOwner()->GetActorValue(RE::ActorValue::kAggression) <= 1)
+				{
+
+					if (target->IsPlayerTeammate() || (target->IsCommandedActor() && ((target->GetCommandingActor().get() == RE::PlayerCharacter::GetSingleton()) || (target->GetCommandingActor().get()->IsPlayerTeammate()))))
+					{
+						if (CurrentFollowerFaction && !target->IsInFaction(CurrentFollowerFaction))
+						{
+
+							if (CFRs_PlayerAlliesFaction && !target->IsInFaction(CFRs_PlayerAlliesFaction))
+							{
+
+								target->AsActorValueOwner()->SetActorValue(RE::ActorValue::kAssistance, 2);
+
+								target->AddToFaction(CFRs_PlayerAlliesFaction, 0);
+							}
+						}
+					}
+
+					if (aggressor == RE::PlayerCharacter::GetSingleton())
+					{
+						if (const auto CFRs_Enable = skyrim_cast<RE::TESGlobal *>(HdSingle->LookupForm(0x801, "Coherent Fight Reactions.esp")); CFRs_Enable)
+						{
+							if (CFRs_Enable->value == 1.0f)
+							{
+
+								if (CurrentFollowerFaction && CFRs_PlayerAlliesFaction && !target->IsInFaction(CFRs_PlayerAlliesFaction) && !target->IsInFaction(CurrentFollowerFaction))
+								{
+
+									if (CFRs_PlayerFriendsFaction && !target->IsInFaction(CFRs_PlayerFriendsFaction))
+									{
+										target->AddToFaction(CFRs_PlayerFriendsFaction, 0);
+									}
+								}
+
+								ignoredamage = true;
+							}
+							else
+							{
+
+								if (CFRs_PlayerFriendsFaction && !target->IsInFaction(CFRs_PlayerFriendsFaction))
+								{
+									RemoveFromFaction(target, CFRs_PlayerFriendsFaction);
+								}
+							}
+						}
+					}
+					else
+					{
+					}
+				}
+			}
+		}
 	}
 
 	std::unordered_map<uint64_t, animEventHandler::FnProcessEvent> animEventHandler::fnHash;
@@ -349,10 +459,10 @@ namespace Events_Space
 		//eventSourceHolder->AddEventSink<RE::TESEquipEvent>(eventSink);
 		eventSourceHolder->AddEventSink<RE::TESCombatEvent>(eventSink);
 		//eventSourceHolder->AddEventSink<RE::TESActorLocationChangeEvent>(eventSink);
-		eventSourceHolder->AddEventSink<RE::TESSpellCastEvent>(eventSink);
-		eventSourceHolder->AddEventSink<RE::TESDeathEvent>(eventSink);
+		//eventSourceHolder->AddEventSink<RE::TESSpellCastEvent>(eventSink);
+		//eventSourceHolder->AddEventSink<RE::TESDeathEvent>(eventSink);
 		eventSourceHolder->AddEventSink<RE::TESHitEvent>(eventSink);
-		eventSourceHolder->AddEventSink<RE::TESMagicEffectApplyEvent>(eventSink);
+		//eventSourceHolder->AddEventSink<RE::TESMagicEffectApplyEvent>(eventSink);
 	}
 
 	void Events::install_pluginListener(){
