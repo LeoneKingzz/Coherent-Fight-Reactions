@@ -94,7 +94,7 @@ namespace Events_Space
 		}
 
 		RE::BSEventNotifyControl ProcessEvent(const RE::TESCombatEvent* event, RE::BSTEventSource<RE::TESCombatEvent>*){
-			
+
 			auto Protagonist = event->actor->As<RE::Actor>();
 
 			if (!Protagonist || Protagonist->IsPlayerRef())
@@ -380,6 +380,7 @@ namespace Events_Space
 		const auto CurrentFollowerFaction = RE::TESForm::LookupByEditorID<RE::TESFaction>("CurrentFollowerFaction");
 		const auto CFRs_PlayerAlliesFaction = RE::TESForm::LookupByEditorID<RE::TESFaction>("CFRs_PlayerAlliesFaction");
 		const auto CFRs_PlayerFriendsFaction = RE::TESForm::LookupByEditorID<RE::TESFaction>("CFRs_PlayerFriendsFaction");
+		const auto CFRs_NPCNeutralsFaction = RE::TESForm::LookupByEditorID<RE::TESFaction>("CFRs_NPCNeutralsFaction");
 
 		if (const auto CFRs_Currentfollow_Glob = skyrim_cast<RE::TESGlobal *>(HdSingle->LookupForm(0x805, "Coherent Fight Reactions.esp")); CFRs_Currentfollow_Glob && CFRs_Currentfollow_Glob->value == 0.0f)
 		{
@@ -432,7 +433,7 @@ namespace Events_Space
 							else
 							{
 
-								if (CFRs_PlayerFriendsFaction && !target->IsInFaction(CFRs_PlayerFriendsFaction))
+								if (CFRs_PlayerFriendsFaction && target->IsInFaction(CFRs_PlayerFriendsFaction))
 								{
 									RemoveFromFaction(target, CFRs_PlayerFriendsFaction);
 								}
@@ -440,6 +441,14 @@ namespace Events_Space
 						}
 					}
 					else
+					{
+						if (CFRs_NPCNeutralsFaction && !target->IsInFaction(CFRs_NPCNeutralsFaction))
+						{
+							target->AddToFaction(CFRs_NPCNeutralsFaction, 0);
+						}
+					}
+
+					if (ignoredamage)
 					{
 					}
 				}
