@@ -500,6 +500,38 @@ namespace Events_Space
 						{
 							hitData->physicalDamage = 0.0f;
 						}
+
+						hitData->stagger = static_cast<uint32_t>(0.00);
+
+						if (auto indv_spell = hitData->criticalEffect; indv_spell)
+						{
+							for (auto indv_effect : indv_spell->effects)
+							{
+								if (indv_effect && indv_effect->baseEffect)
+								{
+									auto Archy_X = indv_effect->baseEffect->data.archetype;
+									auto hasHostileflag = indv_effect->baseEffect->data.flags.any(RE::EffectSetting::EffectSettingData::Flag::kHostile);
+									auto Kw_ScriptHostile = clib_util::editorID::get_editorID(indv_effect->baseEffect).contains("FrostSlowFFContact");
+
+									auto Kw_magicfire = indv_effect->baseEffect->HasKeyword(fireKeyword);
+									auto Kw_magicfrost = indv_effect->baseEffect->HasKeyword(frostKeyword);
+									auto Kw_magicshock = indv_effect->baseEffect->HasKeyword(shockKeyword);
+									auto Kw_magicshout = indv_effect->baseEffect->HasKeyword(shoutKeyword);
+									auto Kw_Exclude = indv_effect->baseEffect->HasKeyword(TrapGasKeyword) || indv_effect->baseEffect->HasKeyword(TrapPoisonKeyword) || indv_effect->baseEffect->HasKeyword(stormKeyword);
+									auto Kw_Storm = indv_effect->baseEffect->HasKeyword(stormKeyword);
+
+									if ((Kw_ScriptHostile && Archy_X == AX::kScript) || (Kw_Storm && Archy_X == AX::kStagger) || (Kw_magicshout && Archy_X == AX::kStagger) || (!Kw_Exclude && (hasHostileflag || Kw_magicfire || Kw_magicfrost || Kw_magicshock) && (Archy_X == AX::kDualValueModifier || Archy_X == AX::kValueModifier || Archy_X == AX::kPeakValueModifier || Archy_X == AX::kParalysis || Archy_X == AX::kDemoralize || Archy_X == AX::kFrenzy || Archy_X == AX::kDisarm || Archy_X == AX::kAbsorb || Archy_X == AX::kStagger)))
+									{
+										RE::BSTArray<RE::Effect *>::iterator position = std::find(hitData->attackDataSpell->effects.begin(), hitData->attackDataSpell->effects.end(), indv_effect);
+										if (position != hitData->attackDataSpell->effects.end())
+										{
+											auto i = std::distance(hitData->attackDataSpell->effects.begin(), position);
+											hitData->attackDataSpell->effects[i] = nullptr;
+										}
+									}
+								}
+							}
+						}
 					}
 				}
 			}
