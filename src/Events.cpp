@@ -490,6 +490,16 @@ namespace Events_Space
 								}
 							}
 						}
+
+						if (hitData->totalDamage)
+						{
+							hitData->totalDamage = 0.0f;
+						}
+
+						if (hitData->physicalDamage)
+						{
+							hitData->physicalDamage = 0.0f;
+						}
 					}
 				}
 			}
