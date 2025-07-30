@@ -340,28 +340,6 @@ namespace Events_Space
 			}
 			break;
 
-		case "BeginCastLeft"_h:
-		case "BeginCastRight"_h:
-		case "BeginCastVoice"_h:
-
-			if (a_actor->IsPlayerTeammate() || (a_actor->IsCommandedActor() && ((a_actor->GetCommandingActor().get() == RE::PlayerCharacter::GetSingleton()) || (a_actor->GetCommandingActor().get()->IsPlayerTeammate()))))
-			{
-				if (auto CombatTarget = a_actor->GetActorRuntimeData().currentCombatTarget.get().get())
-				{
-					if (CombatTarget->IsPlayerTeammate() || (CombatTarget->IsCommandedActor() && ((CombatTarget->GetCommandingActor().get() == RE::PlayerCharacter::GetSingleton()) || (CombatTarget->GetCommandingActor().get()->IsPlayerTeammate()))))
-					{
-						if (const auto Evaluate = RE::TESForm::LookupByEditorID<RE::MagicItem>("CFRs_CalmSpell"))
-						{
-							const auto caster = a_actor->GetMagicCaster(RE::MagicSystem::CastingSource::kInstant);
-							const auto caster2 = CombatTarget->GetMagicCaster(RE::MagicSystem::CastingSource::kInstant);
-							caster->CastSpellImmediate(Evaluate, true, a_actor, 1, false, 100.0, a_actor);
-							caster2->CastSpellImmediate(Evaluate, true, CombatTarget, 1, false, 100.0, CombatTarget);
-						}
-					}
-				}
-			}
-			break;
-
 		default:
 			break;
 		}
@@ -442,9 +420,17 @@ namespace Events_Space
 					}
 					else
 					{
-						if (CFRs_NPCNeutralsFaction && !target->IsInFaction(CFRs_NPCNeutralsFaction))
+						if (CFRs_NPCNeutralsFaction)
 						{
-							target->AddToFaction(CFRs_NPCNeutralsFaction, 0);
+							if (!target->IsInFaction(CFRs_NPCNeutralsFaction))
+							{
+								target->AddToFaction(CFRs_NPCNeutralsFaction, 0);
+							}
+
+							if (!aggressor->IsInFaction(CFRs_NPCNeutralsFaction))
+							{
+								aggressor->AddToFaction(CFRs_NPCNeutralsFaction, 0);
+							}
 						}
 					}
 
@@ -496,41 +482,16 @@ namespace Events_Space
 							hitData->totalDamage = 0.0f;
 						}
 
-						if (hitData->physicalDamage)
+						if (hitData->pushBack)
 						{
-							hitData->physicalDamage = 0.0f;
+							hitData->pushBack = 0.0f;
 						}
 
 						hitData->stagger = static_cast<uint32_t>(0.00);
 
-						if (auto indv_spell = hitData->criticalEffect; indv_spell)
+						if (hitData->flags && !hitData->flags.any(RE::HitData::Flag::kIgnoreCritical))
 						{
-							for (auto indv_effect : indv_spell->effects)
-							{
-								if (indv_effect && indv_effect->baseEffect)
-								{
-									auto Archy_X = indv_effect->baseEffect->data.archetype;
-									auto hasHostileflag = indv_effect->baseEffect->data.flags.any(RE::EffectSetting::EffectSettingData::Flag::kHostile);
-									auto Kw_ScriptHostile = clib_util::editorID::get_editorID(indv_effect->baseEffect).contains("FrostSlowFFContact");
-
-									auto Kw_magicfire = indv_effect->baseEffect->HasKeyword(fireKeyword);
-									auto Kw_magicfrost = indv_effect->baseEffect->HasKeyword(frostKeyword);
-									auto Kw_magicshock = indv_effect->baseEffect->HasKeyword(shockKeyword);
-									auto Kw_magicshout = indv_effect->baseEffect->HasKeyword(shoutKeyword);
-									auto Kw_Exclude = indv_effect->baseEffect->HasKeyword(TrapGasKeyword) || indv_effect->baseEffect->HasKeyword(TrapPoisonKeyword) || indv_effect->baseEffect->HasKeyword(stormKeyword);
-									auto Kw_Storm = indv_effect->baseEffect->HasKeyword(stormKeyword);
-
-									if ((Kw_ScriptHostile && Archy_X == AX::kScript) || (Kw_Storm && Archy_X == AX::kStagger) || (Kw_magicshout && Archy_X == AX::kStagger) || (!Kw_Exclude && (hasHostileflag || Kw_magicfire || Kw_magicfrost || Kw_magicshock) && (Archy_X == AX::kDualValueModifier || Archy_X == AX::kValueModifier || Archy_X == AX::kPeakValueModifier || Archy_X == AX::kParalysis || Archy_X == AX::kDemoralize || Archy_X == AX::kFrenzy || Archy_X == AX::kDisarm || Archy_X == AX::kAbsorb || Archy_X == AX::kStagger)))
-									{
-										RE::BSTArray<RE::Effect *>::iterator position = std::find(hitData->attackDataSpell->effects.begin(), hitData->attackDataSpell->effects.end(), indv_effect);
-										if (position != hitData->attackDataSpell->effects.end())
-										{
-											auto i = std::distance(hitData->attackDataSpell->effects.begin(), position);
-											hitData->attackDataSpell->effects[i] = nullptr;
-										}
-									}
-								}
-							}
+							hitData->flags |= RE::HitData::Flag::kIgnoreCritical;
 						}
 					}
 				}
@@ -552,7 +513,7 @@ namespace Events_Space
 		//eventSourceHolder->AddEventSink<RE::TESActorLocationChangeEvent>(eventSink);
 		//eventSourceHolder->AddEventSink<RE::TESSpellCastEvent>(eventSink);
 		//eventSourceHolder->AddEventSink<RE::TESDeathEvent>(eventSink);
-		eventSourceHolder->AddEventSink<RE::TESHitEvent>(eventSink);
+		//eventSourceHolder->AddEventSink<RE::TESHitEvent>(eventSink);
 		//eventSourceHolder->AddEventSink<RE::TESMagicEffectApplyEvent>(eventSink);
 	}
 
