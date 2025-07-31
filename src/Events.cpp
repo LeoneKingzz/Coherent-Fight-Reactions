@@ -103,7 +103,7 @@ namespace Events_Space
 			}
 			
 			auto HdSingle = RE::TESDataHandler::GetSingleton();
-			if (const auto CFRs_Enable = skyrim_cast<RE::TESGlobal *>(HdSingle->LookupForm(0x801, "Coherent Fight Reactions.esp")))
+			if (const auto CFRs_Enable = skyrim_cast<RE::TESGlobal *>(HdSingle->LookupForm(0x804, "Coherent Fight Reactions.esp")))
 			{
 				if (CFRs_Enable->value == 1.0f)
 				{
@@ -306,7 +306,7 @@ namespace Events_Space
 		case "BowFullDrawn"_h:
 			if (a_actor->IsPlayerRef())
 			{
-				if (const auto CFRs_Enable = skyrim_cast<RE::TESGlobal *>(H->LookupForm(0x801, "Coherent Fight Reactions.esp")))
+				if (const auto CFRs_Enable = skyrim_cast<RE::TESGlobal *>(H->LookupForm(0x804, "Coherent Fight Reactions.esp")))
 				{
 					if (a_actor->IsSneaking() && !a_actor->IsInCombat())
 					{
@@ -380,7 +380,7 @@ namespace Events_Space
 
 					if (aggressor->IsPlayerRef() || (CFRs_PlayerAlliesFaction && aggressor->IsInFaction(CFRs_PlayerAlliesFaction)) || (CurrentFollowerFaction && aggressor->IsInFaction(CurrentFollowerFaction)) )
 					{
-						if (const auto CFRs_Enable = skyrim_cast<RE::TESGlobal *>(HdSingle->LookupForm(0x801, "Coherent Fight Reactions.esp")); CFRs_Enable)
+						if (const auto CFRs_Enable = skyrim_cast<RE::TESGlobal *>(HdSingle->LookupForm(0x804, "Coherent Fight Reactions.esp")); CFRs_Enable)
 						{
 							if (CFRs_Enable->value == 1.0f)
 							{
