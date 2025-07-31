@@ -456,7 +456,7 @@ namespace Events_Space
 										auto position = std::find(hitData->attackDataSpell->effects.begin(), hitData->attackDataSpell->effects.end(), indv_effect);
 										if (position != hitData->attackDataSpell->effects.end())
 										{
-											int32_t i = std::distance(hitData->attackDataSpell->effects.begin(), position);
+											int32_t i = static_cast<int32_t>(std::distance(hitData->attackDataSpell->effects.begin(), position));
 											hitData->attackDataSpell->effects[i] = nullptr;
 										}
 									}
