@@ -456,7 +456,7 @@ namespace Events_Space
 										RE::BSTArray<RE::Effect*>::iterator position = std::find(hitData->attackDataSpell->effects.begin(), hitData->attackDataSpell->effects.end(), indv_effect);
 										if (position != hitData->attackDataSpell->effects.end())
 										{
-											auto i = std::distance(hitData->attackDataSpell->effects.begin(), position);
+											size_t i = std::distance(hitData->attackDataSpell->effects.begin(), position);
 											hitData->attackDataSpell->effects[i] = nullptr;
 										}
 									}
