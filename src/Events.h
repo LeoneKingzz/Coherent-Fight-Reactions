@@ -44,7 +44,7 @@ namespace Events_Space
 
 		// float RecalculateStagger(RE::Actor* target, RE::Actor* aggressor, RE::HitData* hitData);
 
-		void PreProcessHit(RE::Actor *target, RE::HitData *hitData);
+		bool PreProcessHit(RE::Actor *target, RE::HitData *hitData);
 
 		static void RemoveFromFaction(RE::Actor *a_actor, RE::TESFaction *a_faction)
 		{
@@ -61,7 +61,11 @@ namespace Events_Space
 				static void thunk(RE::Actor *target, RE::HitData *hitData)
 				{
 					auto handler = GetSingleton();
-					handler->PreProcessHit(target, hitData);
+
+					if(handler->PreProcessHit(target, hitData)){
+						hitData = nullptr;
+					}
+					
 					func(target, hitData);
 				}
 				static inline REL::Relocation<decltype(thunk)> func;

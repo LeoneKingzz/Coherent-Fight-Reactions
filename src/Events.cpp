@@ -333,7 +333,7 @@ namespace Events_Space
 		return fn ? (this->*fn)(a_event, src) : RE::BSEventNotifyControl::kContinue;
 	}
 
-	void HitEventHandler::PreProcessHit(RE::Actor *target, RE::HitData *hitData)
+	bool HitEventHandler::PreProcessHit(RE::Actor *target, RE::HitData *hitData)
 	{
 		auto aggressor = hitData->aggressor ? hitData->aggressor.get().get() : nullptr;
 
@@ -425,7 +425,7 @@ namespace Events_Space
 
 					if (ignoredamage)
 					{
-						hitData = nullptr;
+						//hitData = nullptr;
 						// auto fireKeyword = RE::TESForm::LookupByEditorID<RE::BGSKeyword>("MagicDamageFire");
 						// auto frostKeyword = RE::TESForm::LookupByEditorID<RE::BGSKeyword>("MagicDamageFrost");
 						// auto shockKeyword = RE::TESForm::LookupByEditorID<RE::BGSKeyword>("MagicDamageShock");
@@ -485,6 +485,8 @@ namespace Events_Space
 				}
 			}
 		}
+
+		return ignoredamage;
 	}
 
 	std::unordered_map<uint64_t, animEventHandler::FnProcessEvent> animEventHandler::fnHash;
