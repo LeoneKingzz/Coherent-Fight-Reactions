@@ -175,22 +175,22 @@ namespace Events_Space
 				if (enemyhandle->Is(RE::FormType::ActorCharacter))
 				{
 					RE::Actor *a_actor = enemyhandle->As<RE::Actor>();
-					if (a_actor->IsPlayerTeammate() || (a_actor->IsCommandedActor() && ((a_actor->GetCommandingActor().get()->IsPlayerRef()) || (a_actor->GetCommandingActor().get()->IsPlayerTeammate()))))
-					{
-						if (auto CombatTarget = a_actor->GetActorRuntimeData().currentCombatTarget.get().get())
-						{
-							if (CombatTarget->IsPlayerTeammate() || (CombatTarget->IsCommandedActor() && ((CombatTarget->GetCommandingActor().get()->IsPlayerRef()) || (CombatTarget->GetCommandingActor().get()->IsPlayerTeammate()))))
-							{
-								if (const auto Evaluate = RE::TESForm::LookupByEditorID<RE::MagicItem>("CFRs_CalmSpell"))
-								{
-									const auto caster = a_actor->GetMagicCaster(RE::MagicSystem::CastingSource::kInstant);
-									const auto caster2 = CombatTarget->GetMagicCaster(RE::MagicSystem::CastingSource::kInstant);
-									caster->CastSpellImmediate(Evaluate, true, a_actor, 1, false, 100.0, a_actor);
-									caster2->CastSpellImmediate(Evaluate, true, CombatTarget, 1, false, 100.0, CombatTarget);
-								}
-							}
-						}
-					}
+					// if (a_actor->IsPlayerTeammate() || (a_actor->IsCommandedActor() && ((a_actor->GetCommandingActor().get()->IsPlayerRef()) || (a_actor->GetCommandingActor().get()->IsPlayerTeammate()))))
+					// {
+					// 	if (auto CombatTarget = a_actor->GetActorRuntimeData().currentCombatTarget.get().get())
+					// 	{
+					// 		if (CombatTarget->IsPlayerTeammate() || (CombatTarget->IsCommandedActor() && ((CombatTarget->GetCommandingActor().get()->IsPlayerRef()) || (CombatTarget->GetCommandingActor().get()->IsPlayerTeammate()))))
+					// 		{
+					// 			if (const auto Evaluate = RE::TESForm::LookupByEditorID<RE::MagicItem>("CFRs_CalmSpell"))
+					// 			{
+					// 				const auto caster = a_actor->GetMagicCaster(RE::MagicSystem::CastingSource::kInstant);
+					// 				const auto caster2 = CombatTarget->GetMagicCaster(RE::MagicSystem::CastingSource::kInstant);
+					// 				caster->CastSpellImmediate(Evaluate, true, a_actor, 1, false, 100.0, a_actor);
+					// 				caster2->CastSpellImmediate(Evaluate, true, CombatTarget, 1, false, 100.0, CombatTarget);
+					// 			}
+					// 		}
+					// 	}
+					// }
 				}
 			}
 
