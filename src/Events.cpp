@@ -398,7 +398,7 @@ namespace Events_Space
 							if (CFRs_Enable->value == 1.0f)
 							{
 
-								if (CurrentFollowerFaction && CFRs_PlayerAlliesFaction && !target->IsInFaction(CFRs_PlayerAlliesFaction) && !target->IsInFaction(CurrentFollowerFaction))
+								if (CurrentFollowerFaction && CFRs_PlayerAlliesFaction && !target->IsInFaction(CFRs_PlayerAlliesFaction) && !target->IsInFaction(CurrentFollowerFaction) && !target->IsPlayerRef())
 								{
 
 									if (CFRs_PlayerFriendsFaction && !target->IsInFaction(CFRs_PlayerFriendsFaction))
@@ -421,7 +421,7 @@ namespace Events_Space
 					}
 					else
 					{
-						if (CurrentFollowerFaction && CFRs_PlayerAlliesFaction &&  !target->IsPlayerRef() && !aggressor->IsInFaction(CFRs_PlayerAlliesFaction) && !aggressor->IsInFaction(CurrentFollowerFaction) && !target->IsInFaction(CFRs_PlayerAlliesFaction) && !target->IsInFaction(CurrentFollowerFaction))
+						if (CurrentFollowerFaction && CFRs_PlayerAlliesFaction &&  !target->IsPlayerRef() && !target->IsInFaction(CFRs_PlayerAlliesFaction) && !target->IsInFaction(CurrentFollowerFaction))
 						{
 							if (CFRs_NPCNeutralsFaction)
 							{
@@ -434,7 +434,6 @@ namespace Events_Space
 								{
 									aggressor->AddToFaction(CFRs_NPCNeutralsFaction, 0);
 								}
-
 							}
 						}
 					}
