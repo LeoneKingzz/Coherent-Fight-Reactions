@@ -356,6 +356,8 @@ namespace Events_Space
 
 		if (aggressor && target)
 		{
+
+			logger::info("Friendly Fire Off. {} ignored attack from {} ", target->GetName(), aggressor->GetName());
 			using OP = RE::CONDITION_ITEM_DATA::OpCode;
 
 			if (GFunc_Space::GetFactionRelation(target, aggressor, 0.0f, OP::kEqualTo))
