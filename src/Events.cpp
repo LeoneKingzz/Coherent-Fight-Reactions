@@ -439,7 +439,7 @@ namespace Events_Space
 						{
 							for (auto indv_effect : indv_spell->effects)
 							{
-								if (indv_effect && indv_effect->baseEffect)
+								if (indv_effect && indv_effect->baseEffect && !clib_util::editorID::get_editorID(indv_effect->baseEffect).contains("_CRFs_exclude"))
 								{
 									auto Archy_X = indv_effect->baseEffect->data.archetype;
 									auto hasHostileflag = indv_effect->baseEffect->data.flags.any(RE::EffectSetting::EffectSettingData::Flag::kHostile);
