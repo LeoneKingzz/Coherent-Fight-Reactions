@@ -453,10 +453,10 @@ namespace Events_Space
 
 									if ((Kw_ScriptHostile && Archy_X == AX::kScript) || (Kw_Storm && Archy_X == AX::kStagger) || (Kw_magicshout && Archy_X == AX::kStagger) || (!Kw_Exclude && (hasHostileflag || Kw_magicfire || Kw_magicfrost || Kw_magicshock) && (Archy_X == AX::kDualValueModifier || Archy_X == AX::kValueModifier || Archy_X == AX::kPeakValueModifier || Archy_X == AX::kParalysis || Archy_X == AX::kDemoralize || Archy_X == AX::kFrenzy || Archy_X == AX::kDisarm || Archy_X == AX::kAbsorb || Archy_X == AX::kStagger)))
 									{
-										RE::BSTArray<RE::Effect*>::iterator position = std::find(hitData->attackDataSpell->effects.begin(), hitData->attackDataSpell->effects.end(), indv_effect);
+										auto position = std::find(hitData->attackDataSpell->effects.begin(), hitData->attackDataSpell->effects.end(), indv_effect);
 										if (position != hitData->attackDataSpell->effects.end())
 										{
-											size_t i = std::distance(hitData->attackDataSpell->effects.begin(), position);
+											auto i = std::distance(hitData->attackDataSpell->effects.begin(), position);
 											hitData->attackDataSpell->effects[i] = nullptr;
 										}
 									}
