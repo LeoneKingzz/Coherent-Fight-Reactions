@@ -161,6 +161,8 @@ namespace Events_Space
 				case RE::ACTOR_COMBAT_STATE::kNone:
 					break;
 
+					Events::GetSingleton()->RegisterforUpdate(Protagonist, std::make_tuple(true, std::chrono::steady_clock::now(), 8000ms, "NeutralFaction_Update"));
+
 				default:
 					break;
 				}
@@ -389,7 +391,7 @@ namespace Events_Space
 						}
 					}
 
-					if (aggressor->IsPlayerRef())
+					if (aggressor->IsPlayerRef() || (CFRs_PlayerAlliesFaction && aggressor->IsInFaction(CFRs_PlayerAlliesFaction)) || (CurrentFollowerFaction && aggressor->IsInFaction(CurrentFollowerFaction)) )
 					{
 						if (const auto CFRs_Enable = skyrim_cast<RE::TESGlobal *>(HdSingle->LookupForm(0x801, "Coherent Fight Reactions.esp")); CFRs_Enable)
 						{
@@ -432,6 +434,7 @@ namespace Events_Space
 								{
 									aggressor->AddToFaction(CFRs_NPCNeutralsFaction, 0);
 								}
+
 							}
 						}
 					}
@@ -550,20 +553,8 @@ namespace Events_Space
 	void Events::Update(RE::Actor* a_actor, [[maybe_unused]] float a_delta)
 	{
 		if (a_actor->GetActorRuntimeData().currentProcess && a_actor->GetActorRuntimeData().currentProcess->InHighProcess() && a_actor->Is3DLoaded()){
-			if (GFunc_Space::GFunc::GetBoolVariable(a_actor, "bNUB_IsinCombat"))
-			{
-				GetSingleton()->Process_Updates(a_actor, std::chrono::steady_clock::now());
 
-				//GFunc_Space::GFunc::Call_Papyrus_Function(a_actor, "dragonActorSCRIPT", "LDP_PlayImpactEffect", RE::MakeFunctionArguments(std::bit_cast<RE::BGSImpactDataSet *>(FXDragonTakeOffImpactSet), std::bit_cast<const char *>(NPCPelvis)));
-
-				// std::tuple<bool, std::chrono::steady_clock::time_point, GFunc_Space::ms, std::string> data;
-				// GFunc_Space::GFunc::set_tupledata(data, true, std::chrono::steady_clock::now(), 100ms, "BusyState_Update");
-				// GFunc_Space::GFunc::GetSingleton()->RegisterforUpdate(a_actor, data);
-
-				// int a = 100;
-				// std::jthread waitThread([&a]() { GFunc_Space::GFunc::GetSingleton()->wait(a); });
-				// GetSingleton()->RegisterforUpdate(a_actor, std::make_tuple(true, std::chrono::steady_clock::now(), 100ms, "BusyState_Update")
-			}
+			GetSingleton()->Process_Updates(a_actor, std::chrono::steady_clock::now());
 		}
 	}
 
@@ -589,8 +580,12 @@ namespace Events_Space
 								auto H = RE::TESDataHandler::GetSingleton();
 								switch (hash(function.c_str(), function.size()))
 								{
-								case "Decoy_Update"_h:
-									
+								case "NeutralFaction_Update"_h:
+									if (auto CFRs_NPCNeutralsFaction = RE::TESForm::LookupByEditorID<RE::TESFaction>("CFRs_NPCNeutralsFaction"); CFRs_NPCNeutralsFaction && a_actor->IsInFaction(CFRs_NPCNeutralsFaction))
+									{
+										HitEventHandler::RemoveFromFaction(a_actor, CFRs_NPCNeutralsFaction);
+									}
+
 									break;
 
 								default:
