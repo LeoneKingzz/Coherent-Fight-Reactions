@@ -445,7 +445,6 @@ namespace Events_Space
 						auto shockKeyword = RE::TESForm::LookupByEditorID<RE::BGSKeyword>("MagicDamageShock");
 						auto shoutKeyword = RE::TESForm::LookupByEditorID<RE::BGSKeyword>("MagicShout");
 						auto stormKeyword = RE::TESForm::LookupByEditorID<RE::BGSKeyword>("MagicVoiceChangeWeather");
-
 						auto TrapPoisonKeyword = RE::TESForm::LookupByEditorID<RE::BGSKeyword>("MagicVoiceChangeWeather");
 						auto TrapGasKeyword = RE::TESForm::LookupByEditorID<RE::BGSKeyword>("MagicVoiceChangeWeather");
 
@@ -460,7 +459,6 @@ namespace Events_Space
 									auto Archy_X = indv_effect->baseEffect->data.archetype;
 									auto hasHostileflag = indv_effect->baseEffect->data.flags.any(RE::EffectSetting::EffectSettingData::Flag::kHostile);
 									auto Kw_ScriptHostile = clib_util::editorID::get_editorID(indv_effect->baseEffect).contains("FrostSlowFFContact");
-
 									auto Kw_magicfire = indv_effect->baseEffect->HasKeyword(fireKeyword);
 									auto Kw_magicfrost = indv_effect->baseEffect->HasKeyword(frostKeyword);
 									auto Kw_magicshock = indv_effect->baseEffect->HasKeyword(shockKeyword);
