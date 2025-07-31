@@ -101,11 +101,11 @@ namespace Events_Space
 			{
 				return RE::BSEventNotifyControl::kContinue;
 			}
-			// if (Protagonist->IsPlayerTeammate() || (Protagonist->IsCommandedActor() && ((Protagonist->GetCommandingActor().get() == RE::PlayerCharacter::GetSingleton()) || (Protagonist->GetCommandingActor().get()->IsPlayerTeammate()))))
+			// if (Protagonist->IsPlayerTeammate() || (Protagonist->IsCommandedActor() && ((Protagonist->GetCommandingActor().get()->IsPlayerRef()) || (Protagonist->GetCommandingActor().get()->IsPlayerTeammate()))))
 			// {
 			// 	if (auto CombatTarget = Protagonist->GetActorRuntimeData().currentCombatTarget.get().get())
 			// 	{
-			// 		if (CombatTarget->IsPlayerTeammate() || (CombatTarget->IsCommandedActor() && ((CombatTarget->GetCommandingActor().get() == RE::PlayerCharacter::GetSingleton()) || (CombatTarget->GetCommandingActor().get()->IsPlayerTeammate()))))
+			// 		if (CombatTarget->IsPlayerTeammate() || (CombatTarget->IsCommandedActor() && ((CombatTarget->GetCommandingActor().get()->IsPlayerRef()) || (CombatTarget->GetCommandingActor().get()->IsPlayerTeammate()))))
 			// 		{
 			// 			if (const auto Evaluate = RE::TESForm::LookupByEditorID<RE::MagicItem>("CFRs_CalmSpell"))
 			// 			{
@@ -144,7 +144,7 @@ namespace Events_Space
 						for (auto &targetData : combatGroup->targets)
 						{
 							auto target = targetData.targetHandle.get();
-							if (target && target.get() == RE::PlayerCharacter::GetSingleton())
+							if (target && target.get()->IsPlayerRef())
 							{
 								if (CFRs_Enable->value != 1.0f)
 								{
@@ -188,11 +188,11 @@ namespace Events_Space
 				if (enemyhandle->Is(RE::FormType::ActorCharacter))
 				{
 					RE::Actor *a_actor = enemyhandle->As<RE::Actor>();
-					if (a_actor->IsPlayerTeammate() || (a_actor->IsCommandedActor() && ((a_actor->GetCommandingActor().get() == RE::PlayerCharacter::GetSingleton()) || (a_actor->GetCommandingActor().get()->IsPlayerTeammate()))))
+					if (a_actor->IsPlayerTeammate() || (a_actor->IsCommandedActor() && ((a_actor->GetCommandingActor().get()->IsPlayerRef()) || (a_actor->GetCommandingActor().get()->IsPlayerTeammate()))))
 					{
 						if (auto CombatTarget = a_actor->GetActorRuntimeData().currentCombatTarget.get().get())
 						{
-							if (CombatTarget->IsPlayerTeammate() || (CombatTarget->IsCommandedActor() && ((CombatTarget->GetCommandingActor().get() == RE::PlayerCharacter::GetSingleton()) || (CombatTarget->GetCommandingActor().get()->IsPlayerTeammate()))))
+							if (CombatTarget->IsPlayerTeammate() || (CombatTarget->IsCommandedActor() && ((CombatTarget->GetCommandingActor().get()->IsPlayerRef()) || (CombatTarget->GetCommandingActor().get()->IsPlayerTeammate()))))
 							{
 								if (const auto Evaluate = RE::TESForm::LookupByEditorID<RE::MagicItem>("CFRs_CalmSpell"))
 								{
@@ -374,7 +374,7 @@ namespace Events_Space
 				if (!target->IsHostileToActor(aggressor) && target->AsActorValueOwner()->GetActorValue(RE::ActorValue::kAggression) <= 1)
 				{
 
-					if (target->IsPlayerTeammate() || (target->IsCommandedActor() && ((target->GetCommandingActor().get() == RE::PlayerCharacter::GetSingleton()) || (target->GetCommandingActor().get()->IsPlayerTeammate()))))
+					if (target->IsPlayerTeammate() || (target->IsCommandedActor() && ((target->GetCommandingActor().get()->IsPlayerRef()) || (target->GetCommandingActor().get()->IsPlayerTeammate()))))
 					{
 						if (CurrentFollowerFaction && !target->IsInFaction(CurrentFollowerFaction))
 						{
@@ -389,7 +389,7 @@ namespace Events_Space
 						}
 					}
 
-					if (aggressor == RE::PlayerCharacter::GetSingleton())
+					if (aggressor->IsPlayerRef())
 					{
 						if (const auto CFRs_Enable = skyrim_cast<RE::TESGlobal *>(HdSingle->LookupForm(0x801, "Coherent Fight Reactions.esp")); CFRs_Enable)
 						{
@@ -419,16 +419,19 @@ namespace Events_Space
 					}
 					else
 					{
-						if (CFRs_NPCNeutralsFaction)
+						if (CurrentFollowerFaction && CFRs_PlayerAlliesFaction &&  !target->IsPlayerRef() && !aggressor->IsInFaction(CFRs_PlayerAlliesFaction) && !aggressor->IsInFaction(CurrentFollowerFaction) && !target->IsInFaction(CFRs_PlayerAlliesFaction) && !target->IsInFaction(CurrentFollowerFaction))
 						{
-							if (!target->IsInFaction(CFRs_NPCNeutralsFaction))
+							if (CFRs_NPCNeutralsFaction)
 							{
-								target->AddToFaction(CFRs_NPCNeutralsFaction, 0);
-							}
+								if (!target->IsInFaction(CFRs_NPCNeutralsFaction))
+								{
+									target->AddToFaction(CFRs_NPCNeutralsFaction, 0);
+								}
 
-							if (!aggressor->IsInFaction(CFRs_NPCNeutralsFaction))
-							{
-								aggressor->AddToFaction(CFRs_NPCNeutralsFaction, 0);
+								if (!aggressor->IsInFaction(CFRs_NPCNeutralsFaction))
+								{
+									aggressor->AddToFaction(CFRs_NPCNeutralsFaction, 0);
+								}
 							}
 						}
 					}
