@@ -7,6 +7,7 @@ void MessageHandler(SKSE::MessagingInterface::Message *a_msg)
 	case SKSE::MessagingInterface::kDataLoaded:
 		Events_Space::animEventHandler::Register(true, false);
 		Events_Space::Events::install();
+		Events_Space::HitEventHandler::InstallHooks();
 		break;
 
 	case SKSE::MessagingInterface::kPostPostLoad:
@@ -28,5 +29,4 @@ void Init()
 
 void Load(){
 	Events_Space::Events::install_protected();
-	Events_Space::HitEventHandler::InstallHooks();
 }
