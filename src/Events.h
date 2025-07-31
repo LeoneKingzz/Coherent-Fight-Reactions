@@ -21,73 +21,24 @@ namespace Events_Space
 		return single;
 	}
 
-	class HitEventHandler
+	namespace Hooks
 	{
-		// friend EldenParry;
-	public:
-		[[nodiscard]] static HitEventHandler *GetSingleton()
+		void Install();
+
+		struct Actor_CombatHit
 		{
-			static HitEventHandler singleton;
-			return std::addressof(singleton);
-		}
+			static float thunk(RE::Actor *a_this, RE::HitData *a_hitData);
 
-		static void InstallHooks()
-		{
-			Hooks::Install();
-		}
-
-		// float GetWeaponDamage(RE::TESObjectWEAP* a_weapon);
-		// float GetUnarmedDamage(RE::Actor* a_actor);
-		// float GetShieldDamage(RE::TESObjectARMO* a_shield);
-		// float GetMiscDamage();
-		// float ModActorBashMult(RE::Actor* aggressor);
-
-		// float RecalculateStagger(RE::Actor* target, RE::Actor* aggressor, RE::HitData* hitData);
-
-		bool PreProcessHit(RE::Actor *target, RE::HitData *hitData);
-
-		static void RemoveFromFaction(RE::Actor *a_actor, RE::TESFaction *a_faction)
-		{
-			using func_t = decltype(&RemoveFromFaction);
-			REL::Relocation<func_t> func{REL::RelocationID(36680, 37688)};
-			func(a_actor, a_faction);
+			static inline REL::Relocation<decltype(thunk)> func;
 		};
 
-	protected:
-		struct Hooks
+		struct HitData_Resolve
 		{
-			struct ProcessHitEvent
-			{
-				static void thunk(RE::Actor *target, RE::HitData *hitData)
-				{
-					auto handler = GetSingleton();
+			static bool thunk(RE::HitData *a_hitData, bool a_ignoreBlocking);
 
-					if(handler->PreProcessHit(target, hitData)){
-						hitData = nullptr;
-					}
-					
-					func(target, hitData);
-				}
-				static inline REL::Relocation<decltype(thunk)> func;
-			};
-
-			static void Install()
-			{
-				stl::write_thunk_call<ProcessHitEvent>(REL::RelocationID(37673, 38627).address() + REL::Relocate(0x3C0, 0x4A8, 0x3C0)); // 1.5.97 140628C20
-			}
+			static inline REL::Relocation<decltype(thunk)> func;
 		};
-
-	private:
-		// static void PoiseCallback_Post(const PRECISION_API::PrecisionHitData& a_precisionHitData, const RE::HitData& hitData);
-		constexpr HitEventHandler() noexcept = default;
-		HitEventHandler(const HitEventHandler &) = delete;
-		HitEventHandler(HitEventHandler &&) = delete;
-
-		~HitEventHandler() = default;
-
-		HitEventHandler &operator=(const HitEventHandler &) = delete;
-		HitEventHandler &operator=(HitEventHandler &&) = delete;
-	};
+	}
 
 	class animEventHandler
 	{
@@ -172,6 +123,15 @@ namespace Events_Space
 		void Update(RE::Actor* a_actor, float a_delta);
 		void Process_Updates(RE::Actor *a_actor, std::chrono::steady_clock::time_point time_now);
 		void RegisterforUpdate(RE::Actor *a_actor, std::tuple<bool, std::chrono::steady_clock::time_point, GFunc_Space::ms, std::string> data);
+
+		bool PreProcessHit(RE::Actor *target, RE::Actor *aggressor, RE::HitData *hitData);
+
+		static void RemoveFromFaction(RE::Actor *a_actor, RE::TESFaction *a_faction)
+		{
+			using func_t = decltype(&RemoveFromFaction);
+			REL::Relocation<func_t> func{REL::RelocationID(36680, 37688)};
+			func(a_actor, a_faction);
+		};
 
 	private:
 		Events() = default;

@@ -333,7 +333,59 @@ namespace Events_Space
 		return fn ? (this->*fn)(a_event, src) : RE::BSEventNotifyControl::kContinue;
 	}
 
-	bool HitEventHandler::PreProcessHit(RE::Actor *target, RE::HitData *hitData)
+	namespace Hooks
+	{
+		
+
+		void Install()
+		{
+			REL::Relocation<std::uintptr_t> target{RELOCATION_ID(37673, 38627), REL::Relocate(0x3c0, 0x4A8)};
+			stl::write_thunk_call<Actor_CombatHit>(target.address());
+
+			REL::Relocation<std::uintptr_t> Sec_target{RELOCATION_ID(42832, 44001), REL::Relocate(0x37C, 0x358, 0x3CF)};
+			stl::write_thunk_call<HitData_Resolve>(target.address());
+		}
+
+		// needed for melee attacks to not use metal impact sound
+		bool HitData_Resolve::thunk(RE::HitData *a_hitData, bool a_ignoreBlocking)
+		{
+			auto attacker = a_hitData->aggressor.get().get();
+			auto defender = a_hitData->target.get().get();
+
+			auto handler = Events::GetSingleton();
+
+			if(defender && attacker){
+				if (handler->PreProcessHit(defender, attacker, a_hitData))
+				{
+					a_hitData = nullptr;
+				}
+			}
+
+			
+			return func(a_hitData, a_ignoreBlocking);
+		}
+
+		float Actor_CombatHit::thunk(RE::Actor *a_this, RE::HitData *a_hitData)
+		{
+			auto attacker = a_hitData->aggressor.get().get();
+			auto defender = a_hitData->target.get().get();
+
+			auto handler = Events::GetSingleton();
+
+			if (defender && attacker)
+			{
+				if (handler->PreProcessHit(defender, attacker, a_hitData))
+				{
+					a_hitData = nullptr;
+				}
+			}
+
+			return func(a_this, a_hitData);
+		}
+
+	}
+
+	bool Events::PreProcessHit(RE::Actor *target, RE::Actor *aggressor, RE::HitData *hitData)
 	{
 		auto aggressor = hitData->aggressor ? hitData->aggressor.get().get() : nullptr;
 
@@ -568,7 +620,7 @@ namespace Events_Space
 								case "NeutralFaction_Update"_h:
 									if (auto CFRs_NPCNeutralsFaction = RE::TESForm::LookupByEditorID<RE::TESFaction>("CFRs_NPCNeutralsFaction"); CFRs_NPCNeutralsFaction && a_actor->IsInFaction(CFRs_NPCNeutralsFaction))
 									{
-										HitEventHandler::RemoveFromFaction(a_actor, CFRs_NPCNeutralsFaction);
+										RemoveFromFaction(a_actor, CFRs_NPCNeutralsFaction);
 									}
 
 									break;
