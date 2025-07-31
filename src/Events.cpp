@@ -343,7 +343,7 @@ namespace Events_Space
 			stl::write_thunk_call<Actor_CombatHit>(target.address());
 
 			REL::Relocation<std::uintptr_t> Sec_target{RELOCATION_ID(42832, 44001), REL::Relocate(0x37C, 0x358, 0x3CF)};
-			stl::write_thunk_call<HitData_Resolve>(target.address());
+			stl::write_thunk_call<HitData_Resolve>(Sec_target.address());
 		}
 
 		// needed for melee attacks to not use metal impact sound
