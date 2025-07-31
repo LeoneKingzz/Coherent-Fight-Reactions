@@ -168,7 +168,7 @@ namespace Events_Space
 		{
 			using func_t = decltype(&GetFactionFightReaction);
 			REL::Relocation<func_t> func{REL::RelocationID(37672, 38626)};
-			func(a_subject, a_target);
+			return func(a_subject, a_target);
 		};
 
 	private:
