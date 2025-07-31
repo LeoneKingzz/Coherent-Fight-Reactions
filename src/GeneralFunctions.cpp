@@ -144,7 +144,7 @@ namespace GFunc_Space{
 		static std::once_flag flag;
 		std::call_once(flag, [&]()
 					   {
-        cond.data.functionData.function = RE::FUNCTION_DATA::FunctionID::kGetFactionRelation;
+        cond.data.functionData.function = RE::FUNCTION_DATA::FunctionID::kGetFactionReaction;
         cond.data.flags.opCode          = a_operand;
         cond.data.comparisonValue.f     = a_comparison_value; });
 

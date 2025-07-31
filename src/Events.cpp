@@ -360,6 +360,7 @@ namespace Events_Space
 
 			if (GFunc_Space::GetFactionRelation(target, aggressor, 0.0f, OP::kEqualTo))
 			{
+				logger::info("Neutral Branch Active");
 
 				if (!target->IsHostileToActor(aggressor) && target->AsActorValueOwner()->GetActorValue(RE::ActorValue::kAggression) <= 1)
 				{
@@ -484,6 +485,8 @@ namespace Events_Space
 			}
 			else if (GFunc_Space::GetFactionRelation(target, aggressor, 2.0f, OP::kGreaterThanOrEqualTo))
 			{
+				logger::info("Allied Branch Active");
+
 				if (aggressor->IsPlayerRef() || (CFRs_PlayerAlliesFaction && aggressor->IsInFaction(CFRs_PlayerAlliesFaction)) || (CurrentFollowerFaction && aggressor->IsInFaction(CurrentFollowerFaction)))
 				{
 					if (const auto CFRs_Enable = skyrim_cast<RE::TESGlobal *>(HdSingle->LookupForm(0x804, "Coherent Fight Reactions.esp")); CFRs_Enable)
