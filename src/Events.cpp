@@ -356,8 +356,9 @@ namespace Events_Space
 
 		if (aggressor && target)
 		{
+			using OP = RE::CONDITION_ITEM_DATA::OpCode;
 
-			if (GFunc_Space::GetFactionRelation(target, aggressor, 0.0f))
+			if (GFunc_Space::GetFactionRelation(target, aggressor, 0.0f, OP::kEqualTo))
 			{
 
 				if (!target->IsHostileToActor(aggressor) && target->AsActorValueOwner()->GetActorValue(RE::ActorValue::kAggression) <= 1)

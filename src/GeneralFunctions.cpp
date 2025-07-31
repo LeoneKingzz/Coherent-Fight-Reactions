@@ -138,14 +138,14 @@ namespace GFunc_Space{
 		return cond(params);
 	}
 
-	bool GetFactionRelation(const RE::Actor *a_actor, const RE::Actor *a_target, float a_comparison_value)
+	bool GetFactionRelation(const RE::Actor *a_actor, const RE::Actor *a_target, float a_comparison_value, RE::CONDITION_ITEM_DATA::OpCode a_operand)
 	{
 		static RE::TESConditionItem cond;
 		static std::once_flag flag;
 		std::call_once(flag, [&]()
 					   {
         cond.data.functionData.function = RE::FUNCTION_DATA::FunctionID::kGetFactionRelation;
-        cond.data.flags.opCode          = RE::CONDITION_ITEM_DATA::OpCode::kEqualTo;
+        cond.data.flags.opCode          = a_operand;
         cond.data.comparisonValue.f     = a_comparison_value; });
 
 		ConditionParam cond_param;
