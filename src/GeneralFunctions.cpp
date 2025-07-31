@@ -146,11 +146,8 @@ namespace GFunc_Space{
 					   {
         cond.data.functionData.function = RE::FUNCTION_DATA::FunctionID::kGetFactionReaction;
         cond.data.flags.opCode          = a_operand;
+		cond.data.object                = RE::CONDITIONITEMOBJECT::kTarget;
         cond.data.comparisonValue.f     = a_comparison_value; });
-
-		ConditionParam cond_param;
-		cond_param.form = const_cast<RE::TESObjectREFR *>(a_target->As<RE::TESObjectREFR>());
-		cond.data.functionData.params[0] = std::bit_cast<void *>(cond_param);
 
 		RE::ConditionCheckParams params(const_cast<RE::TESObjectREFR *>(a_actor->As<RE::TESObjectREFR>()),
 										const_cast<RE::TESObjectREFR *>(a_target->As<RE::TESObjectREFR>()));
