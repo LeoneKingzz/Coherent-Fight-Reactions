@@ -358,7 +358,7 @@ namespace Events_Space
 		{
 			using OP = RE::CONDITION_ITEM_DATA::OpCode;
 
-			if (GFunc_Space::GetFactionRelation(target, aggressor, 0.0f, OP::kEqualTo))
+			if (Events::GetFactionFightReaction(target, aggressor) == RE::FIGHT_REACTION::kNeutral)
 			{
 				logger::info("Neutral Branch Active");
 
@@ -483,7 +483,7 @@ namespace Events_Space
 					// }
 				}
 			}
-			else if (GFunc_Space::GetFactionRelation(target, aggressor, 2.0f, OP::kGreaterThanOrEqualTo))
+			else if (Events::GetFactionFightReaction(target, aggressor) >= RE::FIGHT_REACTION::kAlly)
 			{
 				logger::info("Allied Branch Active");
 
