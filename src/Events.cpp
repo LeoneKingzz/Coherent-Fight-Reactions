@@ -357,7 +357,7 @@ namespace Events_Space
 			if(defender && attacker){
 				if (handler->PreProcessHit(defender, attacker, a_hitData))
 				{
-					a_hitData = nullptr;
+					return;
 				}
 			}
 
@@ -376,7 +376,7 @@ namespace Events_Space
 			{
 				if (handler->PreProcessHit(defender, attacker, a_hitData))
 				{
-					a_hitData = nullptr;
+					return;
 				}
 			}
 
