@@ -101,22 +101,7 @@ namespace Events_Space
 			{
 				return RE::BSEventNotifyControl::kContinue;
 			}
-			// if (Protagonist->IsPlayerTeammate() || (Protagonist->IsCommandedActor() && ((Protagonist->GetCommandingActor().get()->IsPlayerRef()) || (Protagonist->GetCommandingActor().get()->IsPlayerTeammate()))))
-			// {
-			// 	if (auto CombatTarget = Protagonist->GetActorRuntimeData().currentCombatTarget.get().get())
-			// 	{
-			// 		if (CombatTarget->IsPlayerTeammate() || (CombatTarget->IsCommandedActor() && ((CombatTarget->GetCommandingActor().get()->IsPlayerRef()) || (CombatTarget->GetCommandingActor().get()->IsPlayerTeammate()))))
-			// 		{
-			// 			if (const auto Evaluate = RE::TESForm::LookupByEditorID<RE::MagicItem>("CFRs_CalmSpell"))
-			// 			{
-			// 				const auto caster = Protagonist->GetMagicCaster(RE::MagicSystem::CastingSource::kInstant);
-			// 				const auto caster2 = CombatTarget->GetMagicCaster(RE::MagicSystem::CastingSource::kInstant);
-			// 				caster->CastSpellImmediate(Evaluate, true, Protagonist, 1, false, 100.0, Protagonist);
-			// 				caster2->CastSpellImmediate(Evaluate, true, CombatTarget, 1, false, 100.0, CombatTarget);
-			// 			}
-			// 		}
-			// 	}
-			// }
+			
 			auto HdSingle = RE::TESDataHandler::GetSingleton();
 			if (const auto CFRs_Enable = skyrim_cast<RE::TESGlobal *>(HdSingle->LookupForm(0x801, "Coherent Fight Reactions.esp")))
 			{
