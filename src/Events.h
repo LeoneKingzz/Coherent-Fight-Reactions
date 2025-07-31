@@ -21,24 +21,57 @@ namespace Events_Space
 		return single;
 	}
 
-	namespace Hooks
+	class HitEventHandler
 	{
-		void Install();
-
-		struct Actor_CombatHit
+		// friend EldenParry;
+	public:
+		[[nodiscard]] static HitEventHandler *GetSingleton()
 		{
-			static float thunk(RE::Actor *a_this, RE::HitData *a_hitData);
+			static HitEventHandler singleton;
+			return std::addressof(singleton);
+		}
 
-			static inline REL::Relocation<decltype(thunk)> func;
+		static void InstallHooks()
+		{
+			Hooks::Install();
+		}
+
+		bool PreProcessHit(RE::Actor *target, RE::HitData *hitData);
+
+	protected:
+		struct Hooks
+		{
+			struct ProcessHitEvent
+			{
+				static void thunk(RE::Actor *target, RE::HitData *hitData)
+				{
+					auto handler = GetSingleton();
+					if (handler->PreProcessHit(target, hitData))
+					{
+						return;
+					}
+					return func(target, hitData);
+				}
+				static inline REL::Relocation<decltype(thunk)> func;
+			};
+
+			static void Install()
+			{
+				stl::write_thunk_call<ProcessHitEvent>(REL::RelocationID(37673, 38627).address() + REL::Relocate(0x3C0, 0x4A8, 0x3C0)); // 1.5.97 140628C20
+			}
 		};
 
-		struct HitData_Resolve
-		{
-			static bool thunk(RE::HitData *a_hitData, bool a_ignoreBlocking);
+	private:
+		// static void PoiseCallback_Post(const PRECISION_API::PrecisionHitData& a_precisionHitData, const RE::HitData& hitData);
+		constexpr HitEventHandler() noexcept = default;
+		HitEventHandler(const HitEventHandler &) = delete;
+		HitEventHandler(HitEventHandler &&) = delete;
 
-			static inline REL::Relocation<decltype(thunk)> func;
-		};
-	}
+		~HitEventHandler() = default;
+
+		HitEventHandler &operator=(const HitEventHandler &) = delete;
+		HitEventHandler &operator=(HitEventHandler &&) = delete;
+	};
 
 	class animEventHandler
 	{
@@ -123,8 +156,6 @@ namespace Events_Space
 		void Update(RE::Actor* a_actor, float a_delta);
 		void Process_Updates(RE::Actor *a_actor, std::chrono::steady_clock::time_point time_now);
 		void RegisterforUpdate(RE::Actor *a_actor, std::tuple<bool, std::chrono::steady_clock::time_point, GFunc_Space::ms, std::string> data);
-
-		bool PreProcessHit(RE::Actor *target, RE::Actor *aggressor, RE::HitData *hitData);
 
 		static void RemoveFromFaction(RE::Actor *a_actor, RE::TESFaction *a_faction)
 		{
