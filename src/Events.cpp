@@ -475,6 +475,8 @@ namespace Events_Space
 
 					if (ignoredamage)
 					{
+						logger::info("Friendly Fire Off. {} ignored attack from {} ", target->GetName(), aggressor->GetName());
+
 						//hitData = nullptr;
 						// auto fireKeyword = RE::TESForm::LookupByEditorID<RE::BGSKeyword>("MagicDamageFire");
 						// auto frostKeyword = RE::TESForm::LookupByEditorID<RE::BGSKeyword>("MagicDamageFrost");
