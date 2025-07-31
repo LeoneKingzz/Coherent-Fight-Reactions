@@ -387,8 +387,6 @@ namespace Events_Space
 
 	bool Events::PreProcessHit(RE::Actor *target, RE::Actor *aggressor, RE::HitData *hitData)
 	{
-		auto aggressor = hitData->aggressor ? hitData->aggressor.get().get() : nullptr;
-
 		auto HdSingle = RE::TESDataHandler::GetSingleton();
 
 		bool ignoredamage = false;
