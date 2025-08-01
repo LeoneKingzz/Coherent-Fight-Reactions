@@ -649,34 +649,6 @@ namespace Events_Space
 		return ignoredamage;
 	}
 
-	void MagicApplytHook::OnAdd(RE::ActiveEffect *a_activeffect, RE::MagicTarget *a_target)
-	{
-		if (auto target = a_target->GetTargetStatsObject(); target && a_activeffect)
-		{
-			if (target->Is(RE::FormType::ActorCharacter) && a_activeffect->caster && a_activeffect->caster.get() 
-			&& a_activeffect->caster.get().get() && a_activeffect->caster.get().get()->Is(RE::FormType::ActorCharacter))
-			{
-				if (a_activeffect->effect && target->As<RE::Actor>() != a_activeffect->caster.get().get())
-				{
-					auto handler = HitEventHandler::GetSingleton();
-
-					if (handler->PreProcessMagic(target->As<RE::Actor>(), a_activeffect->caster.get().get(), a_activeffect->effect))
-					{
-						return;
-					}
-				}
-			}
-		}
-		return func3(a_activeffect, a_target);
-	}
-
-	void MagicApplytHook::Install()
-	{
-		logger::info("MagicApplytHook Installed");
-		REL::Relocation<uintptr_t> ActiveEffectVtbl{RE::VTABLE_ActiveEffect[0]};
-		MagicApplytHook::func3 = ActiveEffectVtbl.write_vfunc(0x1, &MagicApplytHook::OnAdd);
-	}
-
 	std::unordered_map<uint64_t, animEventHandler::FnProcessEvent> animEventHandler::fnHash;
 
 	void Events::install(){
