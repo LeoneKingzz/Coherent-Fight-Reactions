@@ -73,7 +73,8 @@ namespace Events_Space
 						{
 							if (handler->PreProcessMagic(target->As<RE::Actor>(), a_data->caster->As<RE::Actor>(), a_data))
 							{
-								return func(nullptr, nullptr);
+								a_data->effect = nullptr;
+								return func(a_this, a_data);
 							}
 						}
 					}
