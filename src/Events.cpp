@@ -768,7 +768,7 @@ namespace Events_Space
 
 
 	void Settings::Load(){
-		constexpr auto path = "Data\\SKSE\\Plugins\\NPCSpellVariance.ini";
+		constexpr auto path = "Data\\SKSE\\Plugins\\CoherentFightReactions.ini";
 
 		CSimpleIniA ini;
 		ini.SetUnicode();
@@ -777,10 +777,10 @@ namespace Events_Space
 
 		general.Load(ini);
 
-		include_spells_mods.Load(ini);
-		include_spells_keywords.Load(ini);
-		exclude_spells_mods.Load(ini);
-		exclude_spells_keywords.Load(ini);
+		// include_spells_mods.Load(ini);
+		// include_spells_keywords.Load(ini);
+		// exclude_spells_mods.Load(ini);
+		// exclude_spells_keywords.Load(ini);
 
 		ini.SaveFile(path);
 	}
@@ -791,9 +791,9 @@ namespace Events_Space
 
 		auto DS = GetSingleton();
 
-		DS->general.bWhiteListApproach = a_ini.GetBoolValue(section, "bWhiteListApproach", DS->general.bWhiteListApproach);
+		DS->general.bDebugMode = a_ini.GetBoolValue(section, "bDebugMode", DS->general.bDebugMode);
 
-		a_ini.SetBoolValue(section, "bWhiteListApproach", DS->general.bWhiteListApproach, ";If set to true, only the include mods and keywords are considered. Else only the exclude approach is used");
+		a_ini.SetBoolValue(section, "bDebugMode", DS->general.bDebugMode, ";The log shows which actors ignored attacks and from whom. Also shows EDIDs of any relevant MagicEffects");
 		//
 	}
 

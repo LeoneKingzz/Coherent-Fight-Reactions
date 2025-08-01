@@ -268,7 +268,7 @@ namespace Events_Space
 		struct General_Settings
 		{
 			void Load(CSimpleIniA &a_ini);
-			bool bWhiteListApproach = false;
+			bool bDebugMode = false;
 
 		} general;
 
