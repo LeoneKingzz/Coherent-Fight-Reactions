@@ -21,16 +21,6 @@ namespace Events_Space
 		return single;
 	}
 
-	struct MagicApplytHook
-	{
-	public:
-		static void OnAdd(RE::ActiveEffect* a_activeffect,RE::MagicTarget* a_target);
-
-		static inline REL::Relocation<decltype(OnAdd)> func3;
-
-		static void Install();
-	};
-
 	class HitEventHandler
 	{
 		// friend EldenParry;
@@ -44,6 +34,7 @@ namespace Events_Space
 		static void InstallHooks()
 		{
 			Hooks::Physical_Install();
+			Hooks::Install();
 		}
 
 		bool PreProcessHit(RE::Actor *target, RE::HitData *hitData);
@@ -69,6 +60,34 @@ namespace Events_Space
 			static void Physical_Install()
 			{
 				stl::write_thunk_call<ProcessHitEvent>(REL::RelocationID(37673, 38627).address() + REL::Relocate(0x3C0, 0x4A8, 0x3C0)); // 1.5.97 140628C20
+			}
+
+			struct MagicTargetApply
+			{
+				static bool thunk(RE::MagicTarget *a_this, RE::MagicTarget::AddTargetData *a_data)
+				{
+
+					if (const auto target = a_this && a_data ? a_this->GetTargetStatsObject() : nullptr; target)
+					{
+						const auto effect = a_data->effect;
+						if (const auto baseEffect = effect ? effect->baseEffect : nullptr; baseEffect)
+						{
+							
+						}
+					}
+
+					return func(a_this, a_data);
+				}
+
+				static inline REL::Relocation<decltype(thunk)> func;
+			};
+
+			static void Install()
+			{
+				REL::Relocation<std::uintptr_t> target{RELOCATION_ID(33742, 34526), OFFSET(0x1E8, 0x20B)};
+				stl::write_thunk_call<MagicTargetApply>(target.address());
+
+				logger::info("Hooked Magic Effect Apply");
 			}
 		};
 
