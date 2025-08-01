@@ -347,6 +347,8 @@ namespace Events_Space
 		if (const auto CFRs_Currentfollow_Glob = skyrim_cast<RE::TESGlobal *>(HdSingle->LookupForm(0x805, "Coherent Fight Reactions.esp")); CFRs_Currentfollow_Glob && CFRs_Currentfollow_Glob->value == 0.0f)
 		{
 			CurrentFollowerFaction->SetAlly(CurrentFollowerFaction);
+			CurrentFollowerFaction->SetAlly(CFRs_PlayerAlliesFaction);
+			CurrentFollowerFaction->SetAlly(CFRs_PlayerFriendsFaction, true, true);
 			CFRs_Currentfollow_Glob->value = 1.0f;
 		}
 
@@ -523,6 +525,8 @@ namespace Events_Space
 		if (const auto CFRs_Currentfollow_Glob = skyrim_cast<RE::TESGlobal *>(HdSingle->LookupForm(0x805, "Coherent Fight Reactions.esp")); CFRs_Currentfollow_Glob && CFRs_Currentfollow_Glob->value == 0.0f)
 		{
 			CurrentFollowerFaction->SetAlly(CurrentFollowerFaction);
+			CurrentFollowerFaction->SetAlly(CFRs_PlayerAlliesFaction);
+			CurrentFollowerFaction->SetAlly(CFRs_PlayerFriendsFaction, true, true);
 			CFRs_Currentfollow_Glob->value = 1.0f;
 		}
 
