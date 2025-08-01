@@ -34,6 +34,10 @@ namespace Events_Space
 		static void InstallHooks()
 		{
 			Hooks::Physical_Install();
+		}
+
+		static void InstallMageHooks()
+		{
 			Hooks::Magic_Install();
 		}
 
