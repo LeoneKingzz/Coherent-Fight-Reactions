@@ -594,6 +594,10 @@ namespace Events_Space
 
 		using OP = RE::CONDITION_ITEM_DATA::OpCode;
 
+		std::vector<RE::FIGHT_REACTION> reactions;
+
+
+
 		for (auto &ind_subj_fac : subjectFactions)
 		{
 			if (ind_subj_fac)
@@ -604,26 +608,42 @@ namespace Events_Space
 					{
 						if (GFunc_Space::GetFactionCombatReaction(a_subject, ind_subj_fac, ind_aggr_fac, 1.0, OP::kEqualTo))
 						{
-							result = RE::FIGHT_REACTION::kEnemy;
-							break;
+							reactions.push_back(RE::FIGHT_REACTION::kEnemy);
 
 						}else if(GFunc_Space::GetFactionCombatReaction(a_subject, ind_subj_fac, ind_aggr_fac, 2.0, OP::kEqualTo)){
 
-							result = RE::FIGHT_REACTION::kAlly;
-							break;
+							reactions.push_back(RE::FIGHT_REACTION::kAlly);
 						}
 						else if (GFunc_Space::GetFactionCombatReaction(a_subject, ind_subj_fac, ind_aggr_fac, 3.0, OP::kEqualTo))
 						{
-							result = RE::FIGHT_REACTION::kFriend;
-							break;
+							reactions.push_back(RE::FIGHT_REACTION::kFriend);
 						}
 					}
 				}
+			}
+		}
 
-				if (result != RE::FIGHT_REACTION::kNeutral)
-				{
-					break;
-				}
+		if(!reactions.empty()){
+			
+			auto position_enemy = std::find(reactions.begin(), reactions.end(), RE::FIGHT_REACTION::kEnemy);
+
+			if (position_enemy != reactions.end())
+			{
+				return RE::FIGHT_REACTION::kEnemy;
+			}
+
+			auto position_ally = std::find(reactions.begin(), reactions.end(), RE::FIGHT_REACTION::kAlly);
+
+			if (position_ally != reactions.end())
+			{
+				return RE::FIGHT_REACTION::kAlly;
+			}
+
+			auto position_friend = std::find(reactions.begin(), reactions.end(), RE::FIGHT_REACTION::kFriend);
+
+			if (position_friend != reactions.end())
+			{
+				return RE::FIGHT_REACTION::kFriend;
 			}
 		}
 

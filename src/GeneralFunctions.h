@@ -57,7 +57,7 @@ namespace GFunc_Space{
 	bool GetIsGhost(const RE::Actor *a_actor, float a_comparison_value);
 	bool IsAllowedToFly(const RE::Actor *a_actor, float a_comparison_value);
 	bool IsScenePackageRunning(const RE::Actor *a_actor, float a_comparison_value);
-	bool GetFactionRelation(const RE::Actor *a_actor, const RE::Actor *a_target, float a_comparison_value, RE::CONDITION_ITEM_DATA::OpCode a_operand);
+	bool GetFactionCombatReaction(const RE::Actor *a_subject, const RE::TESFaction *subjectFaction, const RE::TESFaction *aggroFaction, float a_comparison_value, RE::CONDITION_ITEM_DATA::OpCode a_operand);
 
 	class GFunc
 	{
