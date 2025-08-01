@@ -476,7 +476,7 @@ namespace Events_Space
 
 				using AX = RE::EffectSetting::Archetype;
 
-				if (a_effect && a_effect->baseEffect && !clib_util::editorID::get_editorID(a_effect->baseEffect).contains("_CRFs_exclude"))
+				if (a_effect && a_effect->baseEffect && !clib_util::editorID::get_editorID(a_effect->baseEffect).contains("_CFRs_exclude"))
 				{
 					auto Archy_X = a_effect->baseEffect->data.archetype;
 					auto hasHostileflag = a_effect->baseEffect->data.flags.any(RE::EffectSetting::EffectSettingData::Flag::kHostile);
