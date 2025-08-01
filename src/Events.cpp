@@ -333,7 +333,7 @@ namespace Events_Space
 		return fn ? (this->*fn)(a_event, src) : RE::BSEventNotifyControl::kContinue;
 	}
 
-	bool HitEventHandler::PreProcessMagic(RE::Actor *target, RE::Actor *aggressor, RE::MagicTarget::AddTargetData *hitData)
+	bool HitEventHandler::PreProcessMagic(RE::Actor *target, RE::Actor *aggressor, RE::Effect *a_effect)
 	{
 		auto HdSingle = RE::TESDataHandler::GetSingleton();
 
@@ -479,17 +479,17 @@ namespace Events_Space
 
 				using AX = RE::EffectSetting::Archetype;
 
-				if (hitData->effect && hitData->effect->baseEffect && !clib_util::editorID::get_editorID(hitData->effect->baseEffect).contains("_CRFs_exclude"))
+				if (a_effect && a_effect->baseEffect && !clib_util::editorID::get_editorID(a_effect->baseEffect).contains("_CRFs_exclude"))
 				{
-					auto Archy_X = hitData->effect->baseEffect->data.archetype;
-					auto hasHostileflag = hitData->effect->baseEffect->data.flags.any(RE::EffectSetting::EffectSettingData::Flag::kHostile);
-					auto Kw_ScriptHostile = clib_util::editorID::get_editorID(hitData->effect->baseEffect).contains("FrostSlowFFContact");
-					auto Kw_magicfire = hitData->effect->baseEffect->HasKeyword(fireKeyword);
-					auto Kw_magicfrost = hitData->effect->baseEffect->HasKeyword(frostKeyword);
-					auto Kw_magicshock = hitData->effect->baseEffect->HasKeyword(shockKeyword);
-					auto Kw_magicshout = hitData->effect->baseEffect->HasKeyword(shoutKeyword);
-					auto Kw_Exclude = hitData->effect->baseEffect->HasKeyword(TrapGasKeyword) || hitData->effect->baseEffect->HasKeyword(TrapPoisonKeyword) || hitData->effect->baseEffect->HasKeyword(stormKeyword);
-					auto Kw_Storm = hitData->effect->baseEffect->HasKeyword(stormKeyword);
+					auto Archy_X = a_effect->baseEffect->data.archetype;
+					auto hasHostileflag = a_effect->baseEffect->data.flags.any(RE::EffectSetting::EffectSettingData::Flag::kHostile);
+					auto Kw_ScriptHostile = clib_util::editorID::get_editorID(a_effect->baseEffect).contains("FrostSlowFFContact");
+					auto Kw_magicfire = a_effect->baseEffect->HasKeyword(fireKeyword);
+					auto Kw_magicfrost = a_effect->baseEffect->HasKeyword(frostKeyword);
+					auto Kw_magicshock = a_effect->baseEffect->HasKeyword(shockKeyword);
+					auto Kw_magicshout = a_effect->baseEffect->HasKeyword(shoutKeyword);
+					auto Kw_Exclude = a_effect->baseEffect->HasKeyword(TrapGasKeyword) || a_effect->baseEffect->HasKeyword(TrapPoisonKeyword) || a_effect->baseEffect->HasKeyword(stormKeyword);
+					auto Kw_Storm = a_effect->baseEffect->HasKeyword(stormKeyword);
 
 					if ((Kw_ScriptHostile && Archy_X == AX::kScript) || (Kw_Storm && Archy_X == AX::kStagger) || (Kw_magicshout && Archy_X == AX::kStagger) || (!Kw_Exclude && (hasHostileflag || Kw_magicfire || Kw_magicfrost || Kw_magicshock) && (Archy_X == AX::kDualValueModifier || Archy_X == AX::kValueModifier || Archy_X == AX::kPeakValueModifier || Archy_X == AX::kParalysis || Archy_X == AX::kDemoralize || Archy_X == AX::kFrenzy || Archy_X == AX::kDisarm || Archy_X == AX::kAbsorb || Archy_X == AX::kStagger)))
 					{
@@ -647,6 +647,35 @@ namespace Events_Space
 		}
 
 		return ignoredamage;
+	}
+
+	void MagicApplytHook::OnAdd(RE::ActiveEffect *a_activeffect, RE::MagicTarget *a_target)
+	{
+		if (auto target = a_target->GetTargetStatsObject(); target && a_activeffect)
+		{
+			if (target->Is(RE::FormType::ActorCharacter) && a_activeffect->caster && a_activeffect->caster.get() 
+			&& a_activeffect->caster.get().get() && a_activeffect->caster.get().get()->Is(RE::FormType::ActorCharacter))
+			{
+				if (a_activeffect->effect)
+				{
+					auto handler = HitEventHandler::GetSingleton();
+
+					if (handler->PreProcessMagic(target->As<RE::Actor>(), a_activeffect->caster.get().get(), a_activeffect->effect))
+					{
+						return;
+					}
+				}
+			}
+
+		}
+		return func3(a_activeffect, a_target);
+	}
+
+	void MagicApplytHook::Install()
+	{
+		logger::info("MagicApplytHook Installed");
+		REL::Relocation<uintptr_t> ActiveEffectVtbl{RE::VTABLE_ActiveEffect[0]};
+		MagicApplytHook::func3 = ActiveEffectVtbl.write_vfunc(0x1, &MagicApplytHook::OnAdd);
 	}
 
 	std::unordered_map<uint64_t, animEventHandler::FnProcessEvent> animEventHandler::fnHash;
