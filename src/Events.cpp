@@ -473,10 +473,11 @@ namespace Events_Space
 				auto TrapPoisonKeyword = RE::TESForm::LookupByEditorID<RE::BGSKeyword>("MagicTrapPoison");
 				auto TrapGasKeyword = RE::TESForm::LookupByEditorID<RE::BGSKeyword>("'MagicTrapGas");
 				auto WeaponSpeedKeyword = RE::TESForm::LookupByEditorID<RE::BGSKeyword>("MagicWeaponSpeed");
+				auto CFRs_ExcludeKey = RE::TESForm::LookupByEditorID<RE::BGSKeyword>("CFRs_ExcludeKey");
 
 				using AX = RE::EffectSetting::Archetype;
 
-				if (a_effect && a_effect->baseEffect && !clib_util::editorID::get_editorID(a_effect->baseEffect).contains("_CFRs_exclude"))
+				if (a_effect && a_effect->baseEffect && !clib_util::editorID::get_editorID(a_effect->baseEffect).contains("_CFRs_exclude") && !a_effect->baseEffect->HasKeyword(CFRs_ExcludeKey))
 				{
 					auto Archy_X = a_effect->baseEffect->data.archetype;
 					auto hasHostileflag = a_effect->baseEffect->data.flags.any(RE::EffectSetting::EffectSettingData::Flag::kHostile);
