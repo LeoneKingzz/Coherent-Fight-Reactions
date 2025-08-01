@@ -470,8 +470,9 @@ namespace Events_Space
 				auto shockKeyword = RE::TESForm::LookupByEditorID<RE::BGSKeyword>("MagicDamageShock");
 				auto shoutKeyword = RE::TESForm::LookupByEditorID<RE::BGSKeyword>("MagicShout");
 				auto stormKeyword = RE::TESForm::LookupByEditorID<RE::BGSKeyword>("MagicVoiceChangeWeather");
-				auto TrapPoisonKeyword = RE::TESForm::LookupByEditorID<RE::BGSKeyword>("MagicVoiceChangeWeather");
-				auto TrapGasKeyword = RE::TESForm::LookupByEditorID<RE::BGSKeyword>("MagicVoiceChangeWeather");
+				auto TrapPoisonKeyword = RE::TESForm::LookupByEditorID<RE::BGSKeyword>("MagicTrapPoison");
+				auto TrapGasKeyword = RE::TESForm::LookupByEditorID<RE::BGSKeyword>("'MagicTrapGas");
+				auto WeaponSpeedKeyword = RE::TESForm::LookupByEditorID<RE::BGSKeyword>("MagicWeaponSpeed");
 
 				using AX = RE::EffectSetting::Archetype;
 
@@ -484,7 +485,7 @@ namespace Events_Space
 					auto Kw_magicfrost = a_effect->baseEffect->HasKeyword(frostKeyword);
 					auto Kw_magicshock = a_effect->baseEffect->HasKeyword(shockKeyword);
 					auto Kw_magicshout = a_effect->baseEffect->HasKeyword(shoutKeyword);
-					auto Kw_Exclude = a_effect->baseEffect->HasKeyword(TrapGasKeyword) || a_effect->baseEffect->HasKeyword(TrapPoisonKeyword) || a_effect->baseEffect->HasKeyword(stormKeyword);
+					auto Kw_Exclude = a_effect->baseEffect->HasKeyword(TrapGasKeyword) || a_effect->baseEffect->HasKeyword(TrapPoisonKeyword) || a_effect->baseEffect->HasKeyword(stormKeyword) || a_effect->baseEffect->HasKeyword(WeaponSpeedKeyword);
 					auto Kw_Storm = a_effect->baseEffect->HasKeyword(stormKeyword);
 
 					if ((Kw_ScriptHostile && Archy_X == AX::kScript) || (Kw_Storm && Archy_X == AX::kStagger) || (Kw_magicshout && Archy_X == AX::kStagger) || (!Kw_Exclude && (hasHostileflag || Kw_magicfire || Kw_magicfrost || Kw_magicshock) && (Archy_X == AX::kDualValueModifier || Archy_X == AX::kValueModifier || Archy_X == AX::kPeakValueModifier || Archy_X == AX::kParalysis || Archy_X == AX::kDemoralize || Archy_X == AX::kFrenzy || Archy_X == AX::kDisarm || Archy_X == AX::kAbsorb || Archy_X == AX::kStagger)))
