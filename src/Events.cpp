@@ -647,12 +647,9 @@ namespace Events_Space
 			{
 				return RE::FIGHT_REACTION::kFriend;
 			}
-		}else{
-			
-			return RE::FIGHT_REACTION::kNeutral;
 		}
 
-		
+		return RE::FIGHT_REACTION::kNeutral;
 	}
 
 	std::unordered_map<uint64_t, animEventHandler::FnProcessEvent> animEventHandler::fnHash;
