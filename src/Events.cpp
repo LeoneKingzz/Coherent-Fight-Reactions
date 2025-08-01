@@ -517,7 +517,7 @@ namespace Events_Space
 		return ignoredamage;
 	}
 
-	RE::FIGHT_REACTION GetFactionFightReaction(RE::Actor *a_subject, RE::Actor *a_aggressor)
+	RE::FIGHT_REACTION Events::GetFactionFightReaction(RE::Actor *a_subject, RE::Actor *a_aggressor)
 	{
 		std::vector<RE::TESFaction*> subjectFactions;
 		std::vector<RE::TESFaction*> aggroFactions;
