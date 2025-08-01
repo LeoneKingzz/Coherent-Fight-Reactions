@@ -269,6 +269,7 @@ namespace Events_Space
 		{
 			void Load(CSimpleIniA &a_ini);
 			bool bDebugMode = false;
+			bool bDynamicToggle = true;
 
 		} general;
 

@@ -800,8 +800,12 @@ namespace Events_Space
 
 		DS->general.bDebugMode = a_ini.GetBoolValue(section, "bDebugMode", DS->general.bDebugMode);
 
+		DS->general.bDynamicToggle = a_ini.GetBoolValue(section, "bDynamicToggle", DS->general.bDynamicToggle);
+
 		a_ini.SetBoolValue(section, "bDebugMode", DS->general.bDebugMode, ";The log shows which actors ignored attacks and from whom. Also shows EDIDs of any relevant MagicEffects");
-		//
+
+		a_ini.SetBoolValue(section, "bDynamicToggle", DS->general.bDynamicToggle, ";Dynamically toggles FF at appropriate moments. FF is on while sneaking outside combat. FF is off in combat against non-hostile actors");
+		
 	}
 
 	void Settings::Include_AllSpells_withKeywords::Load(CSimpleIniA &a_ini)
