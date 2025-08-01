@@ -67,12 +67,32 @@ namespace Events_Space
 				static bool thunk(RE::MagicTarget *a_this, RE::MagicTarget::AddTargetData *a_data)
 				{
 
-					if (const auto target = a_this && a_data ? a_this->GetTargetStatsObject() : nullptr; target)
+					if (auto target = a_this && a_data ? a_this->GetTargetStatsObject() : nullptr; target)
 					{
-						const auto effect = a_data->effect;
-						if (const auto baseEffect = effect ? effect->baseEffect : nullptr; baseEffect)
+						if (target->Is(RE::FormType::ActorCharacter) && a_data->caster && a_data->caster->Is(RE::FormType::ActorCharacter))
 						{
-							
+							if (a_data->effect && target->As<RE::Actor>() != a_data->caster->As<RE::Actor>())
+							{
+								auto handler = HitEventHandler::GetSingleton();
+
+								if (handler->PreProcessMagic(target->As<RE::Actor>(), a_data->caster->As<RE::Actor>(), a_data->effect))
+								{
+									if (auto item = RE::TESForm::LookupByEditorID<RE::MagicItem>("CFRs_BlankSpell"); item)
+									{
+										if (auto baseEffect = RE::TESForm::LookupByEditorID<RE::EffectSetting>("CFRs_BlankEffect"); baseEffect)
+										{
+											RE::Effect *effect = new RE::Effect;
+											effect->cost = 0.0f;
+											effect->effectItem.area = 0;
+											effect->effectItem.duration = 0;
+											effect->effectItem.magnitude = 0.0f;
+											effect->baseEffect = baseEffect;
+											a_data->magicItem = item;
+											a_data->effect = effect;
+										}
+									}
+								}
+							}
 						}
 					}
 
