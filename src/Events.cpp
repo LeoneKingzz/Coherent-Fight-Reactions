@@ -492,6 +492,9 @@ namespace Events_Space
 					if ((Kw_ScriptHostile && Archy_X == AX::kScript) || (Kw_Storm && Archy_X == AX::kStagger) || (Kw_magicshout && Archy_X == AX::kStagger) || (!Kw_Exclude && (hasHostileflag || Kw_magicfire || Kw_magicfrost || Kw_magicshock) && (Archy_X == AX::kDualValueModifier || Archy_X == AX::kValueModifier || Archy_X == AX::kPeakValueModifier || Archy_X == AX::kParalysis || Archy_X == AX::kDemoralize || Archy_X == AX::kFrenzy || Archy_X == AX::kDisarm || Archy_X == AX::kAbsorb || Archy_X == AX::kStagger)))
 					{
 						// harmful effect - ignore;
+						if(Settings::GetSingleton()->general.bDebugMode){
+
+						}
 						logger::info("Friendly Fire Off. {} ignored magicEffect from {} ", target->GetName(), aggressor->GetName());
 						
 					}else{
@@ -635,7 +638,11 @@ namespace Events_Space
 
 			if (ignoredamage)
 			{
-				logger::info("Friendly Fire Off. {} ignored attack from {} ", target->GetName(), aggressor->GetName());
+				if (Settings::GetSingleton()->general.bDebugMode)
+				{
+					logger::info("Friendly Fire Off. {} ignored attack from {} ", target->GetName(), aggressor->GetName());
+				}
+				
 			}
 		}
 
