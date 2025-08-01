@@ -138,23 +138,27 @@ namespace GFunc_Space{
 		return cond(params);
 	}
 
-	bool GetFactionRelation(const RE::Actor *a_actor, const RE::Actor *a_target, float a_comparison_value, RE::CONDITION_ITEM_DATA::OpCode a_operand)
+	bool GetFactionCombatReaction(const RE::Actor *a_subject, const RE::TESFaction *subjectFaction, const RE::TESFaction *aggroFaction, float a_comparison_value, RE::CONDITION_ITEM_DATA::OpCode a_operand)
 	{
 		static RE::TESConditionItem cond;
 		static std::once_flag flag;
 		std::call_once(flag, [&]()
 					   {
-        cond.data.functionData.function = RE::FUNCTION_DATA::FunctionID::kGetFactionRelation;
+        cond.data.functionData.function = RE::FUNCTION_DATA::FunctionID::kGetFactionCombatReaction;
         cond.data.flags.opCode          = a_operand;
 		cond.data.object                = RE::CONDITIONITEMOBJECT::kSelf;
         cond.data.comparisonValue.f     = a_comparison_value; });
 
 		ConditionParam cond_param;
-		cond_param.form = const_cast<RE::TESObjectREFR *>(a_target->As<RE::TESObjectREFR>());
+		cond_param.form = const_cast<RE::TESFaction *>(subjectFaction->As<RE::TESFaction>());
 		cond.data.functionData.params[0] = std::bit_cast<void *>(cond_param);
 
-		RE::ConditionCheckParams params(const_cast<RE::TESObjectREFR *>(a_actor->As<RE::TESObjectREFR>()),
-										nullptr);
+		ConditionParam cond_param_sec;
+		cond_param_sec.form = const_cast<RE::TESFaction *>(aggroFaction->As<RE::TESFaction>());
+		cond.data.functionData.params[1] = std::bit_cast<void *>(cond_param_sec);
+
+		RE::ConditionCheckParams params(const_cast<RE::TESObjectREFR *>(a_subject->As<RE::TESObjectREFR>()), nullptr);
+
 		return cond(params);
 	}
 

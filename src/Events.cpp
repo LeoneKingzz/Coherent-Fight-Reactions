@@ -517,6 +517,119 @@ namespace Events_Space
 		return ignoredamage;
 	}
 
+	RE::FIGHT_REACTION GetFactionFightReaction(RE::Actor *a_subject, RE::Actor *a_aggressor)
+	{
+		RE::FIGHT_REACTION result = RE::FIGHT_REACTION::kNeutral;
+
+		std::vector<RE::TESFaction*> subjectFactions;
+		std::vector<RE::TESFaction*> aggroFactions;
+
+		if (auto subjectBase = a_subject->GetActorBase(); subjectBase)
+		{
+			for (auto &factionInfo : subjectBase->factions)
+			{
+				if (factionInfo.faction && factionInfo.rank >= 0)
+				{
+					if (a_subject->IsInFaction(factionInfo.faction))
+					{
+						subjectFactions.push_back(factionInfo.faction);
+					}
+				}
+			}
+
+			if (auto factionChanges = a_subject->extraList.GetByType<RE::ExtraFactionChanges>(); factionChanges)
+			{
+				for (auto &change : factionChanges->factionChanges)
+				{
+					if (change.faction && change.rank >= 0)
+					{
+						if (a_subject->IsInFaction(change.faction))
+						{
+							auto position = std::find(subjectFactions.begin(), subjectFactions.end(), change.faction);
+
+							if (position == subjectFactions.end())
+							{
+								subjectFactions.push_back(change.faction);
+								
+							}
+						}
+					}
+				}
+			}
+		}
+
+		if (auto aggroBase = a_aggressor->GetActorBase(); aggroBase)
+		{
+			for (auto &factionInfo : aggroBase->factions)
+			{
+				if (factionInfo.faction && factionInfo.rank >= 0)
+				{
+					if (a_aggressor->IsInFaction(factionInfo.faction))
+					{
+						aggroFactions.push_back(factionInfo.faction);
+					}
+				}
+			}
+
+			if (auto factionChanges = a_aggressor->extraList.GetByType<RE::ExtraFactionChanges>(); factionChanges)
+			{
+				for (auto &change : factionChanges->factionChanges)
+				{
+					if (change.faction && change.rank >= 0)
+					{
+						if (a_aggressor->IsInFaction(change.faction))
+						{
+							auto position = std::find(aggroFactions.begin(), aggroFactions.end(), change.faction);
+
+							if (position == aggroFactions.end())
+							{
+								aggroFactions.push_back(change.faction);
+								
+							}
+						}
+					}
+				}
+			}
+		}
+
+		using OP = RE::CONDITION_ITEM_DATA::OpCode;
+
+		for (auto &ind_subj_fac : subjectFactions)
+		{
+			if (ind_subj_fac)
+			{
+				for (auto &ind_aggr_fac : aggroFactions)
+				{
+					if (ind_aggr_fac)
+					{
+						if (GFunc_Space::GetFactionCombatReaction(a_subject, ind_subj_fac, ind_aggr_fac, 1.0, OP::kEqualTo))
+						{
+							result = RE::FIGHT_REACTION::kEnemy;
+							break;
+
+						}else if(GFunc_Space::GetFactionCombatReaction(a_subject, ind_subj_fac, ind_aggr_fac, 2.0, OP::kEqualTo)){
+
+							result = RE::FIGHT_REACTION::kAlly;
+							break;
+						}
+						else if (GFunc_Space::GetFactionCombatReaction(a_subject, ind_subj_fac, ind_aggr_fac, 3.0, OP::kEqualTo))
+						{
+							result = RE::FIGHT_REACTION::kFriend;
+							break;
+						}
+					}
+				}
+
+				if (result != RE::FIGHT_REACTION::kNeutral)
+				{
+					break;
+				}
+			}
+		}
+
+		return result;
+	}
+
 	std::unordered_map<uint64_t, animEventHandler::FnProcessEvent> animEventHandler::fnHash;
 
 	void Events::install(){
