@@ -33,10 +33,12 @@ namespace Events_Space
 
 		static void InstallHooks()
 		{
-			Hooks::Install();
+			Hooks::Physical_Install();
+			Hooks::Magic_Install();
 		}
 
 		bool PreProcessHit(RE::Actor *target, RE::HitData *hitData);
+		bool PreProcessMagic(RE::Actor *target, RE::Actor *aggressor, RE::MagicTarget::AddTargetData *hitData);
 
 	protected:
 		struct Hooks
@@ -55,9 +57,39 @@ namespace Events_Space
 				static inline REL::Relocation<decltype(thunk)> func;
 			};
 
-			static void Install()
+			static void Physical_Install()
 			{
 				stl::write_thunk_call<ProcessHitEvent>(REL::RelocationID(37673, 38627).address() + REL::Relocate(0x3C0, 0x4A8, 0x3C0)); // 1.5.97 140628C20
+			}
+
+			struct MagicTargetApply
+			{
+				static bool thunk(RE::MagicTarget *a_this, RE::MagicTarget::AddTargetData *a_data)
+				{
+					auto handler = GetSingleton();
+					if (auto target = a_this && a_data ? a_this->GetTargetStatsObject() : nullptr; target)
+					{
+						if (target->Is(RE::FormType::ActorCharacter) && a_data->caster->Is(RE::FormType::ActorCharacter))
+						{
+							if (handler->PreProcessMagic(target->As<RE::Actor>(), a_data->caster->As<RE::Actor>(), a_data))
+							{
+								return func(nullptr, nullptr);
+							}
+						}
+					}
+
+					return func(a_this, a_data);
+				}
+
+				static inline REL::Relocation<decltype(thunk)> func;
+			};
+
+			static void Magic_Install()
+			{
+				REL::Relocation<std::uintptr_t> target{RELOCATION_ID(33742, 34526), OFFSET(0x1E8, 0x20B)};
+				stl::write_thunk_call<MagicTargetApply>(target.address());
+
+				logger::info("Hooked Magic Effect Apply");
 			}
 		};
 

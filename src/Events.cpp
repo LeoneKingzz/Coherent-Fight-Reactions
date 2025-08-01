@@ -333,12 +333,8 @@ namespace Events_Space
 		return fn ? (this->*fn)(a_event, src) : RE::BSEventNotifyControl::kContinue;
 	}
 
-	
-
-	bool HitEventHandler::PreProcessHit(RE::Actor *target, RE::HitData *hitData)
+	bool HitEventHandler::PreProcessMagic(RE::Actor *target, RE::Actor *aggressor, RE::MagicTarget::AddTargetData *hitData)
 	{
-		auto aggressor = hitData->aggressor ? hitData->aggressor.get().get() : nullptr;
-
 		auto HdSingle = RE::TESDataHandler::GetSingleton();
 
 		bool ignoredamage = false;
@@ -421,68 +417,6 @@ namespace Events_Space
 							}
 						}
 					}
-
-					// if (ignoredamage)
-					// {
-					// 	//logger::info("Friendly Fire Off. {} ignored attack from {} ", target->GetName(), aggressor->GetName());
-
-					// 	//hitData = nullptr;
-					// 	// auto fireKeyword = RE::TESForm::LookupByEditorID<RE::BGSKeyword>("MagicDamageFire");
-					// 	// auto frostKeyword = RE::TESForm::LookupByEditorID<RE::BGSKeyword>("MagicDamageFrost");
-					// 	// auto shockKeyword = RE::TESForm::LookupByEditorID<RE::BGSKeyword>("MagicDamageShock");
-					// 	// auto shoutKeyword = RE::TESForm::LookupByEditorID<RE::BGSKeyword>("MagicShout");
-					// 	// auto stormKeyword = RE::TESForm::LookupByEditorID<RE::BGSKeyword>("MagicVoiceChangeWeather");
-					// 	// auto TrapPoisonKeyword = RE::TESForm::LookupByEditorID<RE::BGSKeyword>("MagicVoiceChangeWeather");
-					// 	// auto TrapGasKeyword = RE::TESForm::LookupByEditorID<RE::BGSKeyword>("MagicVoiceChangeWeather");
-
-					// 	// using AX = RE::EffectSetting::Archetype;
-
-					// 	// if (auto indv_spell = hitData->attackDataSpell; indv_spell)
-					// 	// {
-					// 	// 	for (auto indv_effect : indv_spell->effects)
-					// 	// 	{
-					// 	// 		if (indv_effect && indv_effect->baseEffect && !clib_util::editorID::get_editorID(indv_effect->baseEffect).contains("_CRFs_exclude"))
-					// 	// 		{
-					// 	// 			auto Archy_X = indv_effect->baseEffect->data.archetype;
-					// 	// 			auto hasHostileflag = indv_effect->baseEffect->data.flags.any(RE::EffectSetting::EffectSettingData::Flag::kHostile);
-					// 	// 			auto Kw_ScriptHostile = clib_util::editorID::get_editorID(indv_effect->baseEffect).contains("FrostSlowFFContact");
-					// 	// 			auto Kw_magicfire = indv_effect->baseEffect->HasKeyword(fireKeyword);
-					// 	// 			auto Kw_magicfrost = indv_effect->baseEffect->HasKeyword(frostKeyword);
-					// 	// 			auto Kw_magicshock = indv_effect->baseEffect->HasKeyword(shockKeyword);
-					// 	// 			auto Kw_magicshout = indv_effect->baseEffect->HasKeyword(shoutKeyword);
-					// 	// 			auto Kw_Exclude = indv_effect->baseEffect->HasKeyword(TrapGasKeyword) || indv_effect->baseEffect->HasKeyword(TrapPoisonKeyword) || indv_effect->baseEffect->HasKeyword(stormKeyword);
-					// 	// 			auto Kw_Storm = indv_effect->baseEffect->HasKeyword(stormKeyword);
-
-					// 	// 			if ((Kw_ScriptHostile && Archy_X == AX::kScript) || (Kw_Storm && Archy_X == AX::kStagger) || (Kw_magicshout && Archy_X == AX::kStagger) || (!Kw_Exclude && (hasHostileflag || Kw_magicfire || Kw_magicfrost || Kw_magicshock) && (Archy_X == AX::kDualValueModifier || Archy_X == AX::kValueModifier || Archy_X == AX::kPeakValueModifier || Archy_X == AX::kParalysis || Archy_X == AX::kDemoralize || Archy_X == AX::kFrenzy || Archy_X == AX::kDisarm || Archy_X == AX::kAbsorb || Archy_X == AX::kStagger)))
-					// 	// 			{
-					// 	// 				auto position = std::find(hitData->attackDataSpell->effects.begin(), hitData->attackDataSpell->effects.end(), indv_effect);
-					// 	// 				if (position != hitData->attackDataSpell->effects.end())
-					// 	// 				{
-					// 	// 					int32_t i = static_cast<int32_t>(std::distance(hitData->attackDataSpell->effects.begin(), position));
-					// 	// 					hitData->attackDataSpell->effects[i] = nullptr;
-					// 	// 				}
-					// 	// 			}
-					// 	// 		}
-					// 	// 	}
-					// 	// }
-
-					// 	// if (hitData->totalDamage)
-					// 	// {
-					// 	// 	hitData->totalDamage = 0.0f;
-					// 	// }
-
-					// 	// if (hitData->pushBack)
-					// 	// {
-					// 	// 	hitData->pushBack = 0.0f;
-					// 	// }
-
-					// 	// hitData->stagger = static_cast<uint32_t>(0.00);
-
-					// 	// if (hitData->flags && !hitData->flags.any(RE::HitData::Flag::kIgnoreCritical))
-					// 	// {
-					// 	// 	hitData->flags |= RE::HitData::Flag::kIgnoreCritical;
-					// 	// }
-					// }
 				}
 			}
 			else if (Events::GetFactionReaction(target, aggressor) >= RE::FIGHT_REACTION::kAlly)
@@ -531,6 +465,177 @@ namespace Events_Space
 				}
 
 				
+			}
+
+			if (ignoredamage)
+			{
+				auto fireKeyword = RE::TESForm::LookupByEditorID<RE::BGSKeyword>("MagicDamageFire");
+				auto frostKeyword = RE::TESForm::LookupByEditorID<RE::BGSKeyword>("MagicDamageFrost");
+				auto shockKeyword = RE::TESForm::LookupByEditorID<RE::BGSKeyword>("MagicDamageShock");
+				auto shoutKeyword = RE::TESForm::LookupByEditorID<RE::BGSKeyword>("MagicShout");
+				auto stormKeyword = RE::TESForm::LookupByEditorID<RE::BGSKeyword>("MagicVoiceChangeWeather");
+				auto TrapPoisonKeyword = RE::TESForm::LookupByEditorID<RE::BGSKeyword>("MagicVoiceChangeWeather");
+				auto TrapGasKeyword = RE::TESForm::LookupByEditorID<RE::BGSKeyword>("MagicVoiceChangeWeather");
+
+				using AX = RE::EffectSetting::Archetype;
+
+				if (hitData->effect && hitData->effect->baseEffect && !clib_util::editorID::get_editorID(hitData->effect->baseEffect).contains("_CRFs_exclude"))
+				{
+					auto Archy_X = hitData->effect->baseEffect->data.archetype;
+					auto hasHostileflag = hitData->effect->baseEffect->data.flags.any(RE::EffectSetting::EffectSettingData::Flag::kHostile);
+					auto Kw_ScriptHostile = clib_util::editorID::get_editorID(hitData->effect->baseEffect).contains("FrostSlowFFContact");
+					auto Kw_magicfire = hitData->effect->baseEffect->HasKeyword(fireKeyword);
+					auto Kw_magicfrost = hitData->effect->baseEffect->HasKeyword(frostKeyword);
+					auto Kw_magicshock = hitData->effect->baseEffect->HasKeyword(shockKeyword);
+					auto Kw_magicshout = hitData->effect->baseEffect->HasKeyword(shoutKeyword);
+					auto Kw_Exclude = hitData->effect->baseEffect->HasKeyword(TrapGasKeyword) || hitData->effect->baseEffect->HasKeyword(TrapPoisonKeyword) || hitData->effect->baseEffect->HasKeyword(stormKeyword);
+					auto Kw_Storm = hitData->effect->baseEffect->HasKeyword(stormKeyword);
+
+					if ((Kw_ScriptHostile && Archy_X == AX::kScript) || (Kw_Storm && Archy_X == AX::kStagger) || (Kw_magicshout && Archy_X == AX::kStagger) || (!Kw_Exclude && (hasHostileflag || Kw_magicfire || Kw_magicfrost || Kw_magicshock) && (Archy_X == AX::kDualValueModifier || Archy_X == AX::kValueModifier || Archy_X == AX::kPeakValueModifier || Archy_X == AX::kParalysis || Archy_X == AX::kDemoralize || Archy_X == AX::kFrenzy || Archy_X == AX::kDisarm || Archy_X == AX::kAbsorb || Archy_X == AX::kStagger)))
+					{
+						// harmful effect - ignore damage;
+						logger::info("Friendly Fire Off. {} ignored magicEffect from {} ", target->GetName(), aggressor->GetName());
+					}else{
+						ignoredamage = false;
+					}
+				}
+			}
+		}
+
+		return ignoredamage;
+	}
+
+	bool HitEventHandler::PreProcessHit(RE::Actor *target, RE::HitData *hitData)
+	{
+		auto aggressor = hitData->aggressor ? hitData->aggressor.get().get() : nullptr;
+
+		auto HdSingle = RE::TESDataHandler::GetSingleton();
+
+		bool ignoredamage = false;
+
+		const auto CurrentFollowerFaction = RE::TESForm::LookupByEditorID<RE::TESFaction>("CurrentFollowerFaction");
+		const auto CFRs_PlayerAlliesFaction = RE::TESForm::LookupByEditorID<RE::TESFaction>("CFRs_PlayerAlliesFaction");
+		const auto CFRs_PlayerFriendsFaction = RE::TESForm::LookupByEditorID<RE::TESFaction>("CFRs_PlayerFriendsFaction");
+		const auto CFRs_NPCNeutralsFaction = RE::TESForm::LookupByEditorID<RE::TESFaction>("CFRs_NPCNeutralsFaction");
+
+		if (const auto CFRs_Currentfollow_Glob = skyrim_cast<RE::TESGlobal *>(HdSingle->LookupForm(0x805, "Coherent Fight Reactions.esp")); CFRs_Currentfollow_Glob && CFRs_Currentfollow_Glob->value == 0.0f)
+		{
+			CurrentFollowerFaction->SetAlly(CurrentFollowerFaction);
+			CFRs_Currentfollow_Glob->value = 1.0f;
+		}
+
+		if (aggressor && target)
+		{
+			using OP = RE::CONDITION_ITEM_DATA::OpCode;
+
+			if (Events::GetFactionReaction(target, aggressor) == RE::FIGHT_REACTION::kNeutral)
+			{
+				logger::info("Neutral Branch Active");
+
+				if (!target->IsHostileToActor(aggressor) && target->AsActorValueOwner()->GetActorValue(RE::ActorValue::kAggression) <= 1)
+				{
+
+					if (target->IsPlayerTeammate() || (target->IsCommandedActor() && ((target->GetCommandingActor().get()->IsPlayerRef()) || (target->GetCommandingActor().get()->IsPlayerTeammate()))))
+					{
+						if (CurrentFollowerFaction && !target->IsInFaction(CurrentFollowerFaction))
+						{
+
+							if (CFRs_PlayerAlliesFaction && !target->IsInFaction(CFRs_PlayerAlliesFaction))
+							{
+								if (target->AsActorValueOwner()->GetActorValue(RE::ActorValue::kAssistance) != 2)
+								{
+									target->AsActorValueOwner()->SetActorValue(RE::ActorValue::kAssistance, 2);
+								}
+
+								target->AddToFaction(CFRs_PlayerAlliesFaction, 0);
+							}
+						}
+					}
+
+					if (aggressor->IsPlayerRef() || (CFRs_PlayerAlliesFaction && aggressor->IsInFaction(CFRs_PlayerAlliesFaction)) || (CurrentFollowerFaction && aggressor->IsInFaction(CurrentFollowerFaction)))
+					{
+						if (const auto CFRs_Enable = skyrim_cast<RE::TESGlobal *>(HdSingle->LookupForm(0x804, "Coherent Fight Reactions.esp")); CFRs_Enable)
+						{
+							if (CFRs_Enable->value == 1.0f)
+							{
+
+								if (CurrentFollowerFaction && CFRs_PlayerAlliesFaction && !target->IsInFaction(CFRs_PlayerAlliesFaction) && !target->IsInFaction(CurrentFollowerFaction) && !target->IsPlayerRef())
+								{
+
+									if (CFRs_PlayerFriendsFaction && !target->IsInFaction(CFRs_PlayerFriendsFaction))
+									{
+										target->AddToFaction(CFRs_PlayerFriendsFaction, 0);
+									}
+								}
+
+								ignoredamage = true;
+							}
+						}
+					}
+					else
+					{
+						if (CurrentFollowerFaction && CFRs_PlayerAlliesFaction && !target->IsPlayerRef() && !target->IsInFaction(CFRs_PlayerAlliesFaction) && !target->IsInFaction(CurrentFollowerFaction))
+						{
+							if (CFRs_NPCNeutralsFaction)
+							{
+								if (!target->IsInFaction(CFRs_NPCNeutralsFaction))
+								{
+									target->AddToFaction(CFRs_NPCNeutralsFaction, 0);
+								}
+
+								if (!aggressor->IsInFaction(CFRs_NPCNeutralsFaction))
+								{
+									aggressor->AddToFaction(CFRs_NPCNeutralsFaction, 0);
+								}
+							}
+						}
+					}
+				}
+			}
+			else if (Events::GetFactionReaction(target, aggressor) >= RE::FIGHT_REACTION::kAlly)
+			{
+				logger::info("Allied Branch Active");
+
+				if (!target->IsHostileToActor(aggressor))
+				{
+					if (target->IsPlayerTeammate() || (target->IsCommandedActor() && ((target->GetCommandingActor().get()->IsPlayerRef()) || (target->GetCommandingActor().get()->IsPlayerTeammate()))))
+					{
+						if (CurrentFollowerFaction && !target->IsInFaction(CurrentFollowerFaction))
+						{
+
+							if (CFRs_PlayerAlliesFaction && !target->IsInFaction(CFRs_PlayerAlliesFaction))
+							{
+
+								if (target->AsActorValueOwner()->GetActorValue(RE::ActorValue::kAssistance) != 2)
+								{
+									target->AsActorValueOwner()->SetActorValue(RE::ActorValue::kAssistance, 2);
+								}
+
+								target->AddToFaction(CFRs_PlayerAlliesFaction, 0);
+							}
+						}
+					}
+
+					if (aggressor->IsPlayerRef() || (CFRs_PlayerAlliesFaction && aggressor->IsInFaction(CFRs_PlayerAlliesFaction)) || (CurrentFollowerFaction && aggressor->IsInFaction(CurrentFollowerFaction)))
+					{
+						if (const auto CFRs_Enable = skyrim_cast<RE::TESGlobal *>(HdSingle->LookupForm(0x804, "Coherent Fight Reactions.esp")); CFRs_Enable)
+						{
+							if (CFRs_Enable->value == 1.0f)
+							{
+
+								ignoredamage = true;
+							}
+							else
+							{
+
+								if (CFRs_PlayerFriendsFaction && target->IsInFaction(CFRs_PlayerFriendsFaction))
+								{
+									Events::RemoveFromFaction(target, CFRs_PlayerFriendsFaction);
+								}
+							}
+						}
+					}
+				}
 			}
 
 			if (ignoredamage)

@@ -75,6 +75,12 @@ namespace util
 
 #include "Plugin.h"
 
+#ifdef SKYRIM_AE
+#define OFFSET(se, ae) ae
+#else
+#define OFFSET(se, ae) se
+#endif
+
 void Load();
 void Init();
 
