@@ -473,21 +473,21 @@ namespace Events_Space
 				auto TrapPoisonKeyword = RE::TESForm::LookupByEditorID<RE::BGSKeyword>("MagicTrapPoison");
 				auto TrapGasKeyword = RE::TESForm::LookupByEditorID<RE::BGSKeyword>("'MagicTrapGas");
 				auto WeaponSpeedKeyword = RE::TESForm::LookupByEditorID<RE::BGSKeyword>("MagicWeaponSpeed");
-				auto CFRs_ExcludeKey = RE::TESForm::LookupByEditorID<RE::BGSKeyword>("CFRs_ExcludeKey");
+				auto CFRs_Exclude_MagicEffect_Key = RE::TESForm::LookupByEditorID<RE::BGSKeyword>("CFRs_Exclude_MagicEffect_Key");
 
 				using AX = RE::EffectSetting::Archetype;
 
-				if (a_effect && a_effect->baseEffect && !clib_util::editorID::get_editorID(a_effect->baseEffect).contains("_CFRs_exclude") && !a_effect->baseEffect->HasKeyword(CFRs_ExcludeKey))
+				if (a_effect && a_effect->baseEffect && !clib_util::editorID::get_editorID(a_effect->baseEffect).contains("_CFRs_exclude") && CFRs_Exclude_MagicEffect_Key && !a_effect->baseEffect->HasKeyword(CFRs_Exclude_MagicEffect_Key))
 				{
 					auto Archy_X = a_effect->baseEffect->data.archetype;
 					auto hasHostileflag = a_effect->baseEffect->data.flags.any(RE::EffectSetting::EffectSettingData::Flag::kHostile);
 					auto Kw_ScriptHostile = clib_util::editorID::get_editorID(a_effect->baseEffect).contains("FrostSlowFFContact");
-					auto Kw_magicfire = a_effect->baseEffect->HasKeyword(fireKeyword);
-					auto Kw_magicfrost = a_effect->baseEffect->HasKeyword(frostKeyword);
-					auto Kw_magicshock = a_effect->baseEffect->HasKeyword(shockKeyword);
-					auto Kw_magicshout = a_effect->baseEffect->HasKeyword(shoutKeyword);
-					auto Kw_Exclude = a_effect->baseEffect->HasKeyword(TrapGasKeyword) || a_effect->baseEffect->HasKeyword(TrapPoisonKeyword) || a_effect->baseEffect->HasKeyword(stormKeyword) || a_effect->baseEffect->HasKeyword(WeaponSpeedKeyword);
-					auto Kw_Storm = a_effect->baseEffect->HasKeyword(stormKeyword);
+					auto Kw_magicfire = fireKeyword && a_effect->baseEffect->HasKeyword(fireKeyword);
+					auto Kw_magicfrost = frostKeyword && a_effect->baseEffect->HasKeyword(frostKeyword);
+					auto Kw_magicshock = shockKeyword && a_effect->baseEffect->HasKeyword(shockKeyword);
+					auto Kw_magicshout = shoutKeyword && a_effect->baseEffect->HasKeyword(shoutKeyword);
+					auto Kw_Exclude = (TrapGasKeyword && a_effect->baseEffect->HasKeyword(TrapGasKeyword)) || (TrapPoisonKeyword && a_effect->baseEffect->HasKeyword(TrapPoisonKeyword)) || (stormKeyword && a_effect->baseEffect->HasKeyword(stormKeyword)) || (WeaponSpeedKeyword && a_effect->baseEffect->HasKeyword(WeaponSpeedKeyword));
+					auto Kw_Storm = stormKeyword && a_effect->baseEffect->HasKeyword(stormKeyword);
 
 					if ((Kw_ScriptHostile && Archy_X == AX::kScript) || (Kw_Storm && Archy_X == AX::kStagger) || (Kw_magicshout && Archy_X == AX::kStagger) || (!Kw_Exclude && (hasHostileflag || Kw_magicfire || Kw_magicfrost || Kw_magicshock) && (Archy_X == AX::kDualValueModifier || Archy_X == AX::kValueModifier || Archy_X == AX::kPeakValueModifier || Archy_X == AX::kParalysis || Archy_X == AX::kDemoralize || Archy_X == AX::kFrenzy || Archy_X == AX::kDisarm || Archy_X == AX::kAbsorb || Archy_X == AX::kStagger)))
 					{
