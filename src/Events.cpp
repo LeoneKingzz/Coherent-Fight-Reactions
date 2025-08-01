@@ -358,7 +358,7 @@ namespace Events_Space
 		{
 			using OP = RE::CONDITION_ITEM_DATA::OpCode;
 
-			if (Events::GetFactionFightReaction(target, aggressor) == RE::FIGHT_REACTION::kNeutral)
+			if (Events::GetFactionReaction(target, aggressor) == RE::FIGHT_REACTION::kNeutral)
 			{
 				logger::info("Neutral Branch Active");
 
@@ -372,8 +372,10 @@ namespace Events_Space
 
 							if (CFRs_PlayerAlliesFaction && !target->IsInFaction(CFRs_PlayerAlliesFaction))
 							{
-
-								target->AsActorValueOwner()->SetActorValue(RE::ActorValue::kAssistance, 2);
+								if (target->AsActorValueOwner()->GetActorValue(RE::ActorValue::kAssistance) != 2)
+								{
+									target->AsActorValueOwner()->SetActorValue(RE::ActorValue::kAssistance, 2);
+								}
 
 								target->AddToFaction(CFRs_PlayerAlliesFaction, 0);
 							}
@@ -483,29 +485,52 @@ namespace Events_Space
 					// }
 				}
 			}
-			else if (Events::GetFactionFightReaction(target, aggressor) >= RE::FIGHT_REACTION::kAlly)
+			else if (Events::GetFactionReaction(target, aggressor) >= RE::FIGHT_REACTION::kAlly)
 			{
 				logger::info("Allied Branch Active");
 
-				if (aggressor->IsPlayerRef() || (CFRs_PlayerAlliesFaction && aggressor->IsInFaction(CFRs_PlayerAlliesFaction)) || (CurrentFollowerFaction && aggressor->IsInFaction(CurrentFollowerFaction)))
+				if (!target->IsHostileToActor(aggressor))
 				{
-					if (const auto CFRs_Enable = skyrim_cast<RE::TESGlobal *>(HdSingle->LookupForm(0x804, "Coherent Fight Reactions.esp")); CFRs_Enable)
+					if (target->IsPlayerTeammate() || (target->IsCommandedActor() && ((target->GetCommandingActor().get()->IsPlayerRef()) || (target->GetCommandingActor().get()->IsPlayerTeammate()))))
 					{
-						if (CFRs_Enable->value == 1.0f)
+						if (CurrentFollowerFaction && !target->IsInFaction(CurrentFollowerFaction))
 						{
 
-							ignoredamage = true;
-						}
-						else
-						{
-
-							if (CFRs_PlayerFriendsFaction && target->IsInFaction(CFRs_PlayerFriendsFaction))
+							if (CFRs_PlayerAlliesFaction && !target->IsInFaction(CFRs_PlayerAlliesFaction))
 							{
-								Events::RemoveFromFaction(target, CFRs_PlayerFriendsFaction);
+
+								if (target->AsActorValueOwner()->GetActorValue(RE::ActorValue::kAssistance) != 2)
+								{
+									target->AsActorValueOwner()->SetActorValue(RE::ActorValue::kAssistance, 2);
+								}
+
+								target->AddToFaction(CFRs_PlayerAlliesFaction, 0);
+							}
+						}
+					}
+
+					if (aggressor->IsPlayerRef() || (CFRs_PlayerAlliesFaction && aggressor->IsInFaction(CFRs_PlayerAlliesFaction)) || (CurrentFollowerFaction && aggressor->IsInFaction(CurrentFollowerFaction)))
+					{
+						if (const auto CFRs_Enable = skyrim_cast<RE::TESGlobal *>(HdSingle->LookupForm(0x804, "Coherent Fight Reactions.esp")); CFRs_Enable)
+						{
+							if (CFRs_Enable->value == 1.0f)
+							{
+
+								ignoredamage = true;
+							}
+							else
+							{
+
+								if (CFRs_PlayerFriendsFaction && target->IsInFaction(CFRs_PlayerFriendsFaction))
+								{
+									Events::RemoveFromFaction(target, CFRs_PlayerFriendsFaction);
+								}
 							}
 						}
 					}
 				}
+
+				
 			}
 
 			if (ignoredamage)
@@ -515,141 +540,6 @@ namespace Events_Space
 		}
 
 		return ignoredamage;
-	}
-
-	RE::FIGHT_REACTION Events::GetFactionFightReaction(RE::Actor *a_subject, RE::Actor *a_aggressor)
-	{
-		std::vector<RE::TESFaction*> subjectFactions;
-		std::vector<RE::TESFaction*> aggroFactions;
-
-		if (auto subjectBase = a_subject->GetActorBase(); subjectBase)
-		{
-			for (auto &factionInfo : subjectBase->factions)
-			{
-				if (factionInfo.faction && factionInfo.rank >= 0)
-				{
-					if (a_subject->IsInFaction(factionInfo.faction))
-					{
-						subjectFactions.push_back(factionInfo.faction);
-					}
-				}
-			}
-
-			if (auto factionChanges = a_subject->extraList.GetByType<RE::ExtraFactionChanges>(); factionChanges)
-			{
-				for (auto &change : factionChanges->factionChanges)
-				{
-					if (change.faction && change.rank >= 0)
-					{
-						if (a_subject->IsInFaction(change.faction))
-						{
-							auto position = std::find(subjectFactions.begin(), subjectFactions.end(), change.faction);
-
-							if (position == subjectFactions.end())
-							{
-								subjectFactions.push_back(change.faction);
-								
-							}
-						}
-					}
-				}
-			}
-		}
-
-		if (auto aggroBase = a_aggressor->GetActorBase(); aggroBase)
-		{
-			for (auto &factionInfo : aggroBase->factions)
-			{
-				if (factionInfo.faction && factionInfo.rank >= 0)
-				{
-					if (a_aggressor->IsInFaction(factionInfo.faction))
-					{
-						aggroFactions.push_back(factionInfo.faction);
-					}
-				}
-			}
-
-			if (auto factionChanges = a_aggressor->extraList.GetByType<RE::ExtraFactionChanges>(); factionChanges)
-			{
-				for (auto &change : factionChanges->factionChanges)
-				{
-					if (change.faction && change.rank >= 0)
-					{
-						if (a_aggressor->IsInFaction(change.faction))
-						{
-							auto position = std::find(aggroFactions.begin(), aggroFactions.end(), change.faction);
-
-							if (position == aggroFactions.end())
-							{
-								aggroFactions.push_back(change.faction);
-								
-							}
-						}
-					}
-				}
-			}
-		}
-
-		using OP = RE::CONDITION_ITEM_DATA::OpCode;
-
-		std::vector<RE::FIGHT_REACTION> reactions;
-
-
-
-		for (auto &ind_subj_fac : subjectFactions)
-		{
-			if (ind_subj_fac)
-			{
-				for (auto &ind_aggr_fac : aggroFactions)
-				{
-					if (ind_aggr_fac)
-					{
-						if (GFunc_Space::GetFactionCombatReaction(a_subject, ind_subj_fac, ind_aggr_fac, 1.0, OP::kEqualTo))
-						{
-							logger::info("condi function working");
-							reactions.push_back(RE::FIGHT_REACTION::kEnemy);
-
-						}else if(GFunc_Space::GetFactionCombatReaction(a_subject, ind_subj_fac, ind_aggr_fac, 2.0, OP::kEqualTo))
-						{
-
-							logger::info("condi function working");
-							reactions.push_back(RE::FIGHT_REACTION::kAlly);
-						}
-						else if (GFunc_Space::GetFactionCombatReaction(a_subject, ind_subj_fac, ind_aggr_fac, 3.0, OP::kEqualTo))
-						{
-							logger::info("condi function working");
-							reactions.push_back(RE::FIGHT_REACTION::kFriend);
-						}
-					}
-				}
-			}
-		}
-
-		if(!reactions.empty()){
-
-			auto position_enemy = std::find(reactions.begin(), reactions.end(), RE::FIGHT_REACTION::kEnemy);
-
-			if (position_enemy != reactions.end())
-			{
-				return RE::FIGHT_REACTION::kEnemy;
-			}
-
-			auto position_ally = std::find(reactions.begin(), reactions.end(), RE::FIGHT_REACTION::kAlly);
-
-			if (position_ally != reactions.end())
-			{
-				return RE::FIGHT_REACTION::kAlly;
-			}
-
-			auto position_friend = std::find(reactions.begin(), reactions.end(), RE::FIGHT_REACTION::kFriend);
-
-			if (position_friend != reactions.end())
-			{
-				return RE::FIGHT_REACTION::kFriend;
-			}
-		}
-
-		return RE::FIGHT_REACTION::kNeutral;
 	}
 
 	std::unordered_map<uint64_t, animEventHandler::FnProcessEvent> animEventHandler::fnHash;

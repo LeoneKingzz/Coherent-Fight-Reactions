@@ -164,7 +164,12 @@ namespace Events_Space
 			func(a_actor, a_faction);
 		};
 
-		static RE::FIGHT_REACTION GetFactionFightReaction(RE::Actor *a_subject, RE::Actor *a_aggressor);
+		static RE::FIGHT_REACTION GetFactionReaction(RE::Actor *a_subject, RE::Actor *a_other)
+		{
+			using func_t = decltype(&GetFactionReaction);
+			static REL::Relocation<func_t> func{RELOCATION_ID(36658, 37666)};
+			return func(a_subject, a_other);
+		};
 
 	private:
 		Events() = default;
