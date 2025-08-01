@@ -356,7 +356,7 @@ namespace Events_Space
 
 			if (Events::GetFactionReaction(target, aggressor) == RE::FIGHT_REACTION::kNeutral)
 			{
-				logger::info("Neutral Branch Active");
+				// logger::info("Neutral Branch Active");
 
 				if (!target->IsHostileToActor(aggressor) && target->AsActorValueOwner()->GetActorValue(RE::ActorValue::kAggression) <= 1)
 				{
@@ -421,7 +421,7 @@ namespace Events_Space
 			}
 			else if (Events::GetFactionReaction(target, aggressor) >= RE::FIGHT_REACTION::kAlly)
 			{
-				logger::info("Allied Branch Active");
+				// logger::info("Allied Branch Active");
 
 				if (!target->IsHostileToActor(aggressor))
 				{
@@ -532,7 +532,7 @@ namespace Events_Space
 
 			if (Events::GetFactionReaction(target, aggressor) == RE::FIGHT_REACTION::kNeutral)
 			{
-				logger::info("Neutral Branch Active");
+				// logger::info("Neutral Branch Active");
 
 				if (!target->IsHostileToActor(aggressor) && target->AsActorValueOwner()->GetActorValue(RE::ActorValue::kAggression) <= 1)
 				{
@@ -596,7 +596,7 @@ namespace Events_Space
 			}
 			else if (Events::GetFactionReaction(target, aggressor) >= RE::FIGHT_REACTION::kAlly)
 			{
-				logger::info("Allied Branch Active");
+				// logger::info("Allied Branch Active");
 
 				if (!target->IsHostileToActor(aggressor))
 				{
