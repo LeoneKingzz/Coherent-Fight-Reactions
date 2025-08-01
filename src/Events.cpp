@@ -519,8 +519,6 @@ namespace Events_Space
 
 	RE::FIGHT_REACTION GetFactionFightReaction(RE::Actor *a_subject, RE::Actor *a_aggressor)
 	{
-		RE::FIGHT_REACTION result = RE::FIGHT_REACTION::kNeutral;
-
 		std::vector<RE::TESFaction*> subjectFactions;
 		std::vector<RE::TESFaction*> aggroFactions;
 
@@ -624,7 +622,7 @@ namespace Events_Space
 		}
 
 		if(!reactions.empty()){
-			
+
 			auto position_enemy = std::find(reactions.begin(), reactions.end(), RE::FIGHT_REACTION::kEnemy);
 
 			if (position_enemy != reactions.end())
@@ -647,7 +645,7 @@ namespace Events_Space
 			}
 		}
 
-		return result;
+		return RE::FIGHT_REACTION::kNeutral;
 	}
 
 	std::unordered_map<uint64_t, animEventHandler::FnProcessEvent> animEventHandler::fnHash;
