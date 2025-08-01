@@ -666,7 +666,6 @@ namespace Events_Space
 					}
 				}
 			}
-
 		}
 		return func3(a_activeffect, a_target);
 	}
