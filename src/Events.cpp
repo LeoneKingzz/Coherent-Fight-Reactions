@@ -606,14 +606,18 @@ namespace Events_Space
 					{
 						if (GFunc_Space::GetFactionCombatReaction(a_subject, ind_subj_fac, ind_aggr_fac, 1.0, OP::kEqualTo))
 						{
+							logger::info("condi function working");
 							reactions.push_back(RE::FIGHT_REACTION::kEnemy);
 
-						}else if(GFunc_Space::GetFactionCombatReaction(a_subject, ind_subj_fac, ind_aggr_fac, 2.0, OP::kEqualTo)){
+						}else if(GFunc_Space::GetFactionCombatReaction(a_subject, ind_subj_fac, ind_aggr_fac, 2.0, OP::kEqualTo))
+						{
 
+							logger::info("condi function working");
 							reactions.push_back(RE::FIGHT_REACTION::kAlly);
 						}
 						else if (GFunc_Space::GetFactionCombatReaction(a_subject, ind_subj_fac, ind_aggr_fac, 3.0, OP::kEqualTo))
 						{
+							logger::info("condi function working");
 							reactions.push_back(RE::FIGHT_REACTION::kFriend);
 						}
 					}
@@ -643,9 +647,12 @@ namespace Events_Space
 			{
 				return RE::FIGHT_REACTION::kFriend;
 			}
+		}else{
+			
+			return RE::FIGHT_REACTION::kNeutral;
 		}
 
-		return RE::FIGHT_REACTION::kNeutral;
+		
 	}
 
 	std::unordered_map<uint64_t, animEventHandler::FnProcessEvent> animEventHandler::fnHash;
