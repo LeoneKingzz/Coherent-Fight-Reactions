@@ -656,7 +656,7 @@ namespace Events_Space
 			if (target->Is(RE::FormType::ActorCharacter) && a_activeffect->caster && a_activeffect->caster.get() 
 			&& a_activeffect->caster.get().get() && a_activeffect->caster.get().get()->Is(RE::FormType::ActorCharacter))
 			{
-				if (a_activeffect->effect)
+				if (a_activeffect->effect && target->As<RE::Actor>() != a_activeffect->caster.get().get())
 				{
 					auto handler = HitEventHandler::GetSingleton();
 
