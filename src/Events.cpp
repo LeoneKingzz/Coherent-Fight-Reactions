@@ -117,7 +117,7 @@ namespace Events_Space
 					{
 						if (CombatTarget->IsPlayerRef() || CombatTarget->IsPlayerTeammate())
 						{
-							if (CFRs_FriendlyFire_Off->value != 1.0f)
+							if (Settings::GetSingleton()->general.bDynamicToggle && CFRs_FriendlyFire_Off->value != 1.0f)
 							{
 								CFRs_FriendlyFire_Off->value = 1.0f;
 								break;
@@ -131,7 +131,7 @@ namespace Events_Space
 							auto target = targetData.targetHandle.get();
 							if (target && target.get()->IsPlayerRef())
 							{
-								if (CFRs_FriendlyFire_Off->value != 1.0f)
+								if (Settings::GetSingleton()->general.bDynamicToggle && CFRs_FriendlyFire_Off->value != 1.0f)
 								{
 									CFRs_FriendlyFire_Off->value = 1.0f;
 									break;
@@ -311,14 +311,14 @@ namespace Events_Space
 				{
 					if (a_actor->IsSneaking() && !a_actor->IsInCombat())
 					{
-						if (CFRs_FriendlyFire_Off->value != 0.0f)
+						if (Settings::GetSingleton()->general.bDynamicToggle && CFRs_FriendlyFire_Off->value != 0.0f)
 						{
 							CFRs_FriendlyFire_Off->value = 0.0f;
 						}
 					}
 					else
 					{
-						if (CFRs_FriendlyFire_Off->value != 1.0f)
+						if (Settings::GetSingleton()->general.bDynamicToggle && CFRs_FriendlyFire_Off->value != 1.0f)
 						{
 							CFRs_FriendlyFire_Off->value = 1.0f;
 						}
