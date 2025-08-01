@@ -69,7 +69,7 @@ namespace Events_Space
 					auto handler = GetSingleton();
 					if (auto target = a_this && a_data ? a_this->GetTargetStatsObject() : nullptr; target)
 					{
-						if (target->Is(RE::FormType::ActorCharacter) && a_data->caster->Is(RE::FormType::ActorCharacter))
+						if (target->Is(RE::FormType::ActorCharacter) && a_data->caster && a_data->caster->Is(RE::FormType::ActorCharacter))
 						{
 							if (handler->PreProcessMagic(target->As<RE::Actor>(), a_data->caster->As<RE::Actor>(), a_data))
 							{
