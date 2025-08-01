@@ -493,7 +493,7 @@ namespace Events_Space
 					{
 						// harmful effect - ignore;
 						if(Settings::GetSingleton()->general.bDebugMode){
-							logger::info("{} ignored magicEffect from {}. effectID: {} ", target->GetName(), aggressor->GetName(),clib_util::editorID::get_editorID(a_effect->baseEffect));
+							logger::info("{} ignored magicEffect from {}. effectID: {} ", target->GetName(), aggressor->GetName(), clib_util::editorID::get_editorID(a_effect->baseEffect));
 						}
 						
 					}else{
