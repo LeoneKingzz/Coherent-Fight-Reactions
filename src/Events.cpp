@@ -140,6 +140,7 @@ namespace Events_Space
 						}
 					}
 					break;
+					
 				case RE::ACTOR_COMBAT_STATE::kSearching:
 					break;
 
