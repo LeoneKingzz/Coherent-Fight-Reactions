@@ -493,9 +493,8 @@ namespace Events_Space
 					{
 						// harmful effect - ignore;
 						if(Settings::GetSingleton()->general.bDebugMode){
-
+							logger::info("{} ignored magicEffect from {}. effectID: {} ", target->GetName(), aggressor->GetName(),clib_util::editorID::get_editorID(a_effect->baseEffect));
 						}
-						logger::info("Friendly Fire Off. {} ignored magicEffect from {} ", target->GetName(), aggressor->GetName());
 						
 					}else{
 
@@ -640,7 +639,7 @@ namespace Events_Space
 			{
 				if (Settings::GetSingleton()->general.bDebugMode)
 				{
-					logger::info("Friendly Fire Off. {} ignored attack from {} ", target->GetName(), aggressor->GetName());
+					logger::info("{} ignored attack from {} ", target->GetName(), aggressor->GetName());
 				}
 				
 			}
