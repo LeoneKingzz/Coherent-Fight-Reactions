@@ -7,12 +7,13 @@ void MessageHandler(SKSE::MessagingInterface::Message *a_msg)
 	case SKSE::MessagingInterface::kDataLoaded:
 		Events_Space::animEventHandler::Register(true, false);
 		Events_Space::Events::install();
-		Events_Space::HitEventHandler::InstallMageHooks();
 		Events_Space::Settings::GetSingleton()->Load();
 		break;
 
 	case SKSE::MessagingInterface::kPostPostLoad:
 		//Events_Space::Events::GetSingleton()->init();
+		Events_Space::HitEventHandler::InstallMageHooks();
+		Events_Space::HitEventHandler::InstallHooks();
 		break;
 
 	default:
@@ -30,5 +31,4 @@ void Init()
 
 void Load(){
 	Events_Space::Events::install_protected();
-	Events_Space::HitEventHandler::InstallHooks();
 }
