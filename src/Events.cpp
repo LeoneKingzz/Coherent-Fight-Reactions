@@ -352,7 +352,7 @@ namespace Events_Space
 
 		if (aggressor && target)
 		{
-			if (target->IsPlayerTeammate() || (target->IsCommandedActor() && ((target->GetCommandingActor().get()->IsPlayerRef()) || (target->GetCommandingActor().get()->IsPlayerTeammate()))))
+			if (!target->IsHostileToActor(aggressor) && target->AsActorValueOwner()->GetActorValue(RE::ActorValue::kAggression) <= 1 && target->IsPlayerTeammate() || (target->IsCommandedActor() && ((target->GetCommandingActor().get()->IsPlayerRef()) || (target->GetCommandingActor().get()->IsPlayerTeammate()))))
 			{
 				if (CurrentFollowerFaction && !target->IsInFaction(CurrentFollowerFaction))
 				{
@@ -368,7 +368,7 @@ namespace Events_Space
 					}
 				}
 			}
-			if (aggressor->IsPlayerTeammate() || (aggressor->IsCommandedActor() && ((aggressor->GetCommandingActor().get()->IsPlayerRef()) || (aggressor->GetCommandingActor().get()->IsPlayerTeammate()))))
+			if (!aggressor->IsHostileToActor(target) && aggressor->AsActorValueOwner()->GetActorValue(RE::ActorValue::kAggression) <= 1 && aggressor->IsPlayerTeammate() || (aggressor->IsCommandedActor() && ((aggressor->GetCommandingActor().get()->IsPlayerRef()) || (aggressor->GetCommandingActor().get()->IsPlayerTeammate()))))
 			{
 				if (CurrentFollowerFaction && !aggressor->IsInFaction(CurrentFollowerFaction))
 				{
@@ -505,7 +505,7 @@ namespace Events_Space
 
 		if (aggressor && target)
 		{
-			if (target->IsPlayerTeammate() || (target->IsCommandedActor() && ((target->GetCommandingActor().get()->IsPlayerRef()) || (target->GetCommandingActor().get()->IsPlayerTeammate()))))
+			if (!target->IsHostileToActor(aggressor) && target->AsActorValueOwner()->GetActorValue(RE::ActorValue::kAggression) <= 1 && target->IsPlayerTeammate() || (target->IsCommandedActor() && ((target->GetCommandingActor().get()->IsPlayerRef()) || (target->GetCommandingActor().get()->IsPlayerTeammate()))))
 			{
 				if (CurrentFollowerFaction && !target->IsInFaction(CurrentFollowerFaction))
 				{
@@ -521,7 +521,7 @@ namespace Events_Space
 					}
 				}
 			}
-			if (aggressor->IsPlayerTeammate() || (aggressor->IsCommandedActor() && ((aggressor->GetCommandingActor().get()->IsPlayerRef()) || (aggressor->GetCommandingActor().get()->IsPlayerTeammate()))))
+			if (!aggressor->IsHostileToActor(target) && aggressor->AsActorValueOwner()->GetActorValue(RE::ActorValue::kAggression) <= 1 && aggressor->IsPlayerTeammate() || (aggressor->IsCommandedActor() && ((aggressor->GetCommandingActor().get()->IsPlayerRef()) || (aggressor->GetCommandingActor().get()->IsPlayerTeammate()))))
 			{
 				if (CurrentFollowerFaction && !aggressor->IsInFaction(CurrentFollowerFaction))
 				{
