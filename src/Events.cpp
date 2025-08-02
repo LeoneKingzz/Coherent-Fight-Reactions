@@ -306,7 +306,8 @@ namespace Events_Space
 		case "preHitFrame"_h:
 		case "BowRelease"_h:
 		case "arrowRelease"_h:
-		
+		case "bowDraw"_h:
+
 			if (a_actor->IsPlayerRef())
 			{
 				if (const auto CFRs_FriendlyFire_Off = skyrim_cast<RE::TESGlobal *>(H->LookupForm(0x804, "Coherent Fight Reactions.esp")); CFRs_FriendlyFire_Off)
