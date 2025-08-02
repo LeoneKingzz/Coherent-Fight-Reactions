@@ -352,7 +352,38 @@ namespace Events_Space
 
 		if (aggressor && target)
 		{
-			using OP = RE::CONDITION_ITEM_DATA::OpCode;
+			if (target->IsPlayerTeammate() || (target->IsCommandedActor() && ((target->GetCommandingActor().get()->IsPlayerRef()) || (target->GetCommandingActor().get()->IsPlayerTeammate()))))
+			{
+				if (CurrentFollowerFaction && !target->IsInFaction(CurrentFollowerFaction))
+				{
+
+					if (CFRs_PlayerAlliesFaction && !target->IsInFaction(CFRs_PlayerAlliesFaction))
+					{
+						if (target->AsActorValueOwner()->GetActorValue(RE::ActorValue::kAssistance) != 2)
+						{
+							target->AsActorValueOwner()->SetActorValue(RE::ActorValue::kAssistance, 2);
+						}
+
+						target->AddToFaction(CFRs_PlayerAlliesFaction, 0);
+					}
+				}
+			}
+			if (aggressor->IsPlayerTeammate() || (aggressor->IsCommandedActor() && ((aggressor->GetCommandingActor().get()->IsPlayerRef()) || (aggressor->GetCommandingActor().get()->IsPlayerTeammate()))))
+			{
+				if (CurrentFollowerFaction && !aggressor->IsInFaction(CurrentFollowerFaction))
+				{
+
+					if (CFRs_PlayerAlliesFaction && !aggressor->IsInFaction(CFRs_PlayerAlliesFaction))
+					{
+						if (aggressor->AsActorValueOwner()->GetActorValue(RE::ActorValue::kAssistance) != 2)
+						{
+							aggressor->AsActorValueOwner()->SetActorValue(RE::ActorValue::kAssistance, 2);
+						}
+
+						aggressor->AddToFaction(CFRs_PlayerAlliesFaction, 0);
+					}
+				}
+			}
 
 			if (Events::GetFactionReaction(target, aggressor) == RE::FIGHT_REACTION::kNeutral)
 			{
@@ -361,43 +392,12 @@ namespace Events_Space
 				if (!target->IsHostileToActor(aggressor) && target->AsActorValueOwner()->GetActorValue(RE::ActorValue::kAggression) <= 1)
 				{
 
-					if (target->IsPlayerTeammate() || (target->IsCommandedActor() && ((target->GetCommandingActor().get()->IsPlayerRef()) || (target->GetCommandingActor().get()->IsPlayerTeammate()))))
-					{
-						if (CurrentFollowerFaction && !target->IsInFaction(CurrentFollowerFaction))
-						{
-
-							if (CFRs_PlayerAlliesFaction && !target->IsInFaction(CFRs_PlayerAlliesFaction))
-							{
-								if (target->AsActorValueOwner()->GetActorValue(RE::ActorValue::kAssistance) != 2)
-								{
-									target->AsActorValueOwner()->SetActorValue(RE::ActorValue::kAssistance, 2);
-								}
-
-								target->AddToFaction(CFRs_PlayerAlliesFaction, 0);
-							}
-						}
-					}
-
 					if (aggressor->IsPlayerRef() || (CFRs_PlayerAlliesFaction && aggressor->IsInFaction(CFRs_PlayerAlliesFaction)) || (CurrentFollowerFaction && aggressor->IsInFaction(CurrentFollowerFaction)) )
 					{
 						if (const auto CFRs_FriendlyFire_Off = skyrim_cast<RE::TESGlobal *>(HdSingle->LookupForm(0x804, "Coherent Fight Reactions.esp")); CFRs_FriendlyFire_Off)
 						{
 							if (CFRs_FriendlyFire_Off->value == 1.0f)
 							{
-
-								// if (CurrentFollowerFaction && CFRs_PlayerAlliesFaction && !target->IsInFaction(CFRs_PlayerAlliesFaction) && !target->IsInFaction(CurrentFollowerFaction) && !target->IsPlayerRef())
-								// {
-
-								// 	if (CFRs_PlayerFriendsFaction && !target->IsInFaction(CFRs_PlayerFriendsFaction))
-								// 	{
-								// 		target->AddToFaction(CFRs_PlayerFriendsFaction, 0);
-								// 	}
-								// }
-
-								if (CFRs_PlayerFriendsFaction && target->IsInFaction(CFRs_PlayerFriendsFaction))
-								{
-									Events::RemoveFromFaction(target, CFRs_PlayerFriendsFaction);
-								}
 
 								ignoredamage = true;
 							}
@@ -430,50 +430,18 @@ namespace Events_Space
 
 				if (!target->IsHostileToActor(aggressor))
 				{
-					if (target->IsPlayerTeammate() || (target->IsCommandedActor() && ((target->GetCommandingActor().get()->IsPlayerRef()) || (target->GetCommandingActor().get()->IsPlayerTeammate()))))
-					{
-						if (CurrentFollowerFaction && !target->IsInFaction(CurrentFollowerFaction))
-						{
-
-							if (CFRs_PlayerAlliesFaction && !target->IsInFaction(CFRs_PlayerAlliesFaction))
-							{
-
-								if (target->AsActorValueOwner()->GetActorValue(RE::ActorValue::kAssistance) != 2)
-								{
-									target->AsActorValueOwner()->SetActorValue(RE::ActorValue::kAssistance, 2);
-								}
-
-								target->AddToFaction(CFRs_PlayerAlliesFaction, 0);
-							}
-						}
-					}
-
 					if (aggressor->IsPlayerRef() || (CFRs_PlayerAlliesFaction && aggressor->IsInFaction(CFRs_PlayerAlliesFaction)) || (CurrentFollowerFaction && aggressor->IsInFaction(CurrentFollowerFaction)))
 					{
 						if (const auto CFRs_FriendlyFire_Off = skyrim_cast<RE::TESGlobal *>(HdSingle->LookupForm(0x804, "Coherent Fight Reactions.esp")); CFRs_FriendlyFire_Off)
 						{
 							if (CFRs_FriendlyFire_Off->value == 1.0f)
 							{
-								if (CFRs_PlayerFriendsFaction && target->IsInFaction(CFRs_PlayerFriendsFaction))
-								{
-									Events::RemoveFromFaction(target, CFRs_PlayerFriendsFaction);
-								}
 
 								ignoredamage = true;
-							}
-							else
-							{
-
-								if (CFRs_PlayerFriendsFaction && target->IsInFaction(CFRs_PlayerFriendsFaction))
-								{
-									Events::RemoveFromFaction(target, CFRs_PlayerFriendsFaction);
-								}
 							}
 						}
 					}
 				}
-
-				
 			}
 
 			if (ignoredamage)
@@ -537,6 +505,38 @@ namespace Events_Space
 
 		if (aggressor && target)
 		{
+			if (target->IsPlayerTeammate() || (target->IsCommandedActor() && ((target->GetCommandingActor().get()->IsPlayerRef()) || (target->GetCommandingActor().get()->IsPlayerTeammate()))))
+			{
+				if (CurrentFollowerFaction && !target->IsInFaction(CurrentFollowerFaction))
+				{
+
+					if (CFRs_PlayerAlliesFaction && !target->IsInFaction(CFRs_PlayerAlliesFaction))
+					{
+						if (target->AsActorValueOwner()->GetActorValue(RE::ActorValue::kAssistance) != 2)
+						{
+							target->AsActorValueOwner()->SetActorValue(RE::ActorValue::kAssistance, 2);
+						}
+
+						target->AddToFaction(CFRs_PlayerAlliesFaction, 0);
+					}
+				}
+			}
+			if (aggressor->IsPlayerTeammate() || (aggressor->IsCommandedActor() && ((aggressor->GetCommandingActor().get()->IsPlayerRef()) || (aggressor->GetCommandingActor().get()->IsPlayerTeammate()))))
+			{
+				if (CurrentFollowerFaction && !aggressor->IsInFaction(CurrentFollowerFaction))
+				{
+
+					if (CFRs_PlayerAlliesFaction && !aggressor->IsInFaction(CFRs_PlayerAlliesFaction))
+					{
+						if (aggressor->AsActorValueOwner()->GetActorValue(RE::ActorValue::kAssistance) != 2)
+						{
+							aggressor->AsActorValueOwner()->SetActorValue(RE::ActorValue::kAssistance, 2);
+						}
+
+						aggressor->AddToFaction(CFRs_PlayerAlliesFaction, 0);
+					}
+				}
+			}
 
 			if (Events::GetFactionReaction(target, aggressor) == RE::FIGHT_REACTION::kNeutral)
 			{
@@ -545,43 +545,12 @@ namespace Events_Space
 				if (!target->IsHostileToActor(aggressor) && target->AsActorValueOwner()->GetActorValue(RE::ActorValue::kAggression) <= 1)
 				{
 
-					if (target->IsPlayerTeammate() || (target->IsCommandedActor() && ((target->GetCommandingActor().get()->IsPlayerRef()) || (target->GetCommandingActor().get()->IsPlayerTeammate()))))
-					{
-						if (CurrentFollowerFaction && !target->IsInFaction(CurrentFollowerFaction))
-						{
-
-							if (CFRs_PlayerAlliesFaction && !target->IsInFaction(CFRs_PlayerAlliesFaction))
-							{
-								if (target->AsActorValueOwner()->GetActorValue(RE::ActorValue::kAssistance) != 2)
-								{
-									target->AsActorValueOwner()->SetActorValue(RE::ActorValue::kAssistance, 2);
-								}
-
-								target->AddToFaction(CFRs_PlayerAlliesFaction, 0);
-							}
-						}
-					}
-
 					if (aggressor->IsPlayerRef() || (CFRs_PlayerAlliesFaction && aggressor->IsInFaction(CFRs_PlayerAlliesFaction)) || (CurrentFollowerFaction && aggressor->IsInFaction(CurrentFollowerFaction)))
 					{
 						if (const auto CFRs_FriendlyFire_Off = skyrim_cast<RE::TESGlobal *>(HdSingle->LookupForm(0x804, "Coherent Fight Reactions.esp")); CFRs_FriendlyFire_Off)
 						{
 							if (CFRs_FriendlyFire_Off->value == 1.0f)
 							{
-
-								// if (CurrentFollowerFaction && CFRs_PlayerAlliesFaction && !target->IsInFaction(CFRs_PlayerAlliesFaction) && !target->IsInFaction(CurrentFollowerFaction) && !target->IsPlayerRef())
-								// {
-
-								// 	if (CFRs_PlayerFriendsFaction && !target->IsInFaction(CFRs_PlayerFriendsFaction))
-								// 	{
-								// 		target->AddToFaction(CFRs_PlayerFriendsFaction, 0);
-								// 	}
-								// }
-
-								if (CFRs_PlayerFriendsFaction && target->IsInFaction(CFRs_PlayerFriendsFaction))
-								{
-									Events::RemoveFromFaction(target, CFRs_PlayerFriendsFaction);
-								}
 
 								ignoredamage = true;
 							}
@@ -613,44 +582,14 @@ namespace Events_Space
 
 				if (!target->IsHostileToActor(aggressor))
 				{
-					if (target->IsPlayerTeammate() || (target->IsCommandedActor() && ((target->GetCommandingActor().get()->IsPlayerRef()) || (target->GetCommandingActor().get()->IsPlayerTeammate()))))
-					{
-						if (CurrentFollowerFaction && !target->IsInFaction(CurrentFollowerFaction))
-						{
-
-							if (CFRs_PlayerAlliesFaction && !target->IsInFaction(CFRs_PlayerAlliesFaction))
-							{
-
-								if (target->AsActorValueOwner()->GetActorValue(RE::ActorValue::kAssistance) != 2)
-								{
-									target->AsActorValueOwner()->SetActorValue(RE::ActorValue::kAssistance, 2);
-								}
-
-								target->AddToFaction(CFRs_PlayerAlliesFaction, 0);
-							}
-						}
-					}
-
 					if (aggressor->IsPlayerRef() || (CFRs_PlayerAlliesFaction && aggressor->IsInFaction(CFRs_PlayerAlliesFaction)) || (CurrentFollowerFaction && aggressor->IsInFaction(CurrentFollowerFaction)))
 					{
 						if (const auto CFRs_FriendlyFire_Off = skyrim_cast<RE::TESGlobal *>(HdSingle->LookupForm(0x804, "Coherent Fight Reactions.esp")); CFRs_FriendlyFire_Off)
 						{
 							if (CFRs_FriendlyFire_Off->value == 1.0f)
 							{
-								if (CFRs_PlayerFriendsFaction && target->IsInFaction(CFRs_PlayerFriendsFaction))
-								{
-									Events::RemoveFromFaction(target, CFRs_PlayerFriendsFaction);
-								}
 
 								ignoredamage = true;
-							}
-							else
-							{
-
-								if (CFRs_PlayerFriendsFaction && target->IsInFaction(CFRs_PlayerFriendsFaction))
-								{
-									Events::RemoveFromFaction(target, CFRs_PlayerFriendsFaction);
-								}
 							}
 						}
 					}
@@ -902,3 +841,17 @@ namespace Events_Space
 
 	
 }
+
+// if (CurrentFollowerFaction && CFRs_PlayerAlliesFaction && !target->IsInFaction(CFRs_PlayerAlliesFaction) && !target->IsInFaction(CurrentFollowerFaction) && !target->IsPlayerRef())
+// {
+
+// 	if (CFRs_PlayerFriendsFaction && !target->IsInFaction(CFRs_PlayerFriendsFaction))
+// 	{
+// 		target->AddToFaction(CFRs_PlayerFriendsFaction, 0);
+// 	}
+// }
+
+// if (CFRs_PlayerFriendsFaction && target->IsInFaction(CFRs_PlayerFriendsFaction))
+// {
+// 	Events::RemoveFromFaction(target, CFRs_PlayerFriendsFaction);
+// }
