@@ -305,6 +305,7 @@ namespace Events_Space
 		case "NextAttackInitiate"_h:
 		case "preHitFrame"_h:
 		case "BowFullDrawn"_h:
+		case "bowDrawn"_h:
 			if (a_actor->IsPlayerRef())
 			{
 				if (const auto CFRs_FriendlyFire_Off = skyrim_cast<RE::TESGlobal *>(H->LookupForm(0x804, "Coherent Fight Reactions.esp")); CFRs_FriendlyFire_Off)
