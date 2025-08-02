@@ -77,8 +77,13 @@ namespace util
 
 #ifdef SKYRIM_AE
 #define OFFSET(se, ae) ae
+#define OFFSET_3(se, ae, vr) ae
+#elif SKYRIMVR
+#define OFFSET(se, ae) se
+#define OFFSET_3(se, ae, vr) vr
 #else
 #define OFFSET(se, ae) se
+#define OFFSET_3(se, ae, vr) se
 #endif
 
 void Load();
@@ -121,7 +126,7 @@ extern "C" DLLEXPORT  bool SKSEAPI SKSEPlugin_Load(const SKSE::LoadInterface * a
 	InitializeLog();
 	logger::info("Loaded plugin");
 	SKSE::Init(a_skse);
-	SKSE::AllocTrampoline(208);
+	SKSE::AllocTrampoline(OFFSET_3(208, 208, 236));
 	Init();
 	Load();
 	return true;
