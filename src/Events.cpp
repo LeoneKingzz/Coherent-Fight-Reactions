@@ -304,7 +304,7 @@ namespace Events_Space
 		case "PowerAttack_Start_end"_h:
 		case "NextAttackInitiate"_h:
 		case "preHitFrame"_h:
-		case "BowFullDrawn"_h:
+		case "BowRelease"_h:
 		case "bowDrawn"_h:
 			if (a_actor->IsPlayerRef())
 			{
