@@ -21,6 +21,8 @@ namespace Events_Space
 		return single;
 	}
 
+	static void Install_apply();
+
 	class HitEventHandler
 	{
 		// friend EldenParry;
@@ -34,11 +36,6 @@ namespace Events_Space
 		static void InstallHooks()
 		{
 			Hooks::Physical_Install();
-		}
-
-		static void InstallMageHooks()
-		{
-			Hooks::Install();
 		}
 
 		bool PreProcessHit(RE::Actor *target, RE::HitData *hitData);
@@ -64,54 +61,6 @@ namespace Events_Space
 			static void Physical_Install()
 			{
 				stl::write_thunk_call<ProcessHitEvent>(REL::RelocationID(37673, 38627).address() + REL::Relocate(0x3C0, 0x4A8, 0x3C0)); // 1.5.97 140628C20
-			}
-
-			struct MagicTargetApply
-			{
-				static bool thunk(RE::MagicTarget *a_this, RE::MagicTarget::AddTargetData *a_data)
-				{
-
-					if (auto target = a_this && a_data ? a_this->GetTargetStatsObject() : nullptr; target)
-					{
-						if (target->Is(RE::FormType::ActorCharacter) && a_data->caster && a_data->caster->Is(RE::FormType::ActorCharacter))
-						{
-							if (a_data->effect && target->As<RE::Actor>() != a_data->caster->As<RE::Actor>())
-							{
-								auto handler = HitEventHandler::GetSingleton();
-
-								if (handler->PreProcessMagic(target->As<RE::Actor>(), a_data->caster->As<RE::Actor>(), a_data->effect))
-								{
-									if (auto item = RE::TESForm::LookupByEditorID<RE::MagicItem>("CFRs_BlankSpell"); item)
-									{
-										if (auto baseEffect = RE::TESForm::LookupByEditorID<RE::EffectSetting>("CFRs_BlankEffect"); baseEffect)
-										{
-											RE::Effect *effect = new RE::Effect;
-											effect->cost = 0.0f;
-											effect->effectItem.area = 0;
-											effect->effectItem.duration = 0;
-											effect->effectItem.magnitude = 0.0f;
-											effect->baseEffect = baseEffect;
-											a_data->magicItem = item;
-											a_data->effect = effect;
-										}
-									}
-								}
-							}
-						}
-					}
-
-					return func(a_this, a_data);
-				}
-
-				static inline REL::Relocation<decltype(thunk)> func;
-			};
-
-			static void Install()
-			{
-				REL::Relocation<std::uintptr_t> target{RELOCATION_ID(33742, 34526), OFFSET(0x1E8, 0x20B)};
-				stl::write_thunk_call<MagicTargetApply>(target.address());
-
-				logger::info("Hooked Magic Effect Apply");
 			}
 		};
 
