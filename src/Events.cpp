@@ -385,13 +385,18 @@ namespace Events_Space
 							if (CFRs_FriendlyFire_Off->value == 1.0f)
 							{
 
-								if (CurrentFollowerFaction && CFRs_PlayerAlliesFaction && !target->IsInFaction(CFRs_PlayerAlliesFaction) && !target->IsInFaction(CurrentFollowerFaction) && !target->IsPlayerRef())
-								{
+								// if (CurrentFollowerFaction && CFRs_PlayerAlliesFaction && !target->IsInFaction(CFRs_PlayerAlliesFaction) && !target->IsInFaction(CurrentFollowerFaction) && !target->IsPlayerRef())
+								// {
 
-									if (CFRs_PlayerFriendsFaction && !target->IsInFaction(CFRs_PlayerFriendsFaction))
-									{
-										target->AddToFaction(CFRs_PlayerFriendsFaction, 0);
-									}
+								// 	if (CFRs_PlayerFriendsFaction && !target->IsInFaction(CFRs_PlayerFriendsFaction))
+								// 	{
+								// 		target->AddToFaction(CFRs_PlayerFriendsFaction, 0);
+								// 	}
+								// }
+
+								if (CFRs_PlayerFriendsFaction && target->IsInFaction(CFRs_PlayerFriendsFaction))
+								{
+									Events::RemoveFromFaction(target, CFRs_PlayerFriendsFaction);
 								}
 
 								ignoredamage = true;
