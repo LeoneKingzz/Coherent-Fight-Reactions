@@ -625,22 +625,25 @@ namespace Events_Space
 				{
 					if (a_data->effect && target->As<RE::Actor>() != a_data->caster->As<RE::Actor>())
 					{
-						auto handler = HitEventHandler::GetSingleton();
-
-						if (handler->PreProcessMagic(target->As<RE::Actor>(), a_data->caster->As<RE::Actor>(), a_data->effect))
+						if (target->As<RE::Actor>()->Is3DLoaded() && target->As<RE::Actor>()->GetParentCell() && target->As<RE::Actor>()->GetParentCell()->cellState == RE::TESObjectCELL::CellState::kAttached)
 						{
-							if (auto item = RE::TESForm::LookupByEditorID<RE::MagicItem>("CFRs_BlankSpell"); item)
+							auto handler = HitEventHandler::GetSingleton();
+
+							if (handler->PreProcessMagic(target->As<RE::Actor>(), a_data->caster->As<RE::Actor>(), a_data->effect))
 							{
-								if (auto baseEffect = RE::TESForm::LookupByEditorID<RE::EffectSetting>("CFRs_BlankEffect"); baseEffect)
+								if (auto item = RE::TESForm::LookupByEditorID<RE::MagicItem>("CFRs_BlankSpell"); item)
 								{
-									RE::Effect *effect = new RE::Effect;
-									effect->cost = 0.0f;
-									effect->effectItem.area = 0;
-									effect->effectItem.duration = 0;
-									effect->effectItem.magnitude = 0.0f;
-									effect->baseEffect = baseEffect;
-									a_data->magicItem = item;
-									a_data->effect = effect;
+									if (auto baseEffect = RE::TESForm::LookupByEditorID<RE::EffectSetting>("CFRs_BlankEffect"); baseEffect)
+									{
+										RE::Effect *effect = new RE::Effect;
+										effect->cost = 0.0f;
+										effect->effectItem.area = 0;
+										effect->effectItem.duration = 0;
+										effect->effectItem.magnitude = 0.0f;
+										effect->baseEffect = baseEffect;
+										a_data->magicItem = item;
+										a_data->effect = effect;
+									}
 								}
 							}
 						}
