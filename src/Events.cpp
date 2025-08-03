@@ -644,7 +644,6 @@ namespace Events_Space
 							}
 						}
 					}
-
 				}
 			}
 
