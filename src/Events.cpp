@@ -465,6 +465,7 @@ namespace Events_Space
 				{
 					auto Archy_X = a_effect->baseEffect->data.archetype;
 					auto hasHostileflag = a_effect->baseEffect->data.flags.any(RE::EffectSetting::EffectSettingData::Flag::kHostile);
+					auto hasdoublehostile = a_effect->baseEffect->data.flags.any(RE::EffectSetting::EffectSettingData::Flag::kHostile) || a_effect->baseEffect->data.flags.any(RE::EffectSetting::EffectSettingData::Flag::kDetrimental);
 					auto Kw_ScriptHostile = clib_util::editorID::get_editorID(a_effect->baseEffect).contains("FrostSlow");
 					auto Kw_magicfire = fireKeyword && a_effect->baseEffect->HasKeyword(fireKeyword);
 					auto Kw_magicfrost = frostKeyword && a_effect->baseEffect->HasKeyword(frostKeyword);
@@ -473,7 +474,7 @@ namespace Events_Space
 					auto Kw_Exclude = (TrapGasKeyword && a_effect->baseEffect->HasKeyword(TrapGasKeyword)) || (TrapPoisonKeyword && a_effect->baseEffect->HasKeyword(TrapPoisonKeyword)) || (stormKeyword && a_effect->baseEffect->HasKeyword(stormKeyword)) || (WeaponSpeedKeyword && a_effect->baseEffect->HasKeyword(WeaponSpeedKeyword));
 					auto Kw_Storm = stormKeyword && a_effect->baseEffect->HasKeyword(stormKeyword);
 
-					if ((Kw_ScriptHostile && Archy_X == AX::kScript) || (Kw_Storm && Archy_X == AX::kStagger) || (Kw_magicshout && Archy_X == AX::kStagger) || (!Kw_Exclude && (hasHostileflag || Kw_magicfire || Kw_magicfrost || Kw_magicshock) && (Archy_X == AX::kDualValueModifier || Archy_X == AX::kValueModifier || Archy_X == AX::kPeakValueModifier || Archy_X == AX::kParalysis || Archy_X == AX::kDemoralize || Archy_X == AX::kFrenzy || Archy_X == AX::kDisarm || Archy_X == AX::kAbsorb || Archy_X == AX::kStagger)))
+					if ((!Kw_Exclude && (hasdoublehostile && Archy_X == AX::kScript)) || (Kw_ScriptHostile && Archy_X == AX::kScript) || (Kw_Storm && Archy_X == AX::kStagger) || (Kw_magicshout && Archy_X == AX::kStagger) || (!Kw_Exclude && (hasHostileflag || Kw_magicfire || Kw_magicfrost || Kw_magicshock) && (Archy_X == AX::kDualValueModifier || Archy_X == AX::kValueModifier || Archy_X == AX::kPeakValueModifier || Archy_X == AX::kParalysis || Archy_X == AX::kDemoralize || Archy_X == AX::kFrenzy || Archy_X == AX::kDisarm || Archy_X == AX::kAbsorb || Archy_X == AX::kStagger)))
 					{
 						// harmful effect - ignore;
 						if(Settings::GetSingleton()->general.bDebugMode){
