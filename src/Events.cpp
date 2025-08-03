@@ -464,7 +464,7 @@ namespace Events_Space
 				if (a_effect && a_effect->baseEffect && !clib_util::editorID::get_editorID(a_effect->baseEffect).contains("_CFRs_exclude") && CFRs_Exclude_MagicEffect_Key && !a_effect->baseEffect->HasKeyword(CFRs_Exclude_MagicEffect_Key))
 				{
 					auto Archy_X = a_effect->baseEffect->data.archetype;
-					auto hasHostileflag = a_effect->baseEffect->data.flags.all(RE::EffectSetting::EffectSettingData::Flag::kHostile);
+					auto hasHostileflag = a_effect->baseEffect->data.flags.any(RE::EffectSetting::EffectSettingData::Flag::kHostile);
 					auto Kw_ScriptHostile = clib_util::editorID::get_editorID(a_effect->baseEffect).contains("FrostSlowFFContact");
 					auto Kw_magicfire = fireKeyword && a_effect->baseEffect->HasKeyword(fireKeyword);
 					auto Kw_magicfrost = frostKeyword && a_effect->baseEffect->HasKeyword(frostKeyword);
