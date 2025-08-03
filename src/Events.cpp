@@ -619,15 +619,14 @@ namespace Events_Space
 		static bool thunk(RE::MagicTarget *a_this, RE::MagicTarget::AddTargetData *a_data)
 		{
 
-			if (auto target = a_this && a_data ? a_this->GetTargetStatsObject() : nullptr; target)
+			if (a_this && a_data && a_this->MagicTargetIsActor() && a_this->GetTargetStatsObject() && a_this->GetTargetStatsObject()->Is(RE::FormType::ActorCharacter))
 			{
-				if (target->Is(RE::FormType::ActorCharacter) && a_data->caster && a_data->caster->Is(RE::FormType::ActorCharacter))
+				if (a_data->caster && a_data->caster->Is(RE::FormType::ActorCharacter))
 				{
-					if (a_data->effect && target->As<RE::Actor>() != a_data->caster->As<RE::Actor>())
+					if (a_data->effect && a_this->GetTargetStatsObject()->As<RE::Actor>() != a_data->caster->As<RE::Actor>())
 					{
-						auto handler = HitEventHandler::GetSingleton();
 
-						if (handler->PreProcessMagic(target->As<RE::Actor>(), a_data->caster->As<RE::Actor>(), a_data->effect))
+						if (HitEventHandler::GetSingleton()->PreProcessMagic(a_this->GetTargetStatsObject()->As<RE::Actor>(), a_data->caster->As<RE::Actor>(), a_data->effect))
 						{
 							if (auto item = RE::TESForm::LookupByEditorID<RE::MagicItem>("CFRs_BlankSpell"); item)
 							{
@@ -641,6 +640,36 @@ namespace Events_Space
 									effect->baseEffect = baseEffect;
 									a_data->magicItem = item;
 									a_data->effect = effect;
+								}
+							}
+						}
+					}
+
+				}
+				else if (a_data->caster && !a_data->caster->Is(RE::FormType::ActorCharacter) && a_data->caster->extraList.HasType(RE::ExtraDataType::kMagicCaster))
+				{
+					if (a_data->caster->As<RE::NonActorMagicCaster>() && a_data->caster->As<RE::NonActorMagicCaster>()->blameActor 
+					&& a_data->caster->As<RE::NonActorMagicCaster>()->blameActor.get() && a_data->caster->As<RE::NonActorMagicCaster>()->blameActor.get().get() 
+					&& a_data->caster->As<RE::NonActorMagicCaster>()->blameActor.get().get()->Is(RE::FormType::ActorCharacter))
+					{
+						if (a_data->effect && a_this->GetTargetStatsObject()->As<RE::Actor>() != a_data->caster->As<RE::NonActorMagicCaster>()->blameActor.get().get())
+						{
+
+							if (HitEventHandler::GetSingleton()->PreProcessMagic(a_this->GetTargetStatsObject()->As<RE::Actor>(), a_data->caster->As<RE::Actor>(), a_data->effect))
+							{
+								if (auto item = RE::TESForm::LookupByEditorID<RE::MagicItem>("CFRs_BlankSpell"); item)
+								{
+									if (auto baseEffect = RE::TESForm::LookupByEditorID<RE::EffectSetting>("CFRs_BlankEffect"); baseEffect)
+									{
+										RE::Effect *effect = new RE::Effect;
+										effect->cost = 0.0f;
+										effect->effectItem.area = 0;
+										effect->effectItem.duration = 0;
+										effect->effectItem.magnitude = 0.0f;
+										effect->baseEffect = baseEffect;
+										a_data->magicItem = item;
+										a_data->effect = effect;
+									}
 								}
 							}
 						}
