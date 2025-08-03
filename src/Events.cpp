@@ -646,37 +646,6 @@ namespace Events_Space
 					}
 
 				}
-				else if (a_data->caster && !a_data->caster->Is(RE::FormType::ActorCharacter))
-				{
-					logger::info("Non Actor caster detected");
-					if (a_data->caster->As<RE::NonActorMagicCaster>() && a_data->caster->As<RE::NonActorMagicCaster>()->blameActor 
-					&& a_data->caster->As<RE::NonActorMagicCaster>()->blameActor.get() && a_data->caster->As<RE::NonActorMagicCaster>()->blameActor.get().get() 
-					&& a_data->caster->As<RE::NonActorMagicCaster>()->blameActor.get().get()->Is(RE::FormType::ActorCharacter))
-					{
-						logger::info("Non Actor caster blame actor detected");
-						if (a_data->effect && a_this->GetTargetStatsObject()->As<RE::Actor>() && a_this->GetTargetStatsObject()->As<RE::Actor>() != a_data->caster->As<RE::NonActorMagicCaster>()->blameActor.get().get())
-						{
-
-							if (HitEventHandler::GetSingleton()->PreProcessMagic(a_this->GetTargetStatsObject()->As<RE::Actor>(), a_data->caster->As<RE::Actor>(), a_data->effect))
-							{
-								if (auto item = RE::TESForm::LookupByEditorID<RE::MagicItem>("CFRs_BlankSpell"); item)
-								{
-									if (auto baseEffect = RE::TESForm::LookupByEditorID<RE::EffectSetting>("CFRs_BlankEffect"); baseEffect)
-									{
-										RE::Effect *effect = new RE::Effect;
-										effect->cost = 0.0f;
-										effect->effectItem.area = 0;
-										effect->effectItem.duration = 0;
-										effect->effectItem.magnitude = 0.0f;
-										effect->baseEffect = baseEffect;
-										a_data->magicItem = item;
-										a_data->effect = effect;
-									}
-								}
-							}
-						}
-					}
-				}
 			}
 
 			return func(a_this, a_data);
