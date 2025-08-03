@@ -621,27 +621,20 @@ namespace Events_Space
 
 			if (auto target = a_this && a_data ? a_this->GetTargetStatsObject() : nullptr; target)
 			{
-				// logger::info("target defined");
 				if (target->Is(RE::FormType::ActorCharacter) && a_data->caster && a_data->caster->Is(RE::FormType::ActorCharacter))
 				{
-					// logger::info("target and caster defined as actorcharacters");
 					if (a_data->effect && target->As<RE::Actor>() != a_data->caster->As<RE::Actor>())
 					{
-						// logger::info("target is not caster");
 						if (target->As<RE::Actor>()->Is3DLoaded() && target->As<RE::Actor>()->GetParentCell() && target->As<RE::Actor>()->GetParentCell()->cellState == RE::TESObjectCELL::CellState::kAttached)
 						{
-							// logger::info("target is attached and loaded");
 							auto handler = HitEventHandler::GetSingleton();
 
 							if (handler->PreProcessMagic(target->As<RE::Actor>(), a_data->caster->As<RE::Actor>(), a_data->effect))
 							{
-								// logger::info("preprocess identified harmful magic effect");
 								if (auto item = RE::TESForm::LookupByEditorID<RE::MagicItem>("CFRs_BlankSpell"); item)
 								{
-									// logger::info("blank spell defined");
 									if (auto baseEffect = RE::TESForm::LookupByEditorID<RE::EffectSetting>("CFRs_BlankEffect"); baseEffect)
 									{
-										// logger::info("blank effect defined");
 										RE::Effect *effect = new RE::Effect;
 										effect->cost = 0.0f;
 										effect->effectItem.area = 0;
