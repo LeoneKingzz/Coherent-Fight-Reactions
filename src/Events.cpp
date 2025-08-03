@@ -623,7 +623,7 @@ namespace Events_Space
 			{
 				if (a_data->caster && a_data->caster->Is(RE::FormType::ActorCharacter))
 				{
-					if (a_data->effect && a_this->GetTargetStatsObject()->As<RE::Actor>() != a_data->caster->As<RE::Actor>())
+					if (a_data->effect && a_this->GetTargetStatsObject()->As<RE::Actor>() && a_data->caster->As<RE::Actor>() && a_this->GetTargetStatsObject()->As<RE::Actor>() != a_data->caster->As<RE::Actor>())
 					{
 
 						if (HitEventHandler::GetSingleton()->PreProcessMagic(a_this->GetTargetStatsObject()->As<RE::Actor>(), a_data->caster->As<RE::Actor>(), a_data->effect))
@@ -654,7 +654,7 @@ namespace Events_Space
 					&& a_data->caster->As<RE::NonActorMagicCaster>()->blameActor.get().get()->Is(RE::FormType::ActorCharacter))
 					{
 						logger::info("Non Actor caster blame actor detected");
-						if (a_data->effect && a_this->GetTargetStatsObject()->As<RE::Actor>() != a_data->caster->As<RE::NonActorMagicCaster>()->blameActor.get().get())
+						if (a_data->effect && a_this->GetTargetStatsObject()->As<RE::Actor>() && a_this->GetTargetStatsObject()->As<RE::Actor>() != a_data->caster->As<RE::NonActorMagicCaster>()->blameActor.get().get())
 						{
 
 							if (HitEventHandler::GetSingleton()->PreProcessMagic(a_this->GetTargetStatsObject()->As<RE::Actor>(), a_data->caster->As<RE::Actor>(), a_data->effect))
