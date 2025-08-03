@@ -21,7 +21,7 @@ namespace Events_Space
 		return single;
 	}
 
-	static void Install_apply();
+	void Install_apply();
 
 	class HitEventHandler
 	{
