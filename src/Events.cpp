@@ -458,18 +458,21 @@ namespace Events_Space
 				auto TrapGasKeyword = RE::TESForm::LookupByEditorID<RE::BGSKeyword>("'MagicTrapGas");
 				auto WeaponSpeedKeyword = RE::TESForm::LookupByEditorID<RE::BGSKeyword>("MagicWeaponSpeed");
 				auto CFRs_Exclude_MagicEffect_Key = RE::TESForm::LookupByEditorID<RE::BGSKeyword>("CFRs_Exclude_MagicEffect_Key");
+				RE::BSFixedString CFRs_exclude = "_CFRs_exclude";
 
 				using AX = RE::EffectSetting::Archetype;
 
-				if (a_effect && a_effect->baseEffect && !clib_util::editorID::get_editorID(a_effect->baseEffect).contains("_CFRs_exclude") && CFRs_Exclude_MagicEffect_Key && !a_effect->baseEffect->HasKeyword(CFRs_Exclude_MagicEffect_Key))
+				if (a_effect && a_effect->baseEffect && !clib_util::editorID::get_editorID(a_effect->baseEffect).contains(CFRs_exclude) && CFRs_Exclude_MagicEffect_Key && !a_effect->baseEffect->HasKeyword(CFRs_Exclude_MagicEffect_Key))
 				{
+					RE::BSFixedString VoiceDragonrend = "VoiceDragonrend";
+					RE::BSFixedString FrostSlow = "FrostSlow";
 					auto Archy_X = a_effect->baseEffect->data.archetype;
 					auto PrimAV = a_effect->baseEffect->data.primaryAV;
 					auto SecAV = a_effect->baseEffect->data.secondaryAV;
 					auto hasHostileflag = a_effect->baseEffect->data.flags.any(RE::EffectSetting::EffectSettingData::Flag::kHostile);
 					auto hasdoublehostile = a_effect->baseEffect->data.flags.any(RE::EffectSetting::EffectSettingData::Flag::kHostile) || a_effect->baseEffect->data.flags.any(RE::EffectSetting::EffectSettingData::Flag::kDetrimental);
-					auto Kw_ScriptHostile = clib_util::editorID::get_editorID(a_effect->baseEffect).contains("FrostSlow");
-					auto Kw_DragonRend = clib_util::editorID::get_editorID(a_effect->baseEffect).contains("VoiceDragonrend");
+					auto Kw_ScriptHostile = clib_util::editorID::get_editorID(a_effect->baseEffect).contains(FrostSlow);
+					auto Kw_DragonRend = clib_util::editorID::get_editorID(a_effect->baseEffect).contains(VoiceDragonrend);
 					auto Kw_DragonRendeffects = (Archy_X == AX::kScript) || (Archy_X == AX::kStagger) || (PrimAV == RE::ActorValue::kDragonRend);
 					auto Kw_magicfire = fireKeyword && a_effect->baseEffect->HasKeyword(fireKeyword);
 					auto Kw_magicfrost = frostKeyword && a_effect->baseEffect->HasKeyword(frostKeyword);
@@ -623,7 +626,7 @@ namespace Events_Space
 	{
 		static bool thunk(RE::MagicTarget *a_this, RE::MagicTarget::AddTargetData *a_data)
 		{
-			if (a_this && a_data && a_this->MagicTargetIsActor() && a_this->GetTargetStatsObject() && a_this->GetTargetStatsObject()->Is(RE::FormType::ActorCharacter))
+			if (a_this && a_data && a_this->GetTargetStatsObject() && a_this->GetTargetStatsObject()->Is(RE::FormType::ActorCharacter))
 			{
 				if (a_data->caster && a_data->caster->Is(RE::FormType::ActorCharacter))
 				{
