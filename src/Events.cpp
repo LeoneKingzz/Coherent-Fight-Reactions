@@ -648,10 +648,12 @@ namespace Events_Space
 				}
 				else if (a_data->caster && !a_data->caster->Is(RE::FormType::ActorCharacter) && a_data->caster->extraList.HasType(RE::ExtraDataType::kMagicCaster))
 				{
+					logger::info("Non Actor caster detected");
 					if (a_data->caster->As<RE::NonActorMagicCaster>() && a_data->caster->As<RE::NonActorMagicCaster>()->blameActor 
 					&& a_data->caster->As<RE::NonActorMagicCaster>()->blameActor.get() && a_data->caster->As<RE::NonActorMagicCaster>()->blameActor.get().get() 
 					&& a_data->caster->As<RE::NonActorMagicCaster>()->blameActor.get().get()->Is(RE::FormType::ActorCharacter))
 					{
+						logger::info("Non Actor caster blame actor detected");
 						if (a_data->effect && a_this->GetTargetStatsObject()->As<RE::Actor>() != a_data->caster->As<RE::NonActorMagicCaster>()->blameActor.get().get())
 						{
 
