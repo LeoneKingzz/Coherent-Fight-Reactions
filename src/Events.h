@@ -51,7 +51,12 @@ namespace Events_Space
 					auto handler = GetSingleton();
 					if (handler->PreProcessHit(target, hitData))
 					{
-						return;
+						hitData->totalDamage = 0.0f;
+						hitData->pushBack = 0.0f;
+						hitData->attackDataSpell = nullptr;
+						hitData->criticalEffect = nullptr;
+						hitData->stagger = static_cast<uint32_t>(0.00);
+						hitData->aggressor.get() = nullptr;
 					}
 					return func(target, hitData);
 				}
