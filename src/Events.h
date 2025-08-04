@@ -51,17 +51,7 @@ namespace Events_Space
 					auto handler = GetSingleton();
 					if (handler->PreProcessHit(target, hitData))
 					{
-						RE::HitData *newhitData = new RE::HitData;
-						newhitData->totalDamage = 0.0f;
-						newhitData->physicalDamage = 0.0f;
-						newhitData->pushBack = 0.0f;
-						newhitData->flags |= RE::HitData::Flag::kBlocked;
-						newhitData->flags |= RE::HitData::Flag::kIgnoreCritical;
-						newhitData->percentBlocked = 1.0f;
-						newhitData->attackDataSpell = nullptr;
-						newhitData->criticalEffect = nullptr;
-						newhitData->stagger = static_cast<uint32_t>(0.00);
-						hitData = newhitData;
+						target = nullptr;
 					}
 					return func(target, hitData);
 				}
