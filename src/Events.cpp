@@ -626,31 +626,42 @@ namespace Events_Space
 	{
 		static bool thunk(RE::MagicTarget *a_this, RE::MagicTarget::AddTargetData *a_data)
 		{
-			RE::MagicTarget::AddTargetData base_data;
-			RE::MagicTarget::AddTargetData *base_data_pointer = &base_data; // you can assign the pointer to the specific address of the existing object
-			base_data_pointer = a_data;
-			if (base_data_pointer)
+			try
 			{
-				logger::info("data is defined");
-				if (base_data_pointer->magicItem && (((base_data_pointer->magicItem->GetSpellType() == RE::MagicSystem::SpellType::kStaffEnchantment) && base_data_pointer->magicItem->GetDelivery() != RE::MagicSystem::Delivery::kTouch) || (base_data_pointer->magicItem->GetSpellType() == RE::MagicSystem::SpellType::kScroll) || (base_data_pointer->magicItem->GetSpellType() == RE::MagicSystem::SpellType::kLesserPower) || (base_data_pointer->magicItem->GetSpellType() == RE::MagicSystem::SpellType::kPower) || (base_data_pointer->magicItem->GetSpellType() == RE::MagicSystem::SpellType::kSpell) || (base_data_pointer->magicItem->GetSpellType() == RE::MagicSystem::SpellType::kVoicePower)))
+				if(a_data && a_this);
+			}
+			catch(const std::exception& e)
+			{
+				std::cerr << e.what() << '\n';
+			}
+
+			try
+			{
+				if(a_data->caster);
+			}
+			catch(const std::exception& e)
+			{
+				std::cerr << e.what() << '\n';
+			}
+			
+
+			if (a_data)
+			{
+				if (a_data->magicItem && (((a_data->magicItem->GetSpellType() == RE::MagicSystem::SpellType::kStaffEnchantment) && a_data->magicItem->GetDelivery() != RE::MagicSystem::Delivery::kTouch) || (a_data->magicItem->GetSpellType() == RE::MagicSystem::SpellType::kScroll) || (a_data->magicItem->GetSpellType() == RE::MagicSystem::SpellType::kLesserPower) || (a_data->magicItem->GetSpellType() == RE::MagicSystem::SpellType::kPower) || (a_data->magicItem->GetSpellType() == RE::MagicSystem::SpellType::kSpell) || (a_data->magicItem->GetSpellType() == RE::MagicSystem::SpellType::kVoicePower)))
 				{
-					logger::info("mage item identified and not ability");
-					if (base_data_pointer->caster)
+					if (a_data->caster)
 					{
-						logger::info("caster is defined");
-						if (base_data_pointer->caster->formFlags)
+						if (a_data->caster->formFlags)
 						{
-							logger::info("caster's formflags identified");
-							if ((base_data_pointer->caster->formFlags & RE::TESForm::RecordFlags::kTemporary) == 0)
+							if ((a_data->caster->formFlags & RE::TESForm::RecordFlags::kTemporary) == 0)
 							{
-								logger::info("caster has no temporary flags");
 								if (a_this && a_this->GetTargetStatsObject() && a_this->GetTargetStatsObject()->Is(RE::FormType::ActorCharacter))
 								{
-									if (base_data_pointer->caster->Is(RE::FormType::ActorCharacter))
+									if (a_data->caster->Is(RE::FormType::ActorCharacter))
 									{
-										if (base_data_pointer->effect && a_this->GetTargetStatsObject()->As<RE::Actor>() && base_data_pointer->caster->As<RE::Actor>())
+										if (a_data->effect && a_this->GetTargetStatsObject()->As<RE::Actor>() && a_data->caster->As<RE::Actor>())
 										{
-											if (HitEventHandler::GetSingleton()->PreProcessMagic(a_this->GetTargetStatsObject()->As<RE::Actor>(), base_data_pointer->caster->As<RE::Actor>(), base_data_pointer->effect))
+											if (HitEventHandler::GetSingleton()->PreProcessMagic(a_this->GetTargetStatsObject()->As<RE::Actor>(), a_data->caster->As<RE::Actor>(), a_data->effect))
 											{
 												if (auto item = RE::TESForm::LookupByEditorID<RE::MagicItem>("CFRs_BlankSpell"); item)
 												{
@@ -662,9 +673,8 @@ namespace Events_Space
 														effect->effectItem.duration = 0;
 														effect->effectItem.magnitude = 0.0f;
 														effect->baseEffect = baseEffect;
-														base_data_pointer->magicItem = item;
-														base_data_pointer->effect = effect;
-														return func(a_this, base_data_pointer);
+														a_data->magicItem = item;
+														a_data->effect = effect;
 													}
 												}
 											}
