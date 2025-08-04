@@ -621,6 +621,13 @@ namespace Events_Space
 
 		return ignoredamage;
 	}
+
+	std::expected<RE::TESObjectREFR*, bool> GetCaster(RE::MagicTarget::AddTargetData *b_data){
+		if (!b_data->caster)
+		    return std::unexpected(false);
+
+		return b_data->caster;
+	}
 	
 	struct MagicTargetApply
 	{
