@@ -628,12 +628,12 @@ namespace Events_Space
 		{
 			if (a_data && a_data->caster && a_data->caster->Is3DLoaded() && a_data->caster->GetParentCell() && a_data->caster->GetParentCell()->cellState && a_data->caster->GetParentCell()->cellState == RE::TESObjectCELL::CellState::kAttached)
 			{
-				logger::info("caster is defined and is loaded and attached");
+				// logger::info("caster is defined and is loaded and attached");
 				if(a_this && a_this->GetTargetStatsObject() && a_this->GetTargetStatsObject()->Is(RE::FormType::ActorCharacter)){
 
 					if (a_data->caster->Is(RE::FormType::ActorCharacter))
 					{
-						logger::info("target is defined as an objectRefr and is actorcharacter");
+						// logger::info("target is defined as an objectRefr and is actorcharacter");
 						
 						if (a_data->effect && a_data->magicItem && a_this->GetTargetStatsObject()->As<RE::Actor>() && a_data->caster->As<RE::Actor>())
 						{
