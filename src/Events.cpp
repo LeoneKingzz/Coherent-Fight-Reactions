@@ -626,9 +626,9 @@ namespace Events_Space
 	{
 		static bool thunk(RE::MagicTarget *a_this, RE::MagicTarget::AddTargetData *a_data)
 		{
-			if (a_data && a_data->caster)
+			if (a_data && a_data->caster && a_data->caster->data.objectReference)
 			{
-				logger::info("caster is defined");
+				logger::info("Caster is defined");
 				if(a_this && a_this->GetTargetStatsObject() && a_this->GetTargetStatsObject()->Is(RE::FormType::ActorCharacter)){
 
 					if (a_data->caster->Is(RE::FormType::ActorCharacter))
