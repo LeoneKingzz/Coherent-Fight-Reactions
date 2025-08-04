@@ -626,33 +626,44 @@ namespace Events_Space
 	{
 		static bool thunk(RE::MagicTarget *a_this, RE::MagicTarget::AddTargetData *a_data)
 		{
-			if (a_data && a_data->caster && a_data->caster->formFlags && (a_data->caster->formFlags & RE::TESForm::RecordFlags::kTemporary) == 0)
+			if (a_data)
 			{
-				logger::info("Caster is defined");
-				if(a_this && a_this->GetTargetStatsObject() && a_this->GetTargetStatsObject()->Is(RE::FormType::ActorCharacter)){
-
-					if (a_data->caster->Is(RE::FormType::ActorCharacter))
+				logger::info("data is defined");
+				if (a_data->caster)
+				{
+					logger::info("caster is defined");
+					if (a_data->caster->formFlags)
 					{
-						// logger::info("target is defined as an objectRefr and is actorcharacter");
-						
-						if (a_data->effect && a_data->magicItem && a_this->GetTargetStatsObject()->As<RE::Actor>() && a_data->caster->As<RE::Actor>())
+						logger::info("caster's formflags identified");
+						if ((a_data->caster->formFlags & RE::TESForm::RecordFlags::kTemporary) == 0)
 						{
-							if (((a_data->magicItem->GetSpellType() == RE::MagicSystem::SpellType::kStaffEnchantment) && a_data->magicItem->GetDelivery() != RE::MagicSystem::Delivery::kTouch) || (a_data->magicItem->GetSpellType() == RE::MagicSystem::SpellType::kScroll) || (a_data->magicItem->GetSpellType() == RE::MagicSystem::SpellType::kLesserPower) || (a_data->magicItem->GetSpellType() == RE::MagicSystem::SpellType::kPower) || (a_data->magicItem->GetSpellType() == RE::MagicSystem::SpellType::kSpell) || (a_data->magicItem->GetSpellType() == RE::MagicSystem::SpellType::kVoicePower))
+							logger::info("caster has no temporary flags");
+							if (a_this && a_this->GetTargetStatsObject() && a_this->GetTargetStatsObject()->Is(RE::FormType::ActorCharacter))
 							{
-								if (HitEventHandler::GetSingleton()->PreProcessMagic(a_this->GetTargetStatsObject()->As<RE::Actor>(), a_data->caster->As<RE::Actor>(), a_data->effect))
+
+								if (a_data->caster->Is(RE::FormType::ActorCharacter))
 								{
-									if (auto item = RE::TESForm::LookupByEditorID<RE::MagicItem>("CFRs_BlankSpell"); item)
+									if (a_data->effect && a_data->magicItem && a_this->GetTargetStatsObject()->As<RE::Actor>() && a_data->caster->As<RE::Actor>())
 									{
-										if (auto baseEffect = RE::TESForm::LookupByEditorID<RE::EffectSetting>("CFRs_BlankEffect"); baseEffect)
+										if (((a_data->magicItem->GetSpellType() == RE::MagicSystem::SpellType::kStaffEnchantment) && a_data->magicItem->GetDelivery() != RE::MagicSystem::Delivery::kTouch) || (a_data->magicItem->GetSpellType() == RE::MagicSystem::SpellType::kScroll) || (a_data->magicItem->GetSpellType() == RE::MagicSystem::SpellType::kLesserPower) || (a_data->magicItem->GetSpellType() == RE::MagicSystem::SpellType::kPower) || (a_data->magicItem->GetSpellType() == RE::MagicSystem::SpellType::kSpell) || (a_data->magicItem->GetSpellType() == RE::MagicSystem::SpellType::kVoicePower))
 										{
-											RE::Effect *effect = new RE::Effect;
-											effect->cost = 0.0f;
-											effect->effectItem.area = 0;
-											effect->effectItem.duration = 0;
-											effect->effectItem.magnitude = 0.0f;
-											effect->baseEffect = baseEffect;
-											a_data->magicItem = item;
-											a_data->effect = effect;
+											if (HitEventHandler::GetSingleton()->PreProcessMagic(a_this->GetTargetStatsObject()->As<RE::Actor>(), a_data->caster->As<RE::Actor>(), a_data->effect))
+											{
+												if (auto item = RE::TESForm::LookupByEditorID<RE::MagicItem>("CFRs_BlankSpell"); item)
+												{
+													if (auto baseEffect = RE::TESForm::LookupByEditorID<RE::EffectSetting>("CFRs_BlankEffect"); baseEffect)
+													{
+														RE::Effect *effect = new RE::Effect;
+														effect->cost = 0.0f;
+														effect->effectItem.area = 0;
+														effect->effectItem.duration = 0;
+														effect->effectItem.magnitude = 0.0f;
+														effect->baseEffect = baseEffect;
+														a_data->magicItem = item;
+														a_data->effect = effect;
+													}
+												}
+											}
 										}
 									}
 								}
