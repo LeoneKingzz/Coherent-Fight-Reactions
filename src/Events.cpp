@@ -626,47 +626,48 @@ namespace Events_Space
 	{
 		static bool thunk(RE::MagicTarget *a_this, RE::MagicTarget::AddTargetData *a_data)
 		{
-			RE::MagicTarget::AddTargetData base_data;
-			RE::MagicTarget::AddTargetData *base_data_pointer = &base_data; // you can assign the pointer to the specific address of the existing object
-			base_data_pointer = a_data;
-			if (base_data_pointer)
+			if (RE::PlayerCharacter::GetSingleton() && RE::PlayerCharacter::GetSingleton()->Is3DLoaded())
 			{
-				RE::TESObjectREFR base_caster;
-				RE::TESObjectREFR *base_caster_pointer = &base_caster;
-				base_caster_pointer = base_data_pointer->caster;
-				logger::info("data is defined");
-				if (base_caster_pointer)
+				RE::MagicTarget::AddTargetData base_data;
+				RE::MagicTarget::AddTargetData *base_data_pointer = &base_data; // you can assign the pointer to the specific address of the existing object
+				base_data_pointer = a_data;
+				if (base_data_pointer)
 				{
-					logger::info("caster is defined");
-					if (base_caster_pointer->formFlags)
+					logger::info("data is defined");
+					if (base_data_pointer->caster)
 					{
-						logger::info("caster's formflags identified");
-						if ((base_caster_pointer->formFlags & RE::TESForm::RecordFlags::kTemporary) == 0)
+						logger::info("caster is defined");
+						if (base_data_pointer->caster->formFlags)
 						{
-							logger::info("caster has no temporary flags");
-							if (a_this && a_this->GetTargetStatsObject() && a_this->GetTargetStatsObject()->Is(RE::FormType::ActorCharacter))
+							logger::info("caster's formflags identified");
+							if ((base_data_pointer->caster->formFlags & RE::TESForm::RecordFlags::kTemporary) == 0)
 							{
-
-								if (base_caster_pointer->Is(RE::FormType::ActorCharacter))
+								logger::info("caster has no temporary flags");
+								if (a_this && a_this->GetTargetStatsObject() && a_this->GetTargetStatsObject()->Is(RE::FormType::ActorCharacter))
 								{
-									if (base_data_pointer->effect && base_data_pointer->magicItem && a_this->GetTargetStatsObject()->As<RE::Actor>() && base_caster_pointer->As<RE::Actor>())
+
+									if (base_data_pointer->caster->Is(RE::FormType::ActorCharacter))
 									{
-										if (((base_data_pointer->magicItem->GetSpellType() == RE::MagicSystem::SpellType::kStaffEnchantment) && base_data_pointer->magicItem->GetDelivery() != RE::MagicSystem::Delivery::kTouch) || (base_data_pointer->magicItem->GetSpellType() == RE::MagicSystem::SpellType::kScroll) || (base_data_pointer->magicItem->GetSpellType() == RE::MagicSystem::SpellType::kLesserPower) || (base_data_pointer->magicItem->GetSpellType() == RE::MagicSystem::SpellType::kPower) || (base_data_pointer->magicItem->GetSpellType() == RE::MagicSystem::SpellType::kSpell) || (base_data_pointer->magicItem->GetSpellType() == RE::MagicSystem::SpellType::kVoicePower))
+										if (base_data_pointer->effect && base_data_pointer->magicItem && a_this->GetTargetStatsObject()->As<RE::Actor>() && base_data_pointer->caster->As<RE::Actor>())
 										{
-											if (HitEventHandler::GetSingleton()->PreProcessMagic(a_this->GetTargetStatsObject()->As<RE::Actor>(), base_caster_pointer->As<RE::Actor>(), base_data_pointer->effect))
+											if (((base_data_pointer->magicItem->GetSpellType() == RE::MagicSystem::SpellType::kStaffEnchantment) && base_data_pointer->magicItem->GetDelivery() != RE::MagicSystem::Delivery::kTouch) || (base_data_pointer->magicItem->GetSpellType() == RE::MagicSystem::SpellType::kScroll) || (base_data_pointer->magicItem->GetSpellType() == RE::MagicSystem::SpellType::kLesserPower) || (base_data_pointer->magicItem->GetSpellType() == RE::MagicSystem::SpellType::kPower) || (base_data_pointer->magicItem->GetSpellType() == RE::MagicSystem::SpellType::kSpell) || (base_data_pointer->magicItem->GetSpellType() == RE::MagicSystem::SpellType::kVoicePower))
 											{
-												if (auto item = RE::TESForm::LookupByEditorID<RE::MagicItem>("CFRs_BlankSpell"); item)
+												if (HitEventHandler::GetSingleton()->PreProcessMagic(a_this->GetTargetStatsObject()->As<RE::Actor>(), base_data_pointer->caster->As<RE::Actor>(), base_data_pointer->effect))
 												{
-													if (auto baseEffect = RE::TESForm::LookupByEditorID<RE::EffectSetting>("CFRs_BlankEffect"); baseEffect)
+													if (auto item = RE::TESForm::LookupByEditorID<RE::MagicItem>("CFRs_BlankSpell"); item)
 													{
-														RE::Effect *effect = new RE::Effect;
-														effect->cost = 0.0f;
-														effect->effectItem.area = 0;
-														effect->effectItem.duration = 0;
-														effect->effectItem.magnitude = 0.0f;
-														effect->baseEffect = baseEffect;
-														base_data_pointer->magicItem = item;
-														base_data_pointer->effect = effect;
+														if (auto baseEffect = RE::TESForm::LookupByEditorID<RE::EffectSetting>("CFRs_BlankEffect"); baseEffect)
+														{
+															RE::Effect *effect = new RE::Effect;
+															effect->cost = 0.0f;
+															effect->effectItem.area = 0;
+															effect->effectItem.duration = 0;
+															effect->effectItem.magnitude = 0.0f;
+															effect->baseEffect = baseEffect;
+															base_data_pointer->magicItem = item;
+															base_data_pointer->effect = effect;
+															return func(a_this, base_data_pointer);
+														}
 													}
 												}
 											}
