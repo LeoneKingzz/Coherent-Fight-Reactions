@@ -626,9 +626,9 @@ namespace Events_Space
 	{
 		static bool thunk(RE::MagicTarget *a_this, RE::MagicTarget::AddTargetData *a_data)
 		{
-			if (a_data && a_data->caster && a_data->caster->Is3DLoaded() && a_data->caster->GetParentCell() && a_data->caster->GetParentCell()->cellState && a_data->caster->GetParentCell()->cellState == RE::TESObjectCELL::CellState::kAttached)
+			if (a_data && a_data->caster)
 			{
-				// logger::info("caster is defined and is loaded and attached");
+				logger::info("caster is defined");
 				if(a_this && a_this->GetTargetStatsObject() && a_this->GetTargetStatsObject()->Is(RE::FormType::ActorCharacter)){
 
 					if (a_data->caster->Is(RE::FormType::ActorCharacter))
