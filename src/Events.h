@@ -51,7 +51,7 @@ namespace Events_Space
 					auto handler = GetSingleton();
 					if (handler->PreProcessHit(target, hitData))
 					{
-						target = nullptr;
+						return func(nullptr, nullptr);
 					}
 					return func(target, hitData);
 				}
