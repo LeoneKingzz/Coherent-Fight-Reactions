@@ -609,19 +609,20 @@ namespace Events_Space
 				}
 			}
 
-			if (ignoredamage)
+			if (ignoredamage && Actor_GetCombatState(target) == RE::ACTOR_COMBAT_STATE::kNone)
 			{
 				if (Settings::GetSingleton()->general.bDebugMode)
 				{
 					logger::info("{} ignored attack from {} ", target->GetName(), aggressor->GetName());
 				}
-				
+			}else{
+				ignoredamage = false;
 			}
 		}
 
 		return ignoredamage;
 	}
-
+	
 	struct MagicTargetApply
 	{
 		static bool thunk(RE::MagicTarget *a_this, RE::MagicTarget::AddTargetData *a_data)
