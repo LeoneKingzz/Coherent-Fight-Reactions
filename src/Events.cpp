@@ -609,7 +609,7 @@ namespace Events_Space
 				}
 			}
 
-			if (ignoredamage && Actor_GetCombatState(target) == RE::ACTOR_COMBAT_STATE::kNone){
+			if (ignoredamage && Actor_GetCombatState(target) != RE::ACTOR_COMBAT_STATE::kCombat){
 				if (Settings::GetSingleton()->general.bDebugMode)
 				{
 					logger::info("{} ignored attack from {} ", target->GetName(), aggressor->GetName());
