@@ -626,14 +626,15 @@ namespace Events_Space
 	{
 		static bool thunk(RE::MagicTarget *a_this, RE::MagicTarget::AddTargetData *a_data)
 		{
-			if (RE::PlayerCharacter::GetSingleton() && RE::PlayerCharacter::GetSingleton()->Is3DLoaded())
+			RE::MagicTarget::AddTargetData base_data;
+			RE::MagicTarget::AddTargetData *base_data_pointer = &base_data; // you can assign the pointer to the specific address of the existing object
+			base_data_pointer = a_data;
+			if (base_data_pointer)
 			{
-				RE::MagicTarget::AddTargetData base_data;
-				RE::MagicTarget::AddTargetData *base_data_pointer = &base_data; // you can assign the pointer to the specific address of the existing object
-				base_data_pointer = a_data;
-				if (base_data_pointer)
+				logger::info("data is defined");
+				if (base_data_pointer->magicItem && (((base_data_pointer->magicItem->GetSpellType() == RE::MagicSystem::SpellType::kStaffEnchantment) && base_data_pointer->magicItem->GetDelivery() != RE::MagicSystem::Delivery::kTouch) || (base_data_pointer->magicItem->GetSpellType() == RE::MagicSystem::SpellType::kScroll) || (base_data_pointer->magicItem->GetSpellType() == RE::MagicSystem::SpellType::kLesserPower) || (base_data_pointer->magicItem->GetSpellType() == RE::MagicSystem::SpellType::kPower) || (base_data_pointer->magicItem->GetSpellType() == RE::MagicSystem::SpellType::kSpell) || (base_data_pointer->magicItem->GetSpellType() == RE::MagicSystem::SpellType::kVoicePower)))
 				{
-					logger::info("data is defined");
+					logger::info("mage item identified and not ability");
 					if (base_data_pointer->caster)
 					{
 						logger::info("caster is defined");
@@ -645,29 +646,25 @@ namespace Events_Space
 								logger::info("caster has no temporary flags");
 								if (a_this && a_this->GetTargetStatsObject() && a_this->GetTargetStatsObject()->Is(RE::FormType::ActorCharacter))
 								{
-
 									if (base_data_pointer->caster->Is(RE::FormType::ActorCharacter))
 									{
-										if (base_data_pointer->effect && base_data_pointer->magicItem && a_this->GetTargetStatsObject()->As<RE::Actor>() && base_data_pointer->caster->As<RE::Actor>())
+										if (base_data_pointer->effect && a_this->GetTargetStatsObject()->As<RE::Actor>() && base_data_pointer->caster->As<RE::Actor>())
 										{
-											if (((base_data_pointer->magicItem->GetSpellType() == RE::MagicSystem::SpellType::kStaffEnchantment) && base_data_pointer->magicItem->GetDelivery() != RE::MagicSystem::Delivery::kTouch) || (base_data_pointer->magicItem->GetSpellType() == RE::MagicSystem::SpellType::kScroll) || (base_data_pointer->magicItem->GetSpellType() == RE::MagicSystem::SpellType::kLesserPower) || (base_data_pointer->magicItem->GetSpellType() == RE::MagicSystem::SpellType::kPower) || (base_data_pointer->magicItem->GetSpellType() == RE::MagicSystem::SpellType::kSpell) || (base_data_pointer->magicItem->GetSpellType() == RE::MagicSystem::SpellType::kVoicePower))
+											if (HitEventHandler::GetSingleton()->PreProcessMagic(a_this->GetTargetStatsObject()->As<RE::Actor>(), base_data_pointer->caster->As<RE::Actor>(), base_data_pointer->effect))
 											{
-												if (HitEventHandler::GetSingleton()->PreProcessMagic(a_this->GetTargetStatsObject()->As<RE::Actor>(), base_data_pointer->caster->As<RE::Actor>(), base_data_pointer->effect))
+												if (auto item = RE::TESForm::LookupByEditorID<RE::MagicItem>("CFRs_BlankSpell"); item)
 												{
-													if (auto item = RE::TESForm::LookupByEditorID<RE::MagicItem>("CFRs_BlankSpell"); item)
+													if (auto baseEffect = RE::TESForm::LookupByEditorID<RE::EffectSetting>("CFRs_BlankEffect"); baseEffect)
 													{
-														if (auto baseEffect = RE::TESForm::LookupByEditorID<RE::EffectSetting>("CFRs_BlankEffect"); baseEffect)
-														{
-															RE::Effect *effect = new RE::Effect;
-															effect->cost = 0.0f;
-															effect->effectItem.area = 0;
-															effect->effectItem.duration = 0;
-															effect->effectItem.magnitude = 0.0f;
-															effect->baseEffect = baseEffect;
-															base_data_pointer->magicItem = item;
-															base_data_pointer->effect = effect;
-															return func(a_this, base_data_pointer);
-														}
+														RE::Effect *effect = new RE::Effect;
+														effect->cost = 0.0f;
+														effect->effectItem.area = 0;
+														effect->effectItem.duration = 0;
+														effect->effectItem.magnitude = 0.0f;
+														effect->baseEffect = baseEffect;
+														base_data_pointer->magicItem = item;
+														base_data_pointer->effect = effect;
+														return func(a_this, base_data_pointer);
 													}
 												}
 											}
