@@ -55,6 +55,7 @@ namespace Events_Space
 						hitData->physicalDamage = 0.0f;
 						hitData->pushBack = 0.0f;
 						hitData->flags |= RE::HitData::Flag::kBlocked;
+						hitData->flags |= RE::HitData::Flag::kIgnoreCritical;
 						hitData->percentBlocked = 1.0f;
 						hitData->attackDataSpell = nullptr;
 						hitData->criticalEffect = nullptr;
