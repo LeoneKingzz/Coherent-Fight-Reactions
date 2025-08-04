@@ -660,36 +660,6 @@ namespace Events_Space
 			}
 
 			return func(a_this, a_data);
-
-			// if (const auto npcFactory = RE::IFormFactory::GetConcreteFormFactoryByType<RE::TESNPC>())
-			// {
-			// 	const size_t size = REL::Module::IsAE() ? 0x2B8 : 0x2B0;
-			// 	if (auto newNPC = npcFactory->Create())
-			// 	{
-			// 		if (const auto playerBase = RE::TESForm::LookupByID<RE::TESNPC>(0x7))
-			// 		{
-			// 			newNPC->race = playerBase->race;
-			// 			TESForm_MakeTemporary(newNPC);
-
-			// 			if (const auto dummyMaleCharacter = CreateDummyCharacter(newNPC))
-			// 			{
-			// 				dummyMaleCharacter->Load3D(false);
-			// 				// dummyMaleCharacter->Disable();
-			// 				// dummyMaleCharacter->SetDelete(true);
-			// 			}
-
-			// 			newNPC->actorData.actorBaseFlags.set(RE::ACTOR_BASE_DATA::Flag::kFemale);
-			// 			if (const auto dummyFemaleCharacter = CreateDummyCharacter(newNPC))
-			// 			{
-			// 				dummyFemaleCharacter->Load3D(false);
-			// 				// dummyFemaleCharacter->Disable();
-			// 				// dummyFemaleCharacter->SetDelete(true);
-			// 			}
-
-			// 			// newNPC->SetDelete(true);
-			// 		}
-			// 	}
-			// }
 		}
 
 		static inline REL::Relocation<decltype(thunk)> func;
