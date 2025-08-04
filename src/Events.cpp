@@ -626,28 +626,31 @@ namespace Events_Space
 	{
 		static bool thunk(RE::MagicTarget *a_this, RE::MagicTarget::AddTargetData *a_data)
 		{
-			if (a_this && a_data && a_this->GetTargetStatsObject() && a_this->GetTargetStatsObject()->Is(RE::FormType::ActorCharacter))
+			if (a_data && a_data->caster && a_data->caster->Is3DLoaded() && a_data->caster->GetParentCell() && a_data->caster->GetParentCell()->cellState && a_data->caster->GetParentCell()->cellState == RE::TESObjectCELL::CellState::kAttached)
 			{
-				if (a_data->caster && a_data->caster->Is(RE::FormType::ActorCharacter))
-				{
-					if (a_data->effect && a_data->magicItem && a_this->GetTargetStatsObject()->As<RE::Actor>() && a_data->caster->As<RE::Actor>())
+				if(a_this && a_this->GetTargetStatsObject() && a_this->GetTargetStatsObject()->Is(RE::FormType::ActorCharacter)){
+
+					if (a_data->caster->Is(RE::FormType::ActorCharacter))
 					{
-						if (((a_data->magicItem->GetSpellType() == RE::MagicSystem::SpellType::kStaffEnchantment) && a_data->magicItem->GetDelivery() != RE::MagicSystem::Delivery::kTouch) || (a_data->magicItem->GetSpellType() == RE::MagicSystem::SpellType::kScroll) || (a_data->magicItem->GetSpellType() == RE::MagicSystem::SpellType::kLesserPower) || (a_data->magicItem->GetSpellType() == RE::MagicSystem::SpellType::kPower) || (a_data->magicItem->GetSpellType() == RE::MagicSystem::SpellType::kSpell) || (a_data->magicItem->GetSpellType() == RE::MagicSystem::SpellType::kVoicePower))
+						if (a_data->effect && a_data->magicItem && a_this->GetTargetStatsObject()->As<RE::Actor>() && a_data->caster->As<RE::Actor>())
 						{
-							if (HitEventHandler::GetSingleton()->PreProcessMagic(a_this->GetTargetStatsObject()->As<RE::Actor>(), a_data->caster->As<RE::Actor>(), a_data->effect))
+							if (((a_data->magicItem->GetSpellType() == RE::MagicSystem::SpellType::kStaffEnchantment) && a_data->magicItem->GetDelivery() != RE::MagicSystem::Delivery::kTouch) || (a_data->magicItem->GetSpellType() == RE::MagicSystem::SpellType::kScroll) || (a_data->magicItem->GetSpellType() == RE::MagicSystem::SpellType::kLesserPower) || (a_data->magicItem->GetSpellType() == RE::MagicSystem::SpellType::kPower) || (a_data->magicItem->GetSpellType() == RE::MagicSystem::SpellType::kSpell) || (a_data->magicItem->GetSpellType() == RE::MagicSystem::SpellType::kVoicePower))
 							{
-								if (auto item = RE::TESForm::LookupByEditorID<RE::MagicItem>("CFRs_BlankSpell"); item)
+								if (HitEventHandler::GetSingleton()->PreProcessMagic(a_this->GetTargetStatsObject()->As<RE::Actor>(), a_data->caster->As<RE::Actor>(), a_data->effect))
 								{
-									if (auto baseEffect = RE::TESForm::LookupByEditorID<RE::EffectSetting>("CFRs_BlankEffect"); baseEffect)
+									if (auto item = RE::TESForm::LookupByEditorID<RE::MagicItem>("CFRs_BlankSpell"); item)
 									{
-										RE::Effect *effect = new RE::Effect;
-										effect->cost = 0.0f;
-										effect->effectItem.area = 0;
-										effect->effectItem.duration = 0;
-										effect->effectItem.magnitude = 0.0f;
-										effect->baseEffect = baseEffect;
-										a_data->magicItem = item;
-										a_data->effect = effect;
+										if (auto baseEffect = RE::TESForm::LookupByEditorID<RE::EffectSetting>("CFRs_BlankEffect"); baseEffect)
+										{
+											RE::Effect *effect = new RE::Effect;
+											effect->cost = 0.0f;
+											effect->effectItem.area = 0;
+											effect->effectItem.duration = 0;
+											effect->effectItem.magnitude = 0.0f;
+											effect->baseEffect = baseEffect;
+											a_data->magicItem = item;
+											a_data->effect = effect;
+										}
 									}
 								}
 							}
@@ -657,6 +660,36 @@ namespace Events_Space
 			}
 
 			return func(a_this, a_data);
+
+			// if (const auto npcFactory = RE::IFormFactory::GetConcreteFormFactoryByType<RE::TESNPC>())
+			// {
+			// 	const size_t size = REL::Module::IsAE() ? 0x2B8 : 0x2B0;
+			// 	if (auto newNPC = npcFactory->Create())
+			// 	{
+			// 		if (const auto playerBase = RE::TESForm::LookupByID<RE::TESNPC>(0x7))
+			// 		{
+			// 			newNPC->race = playerBase->race;
+			// 			TESForm_MakeTemporary(newNPC);
+
+			// 			if (const auto dummyMaleCharacter = CreateDummyCharacter(newNPC))
+			// 			{
+			// 				dummyMaleCharacter->Load3D(false);
+			// 				// dummyMaleCharacter->Disable();
+			// 				// dummyMaleCharacter->SetDelete(true);
+			// 			}
+
+			// 			newNPC->actorData.actorBaseFlags.set(RE::ACTOR_BASE_DATA::Flag::kFemale);
+			// 			if (const auto dummyFemaleCharacter = CreateDummyCharacter(newNPC))
+			// 			{
+			// 				dummyFemaleCharacter->Load3D(false);
+			// 				// dummyFemaleCharacter->Disable();
+			// 				// dummyFemaleCharacter->SetDelete(true);
+			// 			}
+
+			// 			// newNPC->SetDelete(true);
+			// 		}
+			// 	}
+			// }
 		}
 
 		static inline REL::Relocation<decltype(thunk)> func;
