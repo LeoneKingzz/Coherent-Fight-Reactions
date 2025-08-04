@@ -60,7 +60,7 @@ namespace Events_Space
 						hitData->attackDataSpell = nullptr;
 						hitData->criticalEffect = nullptr;
 						hitData->stagger = static_cast<uint32_t>(0.00);
-						hitData->aggressor = target;
+						hitData->aggressor.get() = nullptr;
 					}
 					return func(target, hitData);
 				}
