@@ -14,6 +14,9 @@ namespace Events_Space
 
 	using EventResult = RE::BSEventNotifyControl;
 
+	using tActor_GetCombatState = RE::ACTOR_COMBAT_STATE (*)(RE::Actor *a_this);
+	static REL::Relocation<tActor_GetCombatState> Actor_GetCombatState{REL::VariantID(37603, 38556, 0x62DD00)}; // 624E90, 64A520, 62DD00
+
 	template <typename T>
 	T &Singleton()
 	{
