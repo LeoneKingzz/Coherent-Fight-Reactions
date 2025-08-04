@@ -626,23 +626,23 @@ namespace Events_Space
 	{
 		static bool thunk(RE::MagicTarget *a_this, RE::MagicTarget::AddTargetData *a_data)
 		{
-			try
-			{
-				if(a_data && a_this);
-			}
-			catch(const std::exception& e)
-			{
-				std::cerr << e.what() << '\n';
-			}
+			// try
+			// {
+			// 	if(a_data && a_this);
+			// }
+			// catch(const std::exception& e)
+			// {
+			// 	std::cerr << e.what() << '\n';
+			// }
 
-			try
-			{
-				if(a_data->caster);
-			}
-			catch(const std::exception& e)
-			{
-				std::cerr << e.what() << '\n';
-			}
+			// try
+			// {
+			// 	if(a_data->caster);
+			// }
+			// catch(const std::exception& e)
+			// {
+			// 	std::cerr << e.what() << '\n';
+			// }
 			
 
 			if (a_data)
