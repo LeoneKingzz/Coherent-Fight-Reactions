@@ -634,26 +634,32 @@ namespace Events_Space
 				const auto effect = a_data->effect;
 				if (const auto baseEffect = effect ? effect->baseEffect : nullptr; baseEffect)
 				{
-					if (a_data->caster->Is(RE::FormType::ActorCharacter) && target->Is(RE::FormType::ActorCharacter))
+					const auto caster = a_data->caster;
+					if (const auto casterActor = caster && caster->Is(RE::FormType::ActorCharacter)? caster->As<RE::Actor>(): nullptr; casterActor)
 					{
-						if (a_data->effect && a_data->magicItem && (((a_data->magicItem->GetSpellType() == RE::MagicSystem::SpellType::kStaffEnchantment) && a_data->magicItem->GetDelivery() != RE::MagicSystem::Delivery::kTouch) || (a_data->magicItem->GetSpellType() == RE::MagicSystem::SpellType::kScroll) || (a_data->magicItem->GetSpellType() == RE::MagicSystem::SpellType::kLesserPower) || (a_data->magicItem->GetSpellType() == RE::MagicSystem::SpellType::kPower) || (a_data->magicItem->GetSpellType() == RE::MagicSystem::SpellType::kSpell) || (a_data->magicItem->GetSpellType() == RE::MagicSystem::SpellType::kVoicePower)))
+						if (const auto targetActor = target->Is(RE::FormType::ActorCharacter)? target->As<RE::Actor>(): nullptr; targetActor)
 						{
+							const auto magicitem = a_data->magicItem;
+							if(const auto valid = magicitem? 
+								(((magicitem->GetSpellType() == RE::MagicSystem::SpellType::kStaffEnchantment) && magicitem->GetDelivery() != RE::MagicSystem::Delivery::kTouch) 
+								|| (magicitem->GetSpellType() == RE::MagicSystem::SpellType::kScroll) || (magicitem->GetSpellType() == RE::MagicSystem::SpellType::kLesserPower) 
+								|| (magicitem->GetSpellType() == RE::MagicSystem::SpellType::kPower) || (magicitem->GetSpellType() == RE::MagicSystem::SpellType::kSpell) 
+								|| (magicitem->GetSpellType() == RE::MagicSystem::SpellType::kVoicePower)): false; valid){
 
-							if (HitEventHandler::GetSingleton()->PreProcessMagic(a_this->GetTargetStatsObject()->As<RE::Actor>(), a_data->caster->As<RE::Actor>(), a_data->effect))
-							{
-								if (auto item = RE::TESForm::LookupByEditorID<RE::MagicItem>("CFRs_BlankSpell"); item)
-								{
-									if (auto baseEffect = RE::TESForm::LookupByEditorID<RE::EffectSetting>("CFRs_BlankEffect"); baseEffect)
-									{
-										RE::Effect *effect = new RE::Effect;
-										effect->cost = 0.0f;
-										effect->effectItem.area = 0;
-										effect->effectItem.duration = 0;
-										effect->effectItem.magnitude = 0.0f;
-										effect->baseEffect = baseEffect;
-										a_data->magicItem = item;
-										a_data->effect = effect;
-										return func(a_this, a_data);
+								if (HitEventHandler::GetSingleton()->PreProcessMagic(targetActor, casterActor, effect)){
+									if (auto item = RE::TESForm::LookupByEditorID<RE::MagicItem>("CFRs_BlankSpell"); item){
+										if (auto baseEffect = RE::TESForm::LookupByEditorID<RE::EffectSetting>("CFRs_BlankEffect"); baseEffect){
+
+											RE::Effect *effect = new RE::Effect;
+											effect->cost = 0.0f;
+											effect->effectItem.area = 0;
+											effect->effectItem.duration = 0;
+											effect->effectItem.magnitude = 0.0f;
+											effect->baseEffect = baseEffect;
+											a_data->magicItem = item;
+											a_data->effect = effect;
+											return func(a_this, a_data);
+										}
 									}
 								}
 							}
@@ -663,7 +669,6 @@ namespace Events_Space
 			}
 
 			return hasAppliedEffect;
-			
 		}
 
 		static inline REL::Relocation<decltype(thunk)> func;
