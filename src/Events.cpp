@@ -173,25 +173,37 @@ namespace Events_Space
 		{
 			if (const auto enemyhandle = event->cause.get(); enemyhandle)
 			{
-				if (enemyhandle->Is(RE::FormType::ActorCharacter))
+				if (const auto targethandle = event->target.get(); targethandle)
 				{
-					RE::Actor *a_actor = enemyhandle->As<RE::Actor>();
-					// if (a_actor->IsPlayerTeammate() || (a_actor->IsCommandedActor() && ((a_actor->GetCommandingActor().get()->IsPlayerRef()) || (a_actor->GetCommandingActor().get()->IsPlayerTeammate()))))
-					// {
-					// 	if (auto CombatTarget = a_actor->GetActorRuntimeData().currentCombatTarget.get().get())
-					// 	{
-					// 		if (CombatTarget->IsPlayerTeammate() || (CombatTarget->IsCommandedActor() && ((CombatTarget->GetCommandingActor().get()->IsPlayerRef()) || (CombatTarget->GetCommandingActor().get()->IsPlayerTeammate()))))
-					// 		{
-					// 			if (const auto Evaluate = RE::TESForm::LookupByEditorID<RE::MagicItem>("CFRs_CalmSpell"))
-					// 			{
-					// 				const auto caster = a_actor->GetMagicCaster(RE::MagicSystem::CastingSource::kInstant);
-					// 				const auto caster2 = CombatTarget->GetMagicCaster(RE::MagicSystem::CastingSource::kInstant);
-					// 				caster->CastSpellImmediate(Evaluate, true, a_actor, 1, false, 100.0, a_actor);
-					// 				caster2->CastSpellImmediate(Evaluate, true, CombatTarget, 1, false, 100.0, CombatTarget);
-					// 			}
-					// 		}
-					// 	}
-					// }
+					if (enemyhandle->Is(RE::FormType::ActorCharacter) && targethandle->Is(RE::FormType::ActorCharacter))
+					{
+						RE::Actor *enemy = enemyhandle->As<RE::Actor>();
+						RE::Actor *target = targethandle->As<RE::Actor>();
+						const auto CurrentFollowerFaction = RE::TESForm::LookupByEditorID<RE::TESFaction>("CurrentFollowerFaction");
+						const auto CFRs_PlayerAlliesFaction = RE::TESForm::LookupByEditorID<RE::TESFaction>("CFRs_PlayerAlliesFaction");
+
+						if (enemy && target && CFRs_PlayerAlliesFaction && CurrentFollowerFaction)
+						{
+							if ((enemy->IsInFaction(CFRs_PlayerAlliesFaction) || enemy->IsInFaction(CurrentFollowerFaction) || enemy->IsPlayerRef()) && (target->IsInFaction(CFRs_PlayerAlliesFaction) || target->IsInFaction(CurrentFollowerFaction) || target->IsPlayerRef()))
+							{
+								if (Events::GetFactionReaction(target, enemy) != RE::FIGHT_REACTION::kAlly)
+								{
+									if (const auto Evaluate = RE::TESForm::LookupByEditorID<RE::MagicItem>("CFRs_CalmSpell"); Evaluate)
+									{
+										if (!enemy->IsPlayerRef())
+										{
+											const auto caster_enemy = enemy->GetMagicCaster(RE::MagicSystem::CastingSource::kInstant);
+											caster_enemy->CastSpellImmediate(Evaluate, true, enemy, 1, false, 100.0, enemy);
+										}
+										if(!target->IsPlayerRef()){
+											const auto caster_target = target->GetMagicCaster(RE::MagicSystem::CastingSource::kInstant);
+											caster_target->CastSpellImmediate(Evaluate, true, target, 1, false, 100.0, target);
+										}
+									}
+								}
+							}
+						}
+					}
 				}
 			}
 
