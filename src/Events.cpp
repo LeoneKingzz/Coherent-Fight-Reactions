@@ -639,7 +639,7 @@ namespace Events_Space
 				catch(...)
 				{
 					//std::cerr << e.what() << '\n';
-					logger::error("Unknown error");
+					logger::error("Unknown exception");
 					return func(a_this, a_data);
 				}
 
