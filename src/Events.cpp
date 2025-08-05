@@ -626,47 +626,31 @@ namespace Events_Space
 	{
 		static bool thunk(RE::MagicTarget *a_this, RE::MagicTarget::AddTargetData *a_data)
 		{
-			if (a_data)
+			try
 			{
-				try
+				if (a_data && a_data->caster && a_data->caster->Is(RE::FormType::ActorCharacter) && a_data->caster->Is3DLoaded() && a_data->caster->GetParentCell() && a_data->caster->GetParentCell()->cellState && a_data->caster->GetParentCell()->cellState == RE::TESObjectCELL::CellState::kAttached)
 				{
-					if (a_data->caster){
-
-					}
-
-				}
-				catch(...)
-				{
-					//std::cerr << e.what() << '\n';
-					logger::error("Access violation");
-					return func(a_this, a_data);
-				}
-
-				if (a_data->magicItem && (((a_data->magicItem->GetSpellType() == RE::MagicSystem::SpellType::kStaffEnchantment) && a_data->magicItem->GetDelivery() != RE::MagicSystem::Delivery::kTouch) || (a_data->magicItem->GetSpellType() == RE::MagicSystem::SpellType::kScroll) || (a_data->magicItem->GetSpellType() == RE::MagicSystem::SpellType::kLesserPower) || (a_data->magicItem->GetSpellType() == RE::MagicSystem::SpellType::kPower) || (a_data->magicItem->GetSpellType() == RE::MagicSystem::SpellType::kSpell) || (a_data->magicItem->GetSpellType() == RE::MagicSystem::SpellType::kVoicePower)))
-				{
-					if (a_data->caster)
+					if (a_this && a_this->GetTargetStatsObject() && a_this->GetTargetStatsObject()->Is(RE::FormType::ActorCharacter))
 					{
-						if (a_this && a_this->GetTargetStatsObject() && a_this->GetTargetStatsObject()->Is(RE::FormType::ActorCharacter))
+						if (a_this->GetTargetStatsObject()->As<RE::Actor>() && a_data->caster->As<RE::Actor>())
 						{
-							if (a_data->caster->Is(RE::FormType::ActorCharacter))
+							if (a_data->effect && a_data->magicItem && (((a_data->magicItem->GetSpellType() == RE::MagicSystem::SpellType::kStaffEnchantment) && a_data->magicItem->GetDelivery() != RE::MagicSystem::Delivery::kTouch) || (a_data->magicItem->GetSpellType() == RE::MagicSystem::SpellType::kScroll) || (a_data->magicItem->GetSpellType() == RE::MagicSystem::SpellType::kLesserPower) || (a_data->magicItem->GetSpellType() == RE::MagicSystem::SpellType::kPower) || (a_data->magicItem->GetSpellType() == RE::MagicSystem::SpellType::kSpell) || (a_data->magicItem->GetSpellType() == RE::MagicSystem::SpellType::kVoicePower)))
 							{
-								if (a_data->effect && a_this->GetTargetStatsObject()->As<RE::Actor>() && a_data->caster->As<RE::Actor>())
+
+								if (HitEventHandler::GetSingleton()->PreProcessMagic(a_this->GetTargetStatsObject()->As<RE::Actor>(), a_data->caster->As<RE::Actor>(), a_data->effect))
 								{
-									if (HitEventHandler::GetSingleton()->PreProcessMagic(a_this->GetTargetStatsObject()->As<RE::Actor>(), a_data->caster->As<RE::Actor>(), a_data->effect))
+									if (auto item = RE::TESForm::LookupByEditorID<RE::MagicItem>("CFRs_BlankSpell"); item)
 									{
-										if (auto item = RE::TESForm::LookupByEditorID<RE::MagicItem>("CFRs_BlankSpell"); item)
+										if (auto baseEffect = RE::TESForm::LookupByEditorID<RE::EffectSetting>("CFRs_BlankEffect"); baseEffect)
 										{
-											if (auto baseEffect = RE::TESForm::LookupByEditorID<RE::EffectSetting>("CFRs_BlankEffect"); baseEffect)
-											{
-												RE::Effect *effect = new RE::Effect;
-												effect->cost = 0.0f;
-												effect->effectItem.area = 0;
-												effect->effectItem.duration = 0;
-												effect->effectItem.magnitude = 0.0f;
-												effect->baseEffect = baseEffect;
-												a_data->magicItem = item;
-												a_data->effect = effect;
-											}
+											RE::Effect *effect = new RE::Effect;
+											effect->cost = 0.0f;
+											effect->effectItem.area = 0;
+											effect->effectItem.duration = 0;
+											effect->effectItem.magnitude = 0.0f;
+											effect->baseEffect = baseEffect;
+											a_data->magicItem = item;
+											a_data->effect = effect;
 										}
 									}
 								}
@@ -675,7 +659,12 @@ namespace Events_Space
 					}
 				}
 			}
-
+			catch (...)
+			{
+				logger::info("Access violation. Returning Function");
+				return func(a_this, a_data);
+			}
+			
 			return func(a_this, a_data);
 		}
 
