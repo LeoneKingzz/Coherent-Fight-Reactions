@@ -626,11 +626,15 @@ namespace Events_Space
 	{
 		static bool thunk(RE::MagicTarget *a_this, RE::MagicTarget::AddTargetData *a_data)
 		{
-			if (a_data && a_data->caster && a_data->caster->Is(RE::FormType::ActorCharacter) && a_data->caster->Is3DLoaded() && a_data->caster->GetParentCell() && a_data->caster->GetParentCell()->cellState && a_data->caster->GetParentCell()->cellState == RE::TESObjectCELL::CellState::kAttached)
+
+			const bool hasAppliedEffect = func(a_this, a_data);
+
+			if (const auto target = a_this && a_data ? a_this->GetTargetStatsObject() : nullptr; target)
 			{
-				if (a_this && a_this->GetTargetStatsObject() && a_this->GetTargetStatsObject()->Is(RE::FormType::ActorCharacter))
+				const auto effect = a_data->effect;
+				if (const auto baseEffect = effect ? effect->baseEffect : nullptr; baseEffect)
 				{
-					if (a_this->GetTargetStatsObject()->As<RE::Actor>() && a_data->caster->As<RE::Actor>())
+					if (a_data->caster->Is(RE::FormType::ActorCharacter) && target->Is(RE::FormType::ActorCharacter))
 					{
 						if (a_data->effect && a_data->magicItem && (((a_data->magicItem->GetSpellType() == RE::MagicSystem::SpellType::kStaffEnchantment) && a_data->magicItem->GetDelivery() != RE::MagicSystem::Delivery::kTouch) || (a_data->magicItem->GetSpellType() == RE::MagicSystem::SpellType::kScroll) || (a_data->magicItem->GetSpellType() == RE::MagicSystem::SpellType::kLesserPower) || (a_data->magicItem->GetSpellType() == RE::MagicSystem::SpellType::kPower) || (a_data->magicItem->GetSpellType() == RE::MagicSystem::SpellType::kSpell) || (a_data->magicItem->GetSpellType() == RE::MagicSystem::SpellType::kVoicePower)))
 						{
@@ -649,6 +653,7 @@ namespace Events_Space
 										effect->baseEffect = baseEffect;
 										a_data->magicItem = item;
 										a_data->effect = effect;
+										return func(a_this, a_data);
 									}
 								}
 							}
@@ -657,7 +662,8 @@ namespace Events_Space
 				}
 			}
 
-			return func(a_this, a_data);
+			return hasAppliedEffect;
+			
 		}
 
 		static inline REL::Relocation<decltype(thunk)> func;
