@@ -622,38 +622,29 @@ namespace Events_Space
 		return ignoredamage;
 	}
 
-	std::expected<RE::TESObjectREFR*, bool> GetCaster(RE::MagicTarget::AddTargetData *b_data){
+	[[nodiscard]] std::expected<RE::TESObjectREFR *, bool> GetCaster(RE::MagicTarget::AddTargetData *b_data)
+	{
 		if (!b_data->caster)
 		    return std::unexpected(false);
 
 		return b_data->caster;
 	}
-	
+
 	struct MagicTargetApply
 	{
 		static bool thunk(RE::MagicTarget *a_this, RE::MagicTarget::AddTargetData *a_data)
 		{
-			// try
-			// {
-			// 	if(a_data && a_this);
-			// }
-			// catch(const std::exception& e)
-			// {
-			// 	std::cerr << e.what() << '\n';
-			// }
-
-			// try
-			// {
-			// 	if(a_data->caster);
-			// }
-			// catch(const std::exception& e)
-			// {
-			// 	std::cerr << e.what() << '\n';
-			// }
-			
-
 			if (a_data)
 			{
+				logger::info("data defined");
+				auto caster_result = Events_Space::GetCaster(a_data);
+
+				if (!caster_result)
+				{
+					logger::error("Access violation on caster pointer. Returning func");
+					return func(a_this, a_data);
+				}
+
 				if (a_data->magicItem && (((a_data->magicItem->GetSpellType() == RE::MagicSystem::SpellType::kStaffEnchantment) && a_data->magicItem->GetDelivery() != RE::MagicSystem::Delivery::kTouch) || (a_data->magicItem->GetSpellType() == RE::MagicSystem::SpellType::kScroll) || (a_data->magicItem->GetSpellType() == RE::MagicSystem::SpellType::kLesserPower) || (a_data->magicItem->GetSpellType() == RE::MagicSystem::SpellType::kPower) || (a_data->magicItem->GetSpellType() == RE::MagicSystem::SpellType::kSpell) || (a_data->magicItem->GetSpellType() == RE::MagicSystem::SpellType::kVoicePower)))
 				{
 					if (a_data->caster)
