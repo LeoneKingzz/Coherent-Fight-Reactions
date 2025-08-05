@@ -631,7 +631,7 @@ namespace Events_Space
 				try
 				{
 					if (a_data->caster){
-						
+
 					}
 
 				}
