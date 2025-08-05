@@ -632,14 +632,11 @@ namespace Events_Space
 				{
 					if (a_data->caster);
 
-				}catch(const char* txt_except){
-					logger::error(txt_except);
-					return func(a_this, a_data);
 				}
 				catch(...)
 				{
 					//std::cerr << e.what() << '\n';
-					logger::error("Unknown exception");
+					logger::error("Access violation");
 					return func(a_this, a_data);
 				}
 
