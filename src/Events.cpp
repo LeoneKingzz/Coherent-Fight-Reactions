@@ -190,12 +190,12 @@ namespace Events_Space
 								{
 									if (const auto CFRs_CalmSpell = RE::TESForm::LookupByEditorID<RE::MagicItem>("CFRs_CalmSpell"); CFRs_CalmSpell)
 									{
-										if (!enemy->IsPlayerRef())
+										if (!enemy->IsPlayerRef() && Actor_GetCombatState(enemy) != RE::ACTOR_COMBAT_STATE::kCombat)
 										{
 											const auto caster_enemy = enemy->GetMagicCaster(RE::MagicSystem::CastingSource::kInstant);
 											caster_enemy->CastSpellImmediate(CFRs_CalmSpell, true, enemy, 1, false, 100.0, enemy);
 										}
-										if(!target->IsPlayerRef()){
+										if(!target->IsPlayerRef() && Actor_GetCombatState(target) != RE::ACTOR_COMBAT_STATE::kCombat){
 											const auto caster_target = target->GetMagicCaster(RE::MagicSystem::CastingSource::kInstant);
 											caster_target->CastSpellImmediate(CFRs_CalmSpell, true, target, 1, false, 100.0, target);
 										}
