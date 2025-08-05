@@ -510,34 +510,26 @@ namespace Events_Space
 		{
 			if (!target->IsHostileToActor(aggressor) && target->AsActorValueOwner()->GetActorValue(RE::ActorValue::kAggression) <= 1 && target->IsPlayerTeammate() || (target->IsCommandedActor() && ((target->GetCommandingActor().get()->IsPlayerRef()) || (target->GetCommandingActor().get()->IsPlayerTeammate()))))
 			{
-				if (CurrentFollowerFaction && !target->IsInFaction(CurrentFollowerFaction))
+				if (CFRs_PlayerAlliesFaction && !target->IsInFaction(CFRs_PlayerAlliesFaction))
 				{
-
-					if (CFRs_PlayerAlliesFaction && !target->IsInFaction(CFRs_PlayerAlliesFaction))
+					if (target->AsActorValueOwner()->GetActorValue(RE::ActorValue::kAssistance) != 2)
 					{
-						if (target->AsActorValueOwner()->GetActorValue(RE::ActorValue::kAssistance) != 2)
-						{
-							target->AsActorValueOwner()->SetActorValue(RE::ActorValue::kAssistance, 2);
-						}
-
-						target->AddToFaction(CFRs_PlayerAlliesFaction, 0);
+						target->AsActorValueOwner()->SetActorValue(RE::ActorValue::kAssistance, 2);
 					}
+
+					target->AddToFaction(CFRs_PlayerAlliesFaction, 0);
 				}
 			}
 			if (!aggressor->IsHostileToActor(target) && aggressor->AsActorValueOwner()->GetActorValue(RE::ActorValue::kAggression) <= 1 && aggressor->IsPlayerTeammate() || (aggressor->IsCommandedActor() && ((aggressor->GetCommandingActor().get()->IsPlayerRef()) || (aggressor->GetCommandingActor().get()->IsPlayerTeammate()))))
 			{
-				if (CurrentFollowerFaction && !aggressor->IsInFaction(CurrentFollowerFaction))
+				if (CFRs_PlayerAlliesFaction && !aggressor->IsInFaction(CFRs_PlayerAlliesFaction))
 				{
-
-					if (CFRs_PlayerAlliesFaction && !aggressor->IsInFaction(CFRs_PlayerAlliesFaction))
+					if (aggressor->AsActorValueOwner()->GetActorValue(RE::ActorValue::kAssistance) != 2)
 					{
-						if (aggressor->AsActorValueOwner()->GetActorValue(RE::ActorValue::kAssistance) != 2)
-						{
-							aggressor->AsActorValueOwner()->SetActorValue(RE::ActorValue::kAssistance, 2);
-						}
-
-						aggressor->AddToFaction(CFRs_PlayerAlliesFaction, 0);
+						aggressor->AsActorValueOwner()->SetActorValue(RE::ActorValue::kAssistance, 2);
 					}
+
+					aggressor->AddToFaction(CFRs_PlayerAlliesFaction, 0);
 				}
 			}
 
