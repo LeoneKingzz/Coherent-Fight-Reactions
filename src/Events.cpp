@@ -628,16 +628,18 @@ namespace Events_Space
 		{
 			if (a_data)
 			{
-				logger::info("data defined");
-
 				try
 				{
 					if (a_data->caster);
+
+				}catch(const char* txt_except){
+					logger::error(txt_except);
+					return func(a_this, a_data);
 				}
 				catch(...)
 				{
 					//std::cerr << e.what() << '\n';
-					logger::error("Access violation on caster pointer. Returning func");
+					logger::error("Unknown error");
 					return func(a_this, a_data);
 				}
 
