@@ -647,8 +647,8 @@ namespace Events_Space
 								|| (magicitem->GetSpellType() == RE::MagicSystem::SpellType::kVoicePower)): false; valid){
 
 								if (HitEventHandler::GetSingleton()->PreProcessMagic(targetActor, casterActor, effect)){
-									if (auto item = RE::TESForm::LookupByEditorID<RE::MagicItem>("CFRs_BlankSpell"); item){
-										if (auto baseEffect = RE::TESForm::LookupByEditorID<RE::EffectSetting>("CFRs_BlankEffect"); baseEffect){
+									if (const auto item = RE::TESForm::LookupByEditorID<RE::MagicItem>("CFRs_BlankSpell"); item){
+										if (const auto baseEffect = RE::TESForm::LookupByEditorID<RE::EffectSetting>("CFRs_BlankEffect"); baseEffect){
 
 											RE::Effect *effect = new RE::Effect;
 											effect->cost = 0.0f;
