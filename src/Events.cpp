@@ -188,16 +188,16 @@ namespace Events_Space
 							{
 								if (Events::GetFactionReaction(target, enemy) != RE::FIGHT_REACTION::kAlly)
 								{
-									if (const auto Evaluate = RE::TESForm::LookupByEditorID<RE::MagicItem>("CFRs_CalmSpell"); Evaluate)
+									if (const auto CFRs_CalmSpell = RE::TESForm::LookupByEditorID<RE::MagicItem>("CFRs_CalmSpell"); CFRs_CalmSpell)
 									{
 										if (!enemy->IsPlayerRef())
 										{
 											const auto caster_enemy = enemy->GetMagicCaster(RE::MagicSystem::CastingSource::kInstant);
-											caster_enemy->CastSpellImmediate(Evaluate, true, enemy, 1, false, 100.0, enemy);
+											caster_enemy->CastSpellImmediate(CFRs_CalmSpell, true, enemy, 1, false, 100.0, enemy);
 										}
 										if(!target->IsPlayerRef()){
 											const auto caster_target = target->GetMagicCaster(RE::MagicSystem::CastingSource::kInstant);
-											caster_target->CastSpellImmediate(Evaluate, true, target, 1, false, 100.0, target);
+											caster_target->CastSpellImmediate(CFRs_CalmSpell, true, target, 1, false, 100.0, target);
 										}
 									}
 								}
@@ -689,7 +689,7 @@ namespace Events_Space
 		//eventSourceHolder->AddEventSink<RE::TESActorLocationChangeEvent>(eventSink);
 		//eventSourceHolder->AddEventSink<RE::TESSpellCastEvent>(eventSink);
 		//eventSourceHolder->AddEventSink<RE::TESDeathEvent>(eventSink);
-		//eventSourceHolder->AddEventSink<RE::TESHitEvent>(eventSink);
+		eventSourceHolder->AddEventSink<RE::TESHitEvent>(eventSink);
 		//eventSourceHolder->AddEventSink<RE::TESMagicEffectApplyEvent>(eventSink);
 	}
 
