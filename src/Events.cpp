@@ -626,9 +626,6 @@ namespace Events_Space
 	{
 		static bool thunk(RE::MagicTarget *a_this, RE::MagicTarget::AddTargetData *a_data)
 		{
-
-			const bool hasAppliedEffect = func(a_this, a_data);
-
 			if (const auto target = a_this && a_data ? a_this->GetTargetStatsObject() : nullptr; target)
 			{
 				const auto effect = a_data->effect;
@@ -668,7 +665,7 @@ namespace Events_Space
 				}
 			}
 
-			return hasAppliedEffect;
+			return func(a_this, a_data);
 		}
 
 		static inline REL::Relocation<decltype(thunk)> func;
