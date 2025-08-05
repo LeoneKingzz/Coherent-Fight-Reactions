@@ -1,5 +1,5 @@
 #include "Events.h"
-#include  <expected>
+
 namespace Events_Space
 {
 	class OurEventSink :
@@ -622,14 +622,6 @@ namespace Events_Space
 		return ignoredamage;
 	}
 
-	[[nodiscard]] std::expected<RE::TESObjectREFR *, bool> GetCaster(RE::MagicTarget::AddTargetData *b_data)
-	{
-		if (!b_data->caster)
-		    return std::unexpected(false);
-
-		return b_data->caster;
-	}
-
 	struct MagicTargetApply
 	{
 		static bool thunk(RE::MagicTarget *a_this, RE::MagicTarget::AddTargetData *a_data)
@@ -637,10 +629,14 @@ namespace Events_Space
 			if (a_data)
 			{
 				logger::info("data defined");
-				auto caster_result = Events_Space::GetCaster(a_data);
 
-				if (!caster_result)
+				try
 				{
+					if (a_data->caster);
+				}
+				catch(...)
+				{
+					//std::cerr << e.what() << '\n';
 					logger::error("Access violation on caster pointer. Returning func");
 					return func(a_this, a_data);
 				}
