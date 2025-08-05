@@ -644,16 +644,16 @@ namespace Events_Space
 								|| (magicitem->GetSpellType() == RE::MagicSystem::SpellType::kVoicePower)): false; valid){
 
 								if (HitEventHandler::GetSingleton()->PreProcessMagic(targetActor, casterActor, effect)){
-									if (const auto item = RE::TESForm::LookupByEditorID<RE::MagicItem>("CFRs_BlankSpell"); item){
-										if (const auto itemEffect = RE::TESForm::LookupByEditorID<RE::EffectSetting>("CFRs_BlankEffect"); itemEffect){
+									if (const auto new_item = RE::TESForm::LookupByEditorID<RE::MagicItem>("CFRs_BlankSpell"); new_item){
+										if (const auto new_itemEffect = RE::TESForm::LookupByEditorID<RE::EffectSetting>("CFRs_BlankEffect"); new_itemEffect){
 
 											RE::Effect *neweffect = new RE::Effect;
 											neweffect->cost = 0.0f;
 											neweffect->effectItem.area = 0;
 											neweffect->effectItem.duration = 0;
 											neweffect->effectItem.magnitude = 0.0f;
-											neweffect->baseEffect = itemEffect;
-											a_data->magicItem = item;
+											neweffect->baseEffect = new_itemEffect;
+											a_data->magicItem = new_item;
 											a_data->effect = neweffect;
 											return func(a_this, a_data);
 										}
