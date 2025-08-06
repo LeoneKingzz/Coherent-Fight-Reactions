@@ -582,6 +582,7 @@ namespace Events_Space
 									aggressor->AddToFaction(CFRs_NPCNeutralsFaction, 0);
 								}
 							}
+							
 						}else{
 							ignoredamage = true;
 						}
