@@ -59,6 +59,25 @@ namespace GFunc_Space{
 		return cond(params);
 	}
 
+	bool GetQuestRunning(const RE::Actor *a_actor, RE::TESQuest *a_quest, RE::CONDITION_ITEM_DATA::OpCode a_operand, float a_comparison_value)
+	{
+		static RE::TESConditionItem cond;
+		static std::once_flag flag;
+		std::call_once(flag, [&]()
+					   {
+        cond.data.functionData.function = RE::FUNCTION_DATA::FunctionID::kGetQuestRunning;
+        cond.data.flags.opCode          = a_operand;
+        cond.data.object                = RE::CONDITIONITEMOBJECT::kSelf;
+        cond.data.comparisonValue.f     = a_comparison_value; });
+
+		ConditionParam cond_param;
+		const_cast<RE::TESQuest *>(a_quest->As<RE::TESQuest>());
+		cond.data.functionData.params[0] = std::bit_cast<void *>(cond_param);
+
+		RE::ConditionCheckParams params(const_cast<RE::TESObjectREFR *>(a_actor->As<RE::TESObjectREFR>()), nullptr);
+		return cond(params);
+	}
+
 	bool GetPairedAnimation(const RE::Actor *a_actor, float a_comparison_value)
 	{
 		static RE::TESConditionItem cond;
