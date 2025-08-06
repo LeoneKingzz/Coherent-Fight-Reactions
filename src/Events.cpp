@@ -361,6 +361,7 @@ namespace Events_Space
 		const auto CFRs_NPCNeutralsFaction = RE::TESForm::LookupByEditorID<RE::TESFaction>("CFRs_NPCNeutralsFaction");
 
 		// GFunc_Space::GetQuestRunning(target, RE::TESForm::LookupByEditorID<RE::TESQuest>("MQ101"), RE::CONDITION_ITEM_DATA::OpCode::kEqualTo, 0.0f);
+		//bool GFunc_Space::IsInScene(const RE::Actor *a_actor, float a_comparison_value);
 
 		
 
