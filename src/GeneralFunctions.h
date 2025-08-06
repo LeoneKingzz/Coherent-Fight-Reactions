@@ -58,6 +58,7 @@ namespace GFunc_Space{
 	bool IsAllowedToFly(const RE::Actor *a_actor, float a_comparison_value);
 	bool IsScenePackageRunning(const RE::Actor *a_actor, float a_comparison_value);
 	bool GetQuestRunning(const RE::Actor *a_actor, RE::TESQuest *a_quest, RE::CONDITION_ITEM_DATA::OpCode a_operand, float a_comparison_value);
+	bool IsInScene(const RE::Actor *a_actor, float a_comparison_value);
 
 	class GFunc
 	{
