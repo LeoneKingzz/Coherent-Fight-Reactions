@@ -71,7 +71,7 @@ namespace GFunc_Space{
         cond.data.comparisonValue.f     = a_comparison_value; });
 
 		ConditionParam cond_param;
-		const_cast<RE::TESQuest *>(a_quest->As<RE::TESQuest>());
+		cond_param.form = const_cast<RE::TESQuest *>(a_quest->As<RE::TESQuest>());
 		cond.data.functionData.params[0] = std::bit_cast<void *>(cond_param);
 
 		RE::ConditionCheckParams params(const_cast<RE::TESObjectREFR *>(a_actor->As<RE::TESObjectREFR>()), nullptr);
