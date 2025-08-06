@@ -360,6 +360,8 @@ namespace Events_Space
 		const auto CFRs_PlayerFriendsFaction = RE::TESForm::LookupByEditorID<RE::TESFaction>("CFRs_PlayerFriendsFaction");
 		const auto CFRs_NPCNeutralsFaction = RE::TESForm::LookupByEditorID<RE::TESFaction>("CFRs_NPCNeutralsFaction");
 
+		// GFunc_Space::GetQuestRunning(target, RE::TESForm::LookupByEditorID<RE::TESQuest>("MQ101"), RE::CONDITION_ITEM_DATA::OpCode::kEqualTo, 0.0f);
+
 		
 
 		if (aggressor && target)
