@@ -421,18 +421,18 @@ namespace Events_Space
 					{
 						if (CurrentFollowerFaction && CFRs_PlayerAlliesFaction &&  !target->IsPlayerRef() && !target->IsInFaction(CFRs_PlayerAlliesFaction) && !target->IsInFaction(CurrentFollowerFaction))
 						{
-							if (CFRs_NPCNeutralsFaction)
-							{
-								if (!target->IsInFaction(CFRs_NPCNeutralsFaction) && GFunc_Space::IsInScene(target, 0.0f))
-								{
-									target->AddToFaction(CFRs_NPCNeutralsFaction, 0);
-								}
+							// if (CFRs_NPCNeutralsFaction)
+							// {
+							// 	if (!target->IsInFaction(CFRs_NPCNeutralsFaction) && GFunc_Space::IsInScene(target, 0.0f))
+							// 	{
+							// 		target->AddToFaction(CFRs_NPCNeutralsFaction, 0);
+							// 	}
 
-								if (!aggressor->IsInFaction(CFRs_NPCNeutralsFaction) && GFunc_Space::IsInScene(aggressor, 0.0f))
-								{
-									aggressor->AddToFaction(CFRs_NPCNeutralsFaction, 0);
-								}
-							}
+							// 	if (!aggressor->IsInFaction(CFRs_NPCNeutralsFaction) && GFunc_Space::IsInScene(aggressor, 0.0f))
+							// 	{
+							// 		aggressor->AddToFaction(CFRs_NPCNeutralsFaction, 0);
+							// 	}
+							// }
 
 						}else{
 							ignoredamage = true;
@@ -582,18 +582,18 @@ namespace Events_Space
 					{
 						if (CurrentFollowerFaction && CFRs_PlayerAlliesFaction && !target->IsPlayerRef() && !target->IsInFaction(CFRs_PlayerAlliesFaction) && !target->IsInFaction(CurrentFollowerFaction))
 						{
-							if (CFRs_NPCNeutralsFaction)
-							{
-								if (!target->IsInFaction(CFRs_NPCNeutralsFaction) && GFunc_Space::IsInScene(target, 0.0f))
-								{
-									target->AddToFaction(CFRs_NPCNeutralsFaction, 0);
-								}
+							// if (CFRs_NPCNeutralsFaction)
+							// {
+							// 	if (!target->IsInFaction(CFRs_NPCNeutralsFaction) && GFunc_Space::IsInScene(target, 0.0f))
+							// 	{
+							// 		target->AddToFaction(CFRs_NPCNeutralsFaction, 0);
+							// 	}
 
-								if (!aggressor->IsInFaction(CFRs_NPCNeutralsFaction) && GFunc_Space::IsInScene(aggressor, 0.0f))
-								{
-									aggressor->AddToFaction(CFRs_NPCNeutralsFaction, 0);
-								}
-							}
+							// 	if (!aggressor->IsInFaction(CFRs_NPCNeutralsFaction) && GFunc_Space::IsInScene(aggressor, 0.0f))
+							// 	{
+							// 		aggressor->AddToFaction(CFRs_NPCNeutralsFaction, 0);
+							// 	}
+							// }
 							
 						}else{
 							ignoredamage = true;
