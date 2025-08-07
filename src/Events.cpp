@@ -397,6 +397,19 @@ namespace Events_Space
 				Events::RemoveFromFaction(aggressor, CFRs_PlayerAlliesFaction);
 
 			}
+			
+			if (CFRs_NPCNeutralsFaction)
+			{
+				if (target->IsInFaction(CFRs_NPCNeutralsFaction))
+				{
+					Events::RemoveFromFaction(target, CFRs_NPCNeutralsFaction);
+				}
+
+				if (aggressor->IsInFaction(CFRs_NPCNeutralsFaction))
+				{
+					Events::RemoveFromFaction(aggressor, CFRs_NPCNeutralsFaction);
+				}
+			}
 
 			if (Events::GetFactionReaction(target, aggressor) == RE::FIGHT_REACTION::kNeutral)
 			{
@@ -558,6 +571,19 @@ namespace Events_Space
 			}else if(CFRs_PlayerAlliesFaction && aggressor->IsInFaction(CFRs_PlayerAlliesFaction)){
 				Events::RemoveFromFaction(aggressor, CFRs_PlayerAlliesFaction);
 
+			}
+
+			if (CFRs_NPCNeutralsFaction)
+			{
+				if (target->IsInFaction(CFRs_NPCNeutralsFaction))
+				{
+					Events::RemoveFromFaction(target, CFRs_NPCNeutralsFaction);
+				}
+
+				if (aggressor->IsInFaction(CFRs_NPCNeutralsFaction))
+				{
+					Events::RemoveFromFaction(aggressor, CFRs_NPCNeutralsFaction);
+				}
 			}
 
 			if (Events::GetFactionReaction(target, aggressor) == RE::FIGHT_REACTION::kNeutral)
