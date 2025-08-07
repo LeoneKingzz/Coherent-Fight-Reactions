@@ -378,6 +378,9 @@ namespace Events_Space
 
 					target->AddToFaction(CFRs_PlayerAlliesFaction, 0);
 				}
+			}else if(CFRs_PlayerAlliesFaction && target->IsInFaction(CFRs_PlayerAlliesFaction)){
+				Events::RemoveFromFaction(target, CFRs_PlayerAlliesFaction);
+
 			}
 			if (!aggressor->IsHostileToActor(target) && aggressor->AsActorValueOwner()->GetActorValue(RE::ActorValue::kAggression) <= 1 && aggressor->IsPlayerTeammate() || (aggressor->IsCommandedActor() && ((aggressor->GetCommandingActor().get()->IsPlayerRef()) || (aggressor->GetCommandingActor().get()->IsPlayerTeammate()))))
 			{
@@ -390,6 +393,9 @@ namespace Events_Space
 
 					aggressor->AddToFaction(CFRs_PlayerAlliesFaction, 0);
 				}
+			}else if(CFRs_PlayerAlliesFaction && aggressor->IsInFaction(CFRs_PlayerAlliesFaction)){
+				Events::RemoveFromFaction(aggressor, CFRs_PlayerAlliesFaction);
+
 			}
 
 			if (Events::GetFactionReaction(target, aggressor) == RE::FIGHT_REACTION::kNeutral)
@@ -534,6 +540,9 @@ namespace Events_Space
 
 					target->AddToFaction(CFRs_PlayerAlliesFaction, 0);
 				}
+			}else if(CFRs_PlayerAlliesFaction && target->IsInFaction(CFRs_PlayerAlliesFaction)){
+				Events::RemoveFromFaction(target, CFRs_PlayerAlliesFaction);
+
 			}
 			if (!aggressor->IsHostileToActor(target) && aggressor->AsActorValueOwner()->GetActorValue(RE::ActorValue::kAggression) <= 1 && aggressor->IsPlayerTeammate() || (aggressor->IsCommandedActor() && ((aggressor->GetCommandingActor().get()->IsPlayerRef()) || (aggressor->GetCommandingActor().get()->IsPlayerTeammate()))))
 			{
@@ -546,6 +555,9 @@ namespace Events_Space
 
 					aggressor->AddToFaction(CFRs_PlayerAlliesFaction, 0);
 				}
+			}else if(CFRs_PlayerAlliesFaction && aggressor->IsInFaction(CFRs_PlayerAlliesFaction)){
+				Events::RemoveFromFaction(aggressor, CFRs_PlayerAlliesFaction);
+
 			}
 
 			if (Events::GetFactionReaction(target, aggressor) == RE::FIGHT_REACTION::kNeutral)
