@@ -363,20 +363,21 @@ namespace Events_Space
 		// GFunc_Space::GetQuestRunning(target, RE::TESForm::LookupByEditorID<RE::TESQuest>("MQ101"), RE::CONDITION_ITEM_DATA::OpCode::kEqualTo, 0.0f);
 		//bool GFunc_Space::IsInScene(const RE::Actor *a_actor, float a_comparison_value);
 
-		
-
 		if (aggressor && target)
 		{
 			if (!target->IsHostileToActor(aggressor) && target->AsActorValueOwner()->GetActorValue(RE::ActorValue::kAggression) <= 1 && target->IsPlayerTeammate() || (target->IsCommandedActor() && ((target->GetCommandingActor().get()->IsPlayerRef()) || (target->GetCommandingActor().get()->IsPlayerTeammate()))))
 			{
 				if (CFRs_PlayerAlliesFaction && !target->IsInFaction(CFRs_PlayerAlliesFaction))
 				{
-					if (target->AsActorValueOwner()->GetActorValue(RE::ActorValue::kAssistance) != 2)
-					{
-						target->AsActorValueOwner()->SetActorValue(RE::ActorValue::kAssistance, 2);
-					}
-
 					target->AddToFaction(CFRs_PlayerAlliesFaction, 0);
+				}
+				if (target->AsActorValueOwner()->GetActorValue(RE::ActorValue::kAssistance) != 2)
+				{
+					target->AsActorValueOwner()->SetActorValue(RE::ActorValue::kAssistance, 2);
+				}
+				if ((target->formFlags & RE::TESObjectREFR::RecordFlags::kIgnoreFriendlyHits) == 0)
+				{
+					target->formFlags |= RE::TESObjectREFR::RecordFlags::kIgnoreFriendlyHits;
 				}
 			}else if(CFRs_PlayerAlliesFaction && target->IsInFaction(CFRs_PlayerAlliesFaction)){
 				Events::RemoveFromFaction(target, CFRs_PlayerAlliesFaction);
@@ -386,12 +387,15 @@ namespace Events_Space
 			{
 				if (CFRs_PlayerAlliesFaction && !aggressor->IsInFaction(CFRs_PlayerAlliesFaction))
 				{
-					if (aggressor->AsActorValueOwner()->GetActorValue(RE::ActorValue::kAssistance) != 2)
-					{
-						aggressor->AsActorValueOwner()->SetActorValue(RE::ActorValue::kAssistance, 2);
-					}
-
 					aggressor->AddToFaction(CFRs_PlayerAlliesFaction, 0);
+				}
+				if (aggressor->AsActorValueOwner()->GetActorValue(RE::ActorValue::kAssistance) != 2)
+				{
+					aggressor->AsActorValueOwner()->SetActorValue(RE::ActorValue::kAssistance, 2);
+				}
+				if ((aggressor->formFlags & RE::TESObjectREFR::RecordFlags::kIgnoreFriendlyHits) == 0)
+				{
+					aggressor->formFlags |= RE::TESObjectREFR::RecordFlags::kIgnoreFriendlyHits;
 				}
 			}else if(CFRs_PlayerAlliesFaction && aggressor->IsInFaction(CFRs_PlayerAlliesFaction)){
 				Events::RemoveFromFaction(aggressor, CFRs_PlayerAlliesFaction);
@@ -546,12 +550,15 @@ namespace Events_Space
 			{
 				if (CFRs_PlayerAlliesFaction && !target->IsInFaction(CFRs_PlayerAlliesFaction))
 				{
-					if (target->AsActorValueOwner()->GetActorValue(RE::ActorValue::kAssistance) != 2)
-					{
-						target->AsActorValueOwner()->SetActorValue(RE::ActorValue::kAssistance, 2);
-					}
-
 					target->AddToFaction(CFRs_PlayerAlliesFaction, 0);
+				}
+				if (target->AsActorValueOwner()->GetActorValue(RE::ActorValue::kAssistance) != 2)
+				{
+					target->AsActorValueOwner()->SetActorValue(RE::ActorValue::kAssistance, 2);
+				}
+				if ((target->formFlags & RE::TESObjectREFR::RecordFlags::kIgnoreFriendlyHits) == 0)
+				{
+					target->formFlags |= RE::TESObjectREFR::RecordFlags::kIgnoreFriendlyHits;
 				}
 			}else if(CFRs_PlayerAlliesFaction && target->IsInFaction(CFRs_PlayerAlliesFaction)){
 				Events::RemoveFromFaction(target, CFRs_PlayerAlliesFaction);
@@ -561,12 +568,15 @@ namespace Events_Space
 			{
 				if (CFRs_PlayerAlliesFaction && !aggressor->IsInFaction(CFRs_PlayerAlliesFaction))
 				{
-					if (aggressor->AsActorValueOwner()->GetActorValue(RE::ActorValue::kAssistance) != 2)
-					{
-						aggressor->AsActorValueOwner()->SetActorValue(RE::ActorValue::kAssistance, 2);
-					}
-
 					aggressor->AddToFaction(CFRs_PlayerAlliesFaction, 0);
+				}
+				if (aggressor->AsActorValueOwner()->GetActorValue(RE::ActorValue::kAssistance) != 2)
+				{
+					aggressor->AsActorValueOwner()->SetActorValue(RE::ActorValue::kAssistance, 2);
+				}
+				if ((aggressor->formFlags & RE::TESObjectREFR::RecordFlags::kIgnoreFriendlyHits) == 0)
+				{
+					aggressor->formFlags |= RE::TESObjectREFR::RecordFlags::kIgnoreFriendlyHits;
 				}
 			}else if(CFRs_PlayerAlliesFaction && aggressor->IsInFaction(CFRs_PlayerAlliesFaction)){
 				Events::RemoveFromFaction(aggressor, CFRs_PlayerAlliesFaction);
