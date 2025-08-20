@@ -339,6 +339,70 @@ namespace Events_Space
 						}
 					}
 				}
+
+			}else{
+
+				if (const auto enemy = a_actor->GetActorRuntimeData().currentCombatTarget.get().get(); enemy)
+				{
+					const auto CurrentFollowerFaction = RE::TESForm::LookupByEditorID<RE::TESFaction>("CurrentFollowerFaction");
+					const auto CFRs_PlayerAlliesFaction = RE::TESForm::LookupByEditorID<RE::TESFaction>("CFRs_PlayerAlliesFaction");
+
+					if (enemy && CFRs_PlayerAlliesFaction && CurrentFollowerFaction)
+					{
+						if ((enemy->IsInFaction(CFRs_PlayerAlliesFaction) || enemy->IsInFaction(CurrentFollowerFaction) || enemy->IsPlayerRef()) && (a_actor->IsInFaction(CFRs_PlayerAlliesFaction) || a_actor->IsInFaction(CurrentFollowerFaction)))
+						{
+							if (const auto CFRs_CalmSpell = RE::TESForm::LookupByEditorID<RE::MagicItem>("CFRs_CalmSpell"); CFRs_CalmSpell)
+							{
+								if (!enemy->IsPlayerRef() && GFunc_Space::Has_Magiceffect_Keyword(enemy, RE::TESForm::LookupByEditorID<RE::BGSKeyword>("CFRs_Calm_Key"), 0.0f))
+								{
+									const auto caster_enemy = enemy->GetMagicCaster(RE::MagicSystem::CastingSource::kInstant);
+									caster_enemy->CastSpellImmediate(CFRs_CalmSpell, true, enemy, 1, false, 100.0, enemy);
+								}
+								if (GFunc_Space::Has_Magiceffect_Keyword(a_actor, RE::TESForm::LookupByEditorID<RE::BGSKeyword>("CFRs_Calm_Key"), 0.0f))
+								{
+									const auto caster_target = a_actor->GetMagicCaster(RE::MagicSystem::CastingSource::kInstant);
+									caster_target->CastSpellImmediate(CFRs_CalmSpell, true, a_actor, 1, false, 100.0, a_actor);
+								}
+							}
+						}
+					}
+				}
+				
+			}
+			break;
+
+		case "BowFullDrawn"_h:
+		case "BeginCastLeft"_h:
+		case "BeginCastRight"_h:
+		case "BeginCastVoice"_h:
+
+			if (!a_actor->IsPlayerRef())
+			{
+				if (const auto enemy = a_actor->GetActorRuntimeData().currentCombatTarget.get().get(); enemy)
+				{
+					const auto CurrentFollowerFaction = RE::TESForm::LookupByEditorID<RE::TESFaction>("CurrentFollowerFaction");
+					const auto CFRs_PlayerAlliesFaction = RE::TESForm::LookupByEditorID<RE::TESFaction>("CFRs_PlayerAlliesFaction");
+
+					if (enemy && CFRs_PlayerAlliesFaction && CurrentFollowerFaction)
+					{
+						if ((enemy->IsInFaction(CFRs_PlayerAlliesFaction) || enemy->IsInFaction(CurrentFollowerFaction) || enemy->IsPlayerRef()) && (a_actor->IsInFaction(CFRs_PlayerAlliesFaction) || a_actor->IsInFaction(CurrentFollowerFaction)))
+						{
+							if (const auto CFRs_CalmSpell = RE::TESForm::LookupByEditorID<RE::MagicItem>("CFRs_CalmSpell"); CFRs_CalmSpell)
+							{
+								if (!enemy->IsPlayerRef() && GFunc_Space::Has_Magiceffect_Keyword(enemy, RE::TESForm::LookupByEditorID<RE::BGSKeyword>("CFRs_Calm_Key"), 0.0f))
+								{
+									const auto caster_enemy = enemy->GetMagicCaster(RE::MagicSystem::CastingSource::kInstant);
+									caster_enemy->CastSpellImmediate(CFRs_CalmSpell, true, enemy, 1, false, 100.0, enemy);
+								}
+								if (GFunc_Space::Has_Magiceffect_Keyword(a_actor, RE::TESForm::LookupByEditorID<RE::BGSKeyword>("CFRs_Calm_Key"), 0.0f))
+								{
+									const auto caster_target = a_actor->GetMagicCaster(RE::MagicSystem::CastingSource::kInstant);
+									caster_target->CastSpellImmediate(CFRs_CalmSpell, true, a_actor, 1, false, 100.0, a_actor);
+								}
+							}
+						}
+					}
+				}
 			}
 			break;
 
@@ -744,7 +808,7 @@ namespace Events_Space
 		//eventSourceHolder->AddEventSink<RE::TESActorLocationChangeEvent>(eventSink);
 		//eventSourceHolder->AddEventSink<RE::TESSpellCastEvent>(eventSink);
 		//eventSourceHolder->AddEventSink<RE::TESDeathEvent>(eventSink);
-		eventSourceHolder->AddEventSink<RE::TESHitEvent>(eventSink);
+		// eventSourceHolder->AddEventSink<RE::TESHitEvent>(eventSink);
 		//eventSourceHolder->AddEventSink<RE::TESMagicEffectApplyEvent>(eventSink);
 	}
 

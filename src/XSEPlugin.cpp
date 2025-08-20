@@ -5,7 +5,7 @@ void MessageHandler(SKSE::MessagingInterface::Message *a_msg)
 	switch (a_msg->type)
 	{
 	case SKSE::MessagingInterface::kDataLoaded:
-		Events_Space::animEventHandler::Register(true, false);
+		Events_Space::animEventHandler::Register(true, true);
 		Events_Space::Events::install();
 		Events_Space::Install_apply();
 		Events_Space::Settings::GetSingleton()->Load();
