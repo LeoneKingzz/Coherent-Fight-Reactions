@@ -7,7 +7,10 @@ void MessageHandler(SKSE::MessagingInterface::Message *a_msg)
 	case SKSE::MessagingInterface::kDataLoaded:
 		Events_Space::animEventHandler::Register(true, true);
 		Events_Space::Events::install();
-		Events_Space::Install_apply();
+		
+		//Events_Space::Install_apply();
+		Events_Space::MagicApplyHandler::Register(true, true);
+
 		Events_Space::Settings::GetSingleton()->Load();
 		break;
 
