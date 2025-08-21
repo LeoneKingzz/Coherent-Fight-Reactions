@@ -280,32 +280,19 @@ namespace Events_Space
 	class MagicApplyHandler
 	{
 	private:
-		template <class Ty>
-		static Ty SafeWrite64Function(uintptr_t addr, Ty data)
+		struct Character
 		{
-			DWORD oldProtect;
-			void *_d[2];
-			memcpy(_d, &data, sizeof(data));
-			size_t len = sizeof(_d[0]);
+			static bool Thunk(RE::MagicTarget *a_this, RE::MagicTarget::AddTargetData *a_data);
 
-			VirtualProtect((void *)addr, len, PAGE_EXECUTE_READWRITE, &oldProtect);
-			Ty olddata;
-			memset(&olddata, 0, sizeof(Ty));
-			memcpy(&olddata, (void *)addr, len);
-			memcpy((void *)addr, &_d[0], len);
-			VirtualProtect((void *)addr, len, oldProtect, &oldProtect);
-			return olddata;
-		}
+			inline static REL::Relocation<decltype(&Thunk)> _func;
+		};
 
-		typedef bool (MagicApplyHandler::*MAProcess)(RE::MagicTarget *a_this, RE::MagicTarget::AddTargetData *a_data);
-
-		bool HookedMagicApply(RE::MagicTarget *a_this, RE::MagicTarget::AddTargetData *a_data);
-
-		static void HookSink(uintptr_t ptr)
+		struct Player
 		{
-			MAProcess fn = SafeWrite64Function(ptr + 0x1, &MagicApplyHandler::HookedMagicApply);
-			maHash.insert(std::pair<uint64_t, MAProcess>(ptr, fn));
-		}
+			static bool Thunk(RE::MagicTarget *a_this, RE::MagicTarget::AddTargetData *a_data);
+
+			inline static REL::Relocation<decltype(&Thunk)> _func;
+		};
 
 	public:
 		static MagicApplyHandler *GetSingleton()
@@ -321,13 +308,13 @@ namespace Events_Space
 			{
 				logger::info("Sinking magic apply hook for player");
 				REL::Relocation<uintptr_t> pcPtr{RE::VTABLE_PlayerCharacter[4]};
-				HookSink(pcPtr.address());
+				Player::_func = pcPtr.write_vfunc(0x1, Player::Thunk);
 			}
 			if (NPC)
 			{
 				logger::info("Sinking magic apply hook for NPC");
 				REL::Relocation<uintptr_t> npcPtr{RE::VTABLE_Character[4]};
-				HookSink(npcPtr.address());
+				Character::_func = npcPtr.write_vfunc(0x1, Character::Thunk);
 			}
 			logger::info("Sinking complete.");
 		}
@@ -338,6 +325,6 @@ namespace Events_Space
 		}
 
 	protected:
-		static std::unordered_map<uint64_t, MAProcess> maHash;
+		
 	};
 };
