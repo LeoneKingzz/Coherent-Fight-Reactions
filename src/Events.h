@@ -301,7 +301,7 @@ namespace Events_Space
 			return &singleton;
 		}
 
-		/*Hook anim event sink*/
+		/*Hook magic apply sink*/
 		static void Register(bool player, bool NPC)
 		{
 			if (player)
