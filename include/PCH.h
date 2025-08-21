@@ -83,6 +83,7 @@ namespace util
 #define OFFSET_3(se, ae, vr) se
 #endif
 
+void PreLoad();
 void Load();
 void Init();
 
@@ -124,6 +125,7 @@ extern "C" DLLEXPORT  bool SKSEAPI SKSEPlugin_Load(const SKSE::LoadInterface * a
 	logger::info("Loaded plugin");
 	SKSE::Init(a_skse);
 	SKSE::AllocTrampoline(45);
+	PreLoad();
 	Init();
 	Load();
 	return true;

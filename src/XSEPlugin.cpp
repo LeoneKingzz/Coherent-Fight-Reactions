@@ -9,7 +9,6 @@ void MessageHandler(SKSE::MessagingInterface::Message *a_msg)
 		Events_Space::Events::install();
 		
 		//Events_Space::Install_apply();
-		Events_Space::MagicApplyHandler::Register(true, true);
 
 		Events_Space::Settings::GetSingleton()->Load();
 		break;
@@ -34,4 +33,8 @@ void Init()
 void Load(){
 	//Events_Space::Events::install_protected();
 	Events_Space::HitEventHandler::InstallHooks();
+}
+
+void PreLoad(){
+	Events_Space::MagicApplyHandler::Register(true, true);
 }
