@@ -803,10 +803,6 @@ namespace Events_Space
 	bool MagicApplyHandler::HookedMagicApply(RE::MagicTarget *a_this, RE::MagicTarget::AddTargetData *a_data){
 
 		MAProcess fn = maHash.at(*(uint64_t *)this);
-		
-		if(!a_this && !a_data){
-			return fn ? (this->*fn)(a_this, a_data) : true;
-		}
 
 		if (const auto target = a_this && a_data ? a_this->GetTargetStatsObject() : nullptr; target)
 		{
