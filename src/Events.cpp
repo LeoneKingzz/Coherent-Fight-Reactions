@@ -798,11 +798,7 @@ namespace Events_Space
 		logger::info("Hooked Magic Effect Apply");
 	}
 
-	
-
-	bool MagicApplyHandler::HookedMagicApply(RE::MagicTarget *a_this, RE::MagicTarget::AddTargetData *a_data){
-
-		MAProcess fn = maHash.at(*(uint64_t *)this);
+	bool MagicApplyHandler::Character::Thunk(RE::MagicTarget *a_this, RE::MagicTarget::AddTargetData *a_data){
 
 		if (const auto target = a_this && a_data ? a_this->GetTargetStatsObject() : nullptr; target)
 		{
@@ -843,11 +839,53 @@ namespace Events_Space
 				}
 			}
 		}
-
-		return fn ? (this->*fn)(a_this, a_data) : true;
+		return _func(a_this, a_data);
 	}
 
-	std::unordered_map<uint64_t, MagicApplyHandler::MAProcess> MagicApplyHandler::maHash;
+	bool MagicApplyHandler::Player::Thunk(RE::MagicTarget *a_this, RE::MagicTarget::AddTargetData *a_data)
+	{
+		if (const auto target = a_this && a_data ? a_this->GetTargetStatsObject() : nullptr; target)
+		{
+			const auto effect = a_data->effect;
+			if (const auto baseEffect = effect ? effect->baseEffect : nullptr; baseEffect)
+			{
+				const auto caster = a_data->caster;
+				if (const auto casterActor = caster && caster->Is(RE::FormType::ActorCharacter) ? caster->As<RE::Actor>() : nullptr; casterActor)
+				{
+					if (const auto targetActor = target->Is(RE::FormType::ActorCharacter) ? target->As<RE::Actor>() : nullptr; targetActor)
+					{
+						if (targetActor != casterActor)
+						{
+							const auto magicitem = a_data->magicItem;
+							if (const auto valid = magicitem ? (((magicitem->GetSpellType() == RE::MagicSystem::SpellType::kStaffEnchantment) && magicitem->GetDelivery() != RE::MagicSystem::Delivery::kTouch) || (magicitem->GetSpellType() == RE::MagicSystem::SpellType::kScroll) || (magicitem->GetSpellType() == RE::MagicSystem::SpellType::kLesserPower) || (magicitem->GetSpellType() == RE::MagicSystem::SpellType::kPower) || (magicitem->GetSpellType() == RE::MagicSystem::SpellType::kSpell) || (magicitem->GetSpellType() == RE::MagicSystem::SpellType::kVoicePower)) : false; valid)
+							{
+
+								if (HitEventHandler::GetSingleton()->PreProcessMagic(targetActor, casterActor, effect))
+								{
+									if (const auto new_item = RE::TESForm::LookupByEditorID<RE::MagicItem>("CFRs_BlankSpell"); new_item)
+									{
+										if (const auto new_itemEffect = RE::TESForm::LookupByEditorID<RE::EffectSetting>("CFRs_BlankEffect"); new_itemEffect)
+										{
+											RE::Effect *neweffect = new RE::Effect;
+											neweffect->cost = 0.0f;
+											neweffect->effectItem.area = 0;
+											neweffect->effectItem.duration = 0;
+											neweffect->effectItem.magnitude = 0.0f;
+											neweffect->baseEffect = new_itemEffect;
+											a_data->magicItem = new_item;
+											a_data->effect = neweffect;
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+		return _func(a_this, a_data);
+	}
+
 
 	void Events::install(){
 
