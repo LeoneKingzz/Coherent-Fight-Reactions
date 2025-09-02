@@ -615,7 +615,7 @@ namespace Events_Space
 
 		if (aggressor && target)
 		{
-			if (!target->IsHostileToActor(aggressor) && target->AsActorValueOwner()->GetActorValue(RE::ActorValue::kAggression) <= 1 && target->IsPlayerTeammate() || (target->IsCommandedActor() && ((target->GetCommandingActor().get()->IsPlayerRef()) || (target->GetCommandingActor().get()->IsPlayerTeammate()))))
+			if (!target->IsHostileToActor(aggressor) && (target->AsActorValueOwner() && target->AsActorValueOwner()->GetActorValue(RE::ActorValue::kAggression) <= 1) && target->IsPlayerTeammate() || (target->IsCommandedActor() && target->GetCommandingActor().get() && ((target->GetCommandingActor().get()->IsPlayerRef()) || (target->GetCommandingActor().get()->IsPlayerTeammate()))))
 			{
 				if (CFRs_PlayerAlliesFaction && !target->IsInFaction(CFRs_PlayerAlliesFaction))
 				{
@@ -629,11 +629,12 @@ namespace Events_Space
 				{
 					target->formFlags |= RE::TESObjectREFR::RecordFlags::kIgnoreFriendlyHits;
 				}
-			}else if(CFRs_PlayerAlliesFaction && target->IsInFaction(CFRs_PlayerAlliesFaction)){
-				Events::RemoveFromFaction(target, CFRs_PlayerAlliesFaction);
-
 			}
-			if (!aggressor->IsHostileToActor(target) && aggressor->AsActorValueOwner()->GetActorValue(RE::ActorValue::kAggression) <= 1 && aggressor->IsPlayerTeammate() || (aggressor->IsCommandedActor() && ((aggressor->GetCommandingActor().get()->IsPlayerRef()) || (aggressor->GetCommandingActor().get()->IsPlayerTeammate()))))
+			else if (CFRs_PlayerAlliesFaction && target->IsInFaction(CFRs_PlayerAlliesFaction))
+			{
+				Events::RemoveFromFaction(target, CFRs_PlayerAlliesFaction);
+			}
+			if (!aggressor->IsHostileToActor(target) && (aggressor->AsActorValueOwner() && aggressor->AsActorValueOwner()->GetActorValue(RE::ActorValue::kAggression) <= 1) && aggressor->IsPlayerTeammate() || (aggressor->IsCommandedActor() && aggressor->GetCommandingActor().get() && ((aggressor->GetCommandingActor().get()->IsPlayerRef()) || (aggressor->GetCommandingActor().get()->IsPlayerTeammate()))))
 			{
 				if (CFRs_PlayerAlliesFaction && !aggressor->IsInFaction(CFRs_PlayerAlliesFaction))
 				{
@@ -647,9 +648,10 @@ namespace Events_Space
 				{
 					aggressor->formFlags |= RE::TESObjectREFR::RecordFlags::kIgnoreFriendlyHits;
 				}
-			}else if(CFRs_PlayerAlliesFaction && aggressor->IsInFaction(CFRs_PlayerAlliesFaction)){
+			}
+			else if (CFRs_PlayerAlliesFaction && aggressor->IsInFaction(CFRs_PlayerAlliesFaction))
+			{
 				Events::RemoveFromFaction(aggressor, CFRs_PlayerAlliesFaction);
-
 			}
 
 			if (CFRs_NPCNeutralsFaction)
