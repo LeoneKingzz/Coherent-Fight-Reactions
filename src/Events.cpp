@@ -795,8 +795,7 @@ namespace Events_Space
 									}
 								}
 
-							}
-							else if (sourceRef->AsExplosion()->actorOwner)
+							}else if (sourceRef->AsExplosion()->actorOwner)
 							{
 								if (const auto blameActorHandle = sourceRef->AsExplosion()->actorOwner; blameActorHandle)
 								{
@@ -855,8 +854,7 @@ namespace Events_Space
 									}
 								}
 
-							}
-							else if (sourceRef->AsExplosion()->magicCaster && sourceRef->AsExplosion()->magicCaster->blameActor)
+							}else if (sourceRef->AsExplosion()->magicCaster && sourceRef->AsExplosion()->magicCaster->blameActor)
 							{
 								if (const auto blameActorHandle = sourceRef->AsExplosion()->magicCaster->blameActor; blameActorHandle)
 								{
