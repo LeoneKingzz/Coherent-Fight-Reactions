@@ -921,40 +921,33 @@ namespace Events_Space
 								{
 									if (const auto blameActor = blameActorPtr.get(); blameActor)
 									{
-										if (Events::GetFactionReaction(target, blameActor) == RE::FIGHT_REACTION::kNeutral)
-										{
+										if (Events::GetFactionReaction(target, blameActor) == RE::FIGHT_REACTION::kNeutral){
 											// logger::info("Neutral Branch Active");
 
-											if (!target->IsHostileToActor(blameActor) && target->AsActorValueOwner()->GetActorValue(RE::ActorValue::kAggression) <= 1)
-											{
+											if (!target->IsHostileToActor(blameActor) && target->AsActorValueOwner()->GetActorValue(RE::ActorValue::kAggression) <= 1){
 
 												if (blameActor->IsPlayerRef() || (CFRs_PlayerAlliesFaction && blameActor->IsInFaction(CFRs_PlayerAlliesFaction)) || (CurrentFollowerFaction && blameActor->IsInFaction(CurrentFollowerFaction)))
 												{
 													if (const auto CFRs_FriendlyFire_Off = skyrim_cast<RE::TESGlobal *>(HdSingle->LookupForm(0x804, "Coherent Fight Reactions.esp")); CFRs_FriendlyFire_Off)
 													{
-														if (CFRs_FriendlyFire_Off->value == 1.0f)
-														{
+														if (CFRs_FriendlyFire_Off->value == 1.0f){
 															// aggressor is in player team
 															ignoredamage = true;
 														}
 													}
 												}
-												else
-												{
-													if (CurrentFollowerFaction && CFRs_PlayerAlliesFaction && !target->IsPlayerRef() && !target->IsInFaction(CFRs_PlayerAlliesFaction) && !target->IsInFaction(CurrentFollowerFaction))
-													{
+												else{
+													if (CurrentFollowerFaction && CFRs_PlayerAlliesFaction && !target->IsPlayerRef() && !target->IsInFaction(CFRs_PlayerAlliesFaction) && !target->IsInFaction(CurrentFollowerFaction)){
 														// do nothing; aggressor and target aren't the player team.
 													}
-													else
-													{
+													else{
 														// target is in the player team.
 														ignoredamage = true;
 													}
 												}
 											}
 										}
-										else if (Events::GetFactionReaction(target, blameActor) >= RE::FIGHT_REACTION::kAlly)
-										{
+										else if (Events::GetFactionReaction(target, blameActor) >= RE::FIGHT_REACTION::kAlly){
 											// logger::info("Allied Branch Active");
 
 											if (!target->IsHostileToActor(blameActor))
@@ -963,8 +956,7 @@ namespace Events_Space
 												{
 													if (const auto CFRs_FriendlyFire_Off = skyrim_cast<RE::TESGlobal *>(HdSingle->LookupForm(0x804, "Coherent Fight Reactions.esp")); CFRs_FriendlyFire_Off)
 													{
-														if (CFRs_FriendlyFire_Off->value == 1.0f)
-														{
+														if (CFRs_FriendlyFire_Off->value == 1.0f){
 
 															ignoredamage = true;
 														}
@@ -973,8 +965,7 @@ namespace Events_Space
 											}
 										}
 
-										if (ignoredamage && Settings::GetSingleton()->general.bDebugMode)
-										{
+										if (ignoredamage && Settings::GetSingleton()->general.bDebugMode){
 											logger::info("{} ignored explosion from {} ", target->GetName(), blameActor->GetName());
 										}
 									}
