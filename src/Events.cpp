@@ -729,7 +729,6 @@ namespace Events_Space
 
 		}else if (target && hitData){
 
-			bool valid = false;
 			if (const auto sourceHandle = hitData->sourceRef; sourceHandle)
 			{
 				if (const auto sourcePtr = sourceHandle.get(); sourcePtr)
