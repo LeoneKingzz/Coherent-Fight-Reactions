@@ -746,7 +746,6 @@ namespace Events_Space
 
 											if (Events::GetFactionReaction(target, blameActor) == RE::FIGHT_REACTION::kNeutral){
 												// logger::info("Neutral Branch Active");
-
 												if (!target->IsHostileToActor(blameActor) && target->AsActorValueOwner()->GetActorValue(RE::ActorValue::kAggression) <= 1){
 
 													if (blameActor->IsPlayerRef() || (CFRs_PlayerAlliesFaction && blameActor->IsInFaction(CFRs_PlayerAlliesFaction)) || (CurrentFollowerFaction && blameActor->IsInFaction(CurrentFollowerFaction)))
@@ -772,7 +771,6 @@ namespace Events_Space
 											}
 											else if (Events::GetFactionReaction(target, blameActor) >= RE::FIGHT_REACTION::kAlly){
 												// logger::info("Allied Branch Active");
-
 												if (!target->IsHostileToActor(blameActor))
 												{
 													if (blameActor->IsPlayerRef() || (CFRs_PlayerAlliesFaction && blameActor->IsInFaction(CFRs_PlayerAlliesFaction)) || (CurrentFollowerFaction && blameActor->IsInFaction(CurrentFollowerFaction)))
@@ -805,7 +803,6 @@ namespace Events_Space
 										{
 											if (Events::GetFactionReaction(target, blameActor) == RE::FIGHT_REACTION::kNeutral){
 												// logger::info("Neutral Branch Active");
-
 												if (!target->IsHostileToActor(blameActor) && target->AsActorValueOwner()->GetActorValue(RE::ActorValue::kAggression) <= 1){
 
 													if (blameActor->IsPlayerRef() || (CFRs_PlayerAlliesFaction && blameActor->IsInFaction(CFRs_PlayerAlliesFaction)) || (CurrentFollowerFaction && blameActor->IsInFaction(CurrentFollowerFaction)))
@@ -831,7 +828,6 @@ namespace Events_Space
 											}
 											else if (Events::GetFactionReaction(target, blameActor) >= RE::FIGHT_REACTION::kAlly){
 												// logger::info("Allied Branch Active");
-
 												if (!target->IsHostileToActor(blameActor))
 												{
 													if (blameActor->IsPlayerRef() || (CFRs_PlayerAlliesFaction && blameActor->IsInFaction(CFRs_PlayerAlliesFaction)) || (CurrentFollowerFaction && blameActor->IsInFaction(CurrentFollowerFaction)))
@@ -864,7 +860,6 @@ namespace Events_Space
 										{
 											if (Events::GetFactionReaction(target, blameActor) == RE::FIGHT_REACTION::kNeutral){
 												// logger::info("Neutral Branch Active");
-
 												if (!target->IsHostileToActor(blameActor) && target->AsActorValueOwner()->GetActorValue(RE::ActorValue::kAggression) <= 1){
 
 													if (blameActor->IsPlayerRef() || (CFRs_PlayerAlliesFaction && blameActor->IsInFaction(CFRs_PlayerAlliesFaction)) || (CurrentFollowerFaction && blameActor->IsInFaction(CurrentFollowerFaction)))
@@ -923,7 +918,6 @@ namespace Events_Space
 									{
 										if (Events::GetFactionReaction(target, blameActor) == RE::FIGHT_REACTION::kNeutral){
 											// logger::info("Neutral Branch Active");
-
 											if (!target->IsHostileToActor(blameActor) && target->AsActorValueOwner()->GetActorValue(RE::ActorValue::kAggression) <= 1){
 
 												if (blameActor->IsPlayerRef() || (CFRs_PlayerAlliesFaction && blameActor->IsInFaction(CFRs_PlayerAlliesFaction)) || (CurrentFollowerFaction && blameActor->IsInFaction(CurrentFollowerFaction)))
@@ -949,7 +943,6 @@ namespace Events_Space
 										}
 										else if (Events::GetFactionReaction(target, blameActor) >= RE::FIGHT_REACTION::kAlly){
 											// logger::info("Allied Branch Active");
-
 											if (!target->IsHostileToActor(blameActor))
 											{
 												if (blameActor->IsPlayerRef() || (CFRs_PlayerAlliesFaction && blameActor->IsInFaction(CFRs_PlayerAlliesFaction)) || (CurrentFollowerFaction && blameActor->IsInFaction(CurrentFollowerFaction)))
