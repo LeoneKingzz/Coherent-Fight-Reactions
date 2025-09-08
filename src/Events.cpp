@@ -717,7 +717,8 @@ namespace Events_Space
 				}
 			}
 
-			if (ignoredamage && Actor_GetCombatState(target) != RE::ACTOR_COMBAT_STATE::kCombat){
+			if (ignoredamage){
+				// && Actor_GetCombatState(target) != RE::ACTOR_COMBAT_STATE::kCombat
 				if (Settings::GetSingleton()->general.bDebugMode)
 				{
 					logger::info("{} ignored attack from {} ", target->GetName(), aggressor->GetName());
@@ -1064,14 +1065,6 @@ namespace Events_Space
 											neweffect->baseEffect = new_itemEffect;
 											a_data->magicItem = new_item;
 											a_data->effect = neweffect;
-
-											logger::info("caster: {} magnitude: {:.2f} unk40: {:.2f}", casterActor->GetName(), a_data->magnitude, a_data->unk40);
-											if (const auto a_object = a_data->source; a_object)
-											{
-												// a_data->source = nullptr;
-												logger::info("source: {}", a_object->GetName());
-												a_data->magnitude = 0.0f;
-											}
 										}
 									}
 								}
@@ -1116,14 +1109,6 @@ namespace Events_Space
 											neweffect->baseEffect = new_itemEffect;
 											a_data->magicItem = new_item;
 											a_data->effect = neweffect;
-
-											logger::info("caster: {} magnitude: {:.2f} unk40: {:.2f}", casterActor->GetName(), a_data->magnitude, a_data->unk40);
-											if (const auto a_object = a_data->source; a_object)
-											{
-												// a_data->source = nullptr;
-												logger::info("source: {}", a_object->GetName());
-												a_data->magnitude = 0.0f;
-											}
 										}
 									}
 								}
