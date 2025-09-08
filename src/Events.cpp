@@ -737,7 +737,7 @@ namespace Events_Space
 					{
 						if (sourceRef->AsExplosion() && (sourceRef->AsExplosion()->actorCause || sourceRef->AsExplosion()->actorOwner || sourceRef->AsExplosion()->magicCaster))
 						{
-							logger::info("Explosion Branch Active");
+							// logger::info("Explosion Branch Active");
 							if (sourceRef->AsExplosion()->actorCause && sourceRef->AsExplosion()->actorCause.get() && sourceRef->AsExplosion()->actorCause.get()->actor)
 							{
 								if (const auto blameActorHandle = sourceRef->AsExplosion()->actorCause.get()->actor; blameActorHandle)
@@ -911,7 +911,7 @@ namespace Events_Space
 							}
 						}else if(sourceRef->Is(RE::FormType::PlacedHazard) && sourceRef->As<RE::Hazard>() && sourceRef->As<RE::Hazard>()->GetHazardRuntimeData().ownerActor)
 						{
-							logger::info("Hazard Branch Active");
+							// logger::info("Hazard Branch Active");
 							if (const auto blameActorHandle = sourceRef->As<RE::Hazard>()->GetHazardRuntimeData().ownerActor; blameActorHandle)
 							{
 								if (const auto blameActorPtr = blameActorHandle.get(); blameActorPtr)
