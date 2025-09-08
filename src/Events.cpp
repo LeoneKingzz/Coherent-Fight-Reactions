@@ -1066,6 +1066,7 @@ namespace Events_Space
 											neweffect->baseEffect = new_itemEffect;
 											a_data->magicItem = new_item;
 											a_data->effect = neweffect;
+											a_data->caster = target;
 										}
 									}
 								}
