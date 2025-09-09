@@ -43,6 +43,7 @@ namespace Events_Space
 
 		bool PreProcessHit(RE::Actor *target, RE::HitData *hitData);
 		bool PreProcessMagic(RE::Actor *target, RE::Actor *aggressor, RE::Effect * a_effect);
+		bool PreProcessExplosion(RE::Actor *target, RE::Actor *blameActor);
 
 	protected:
 		struct Hooks
@@ -326,5 +327,34 @@ namespace Events_Space
 
 	protected:
 		
+	};
+
+	class ExplosionCollision
+	{
+	private:
+		struct ExplosionHandler
+		{
+			static void Thunk(RE::Explosion *a_this, RE::hkpAllCdPointCollector *a_AllCdPointCollector);
+
+			inline static REL::Relocation<decltype(&Thunk)> _func;
+		};
+
+	public:
+		static ExplosionCollision *GetSingleton()
+		{
+			static ExplosionCollision singleton;
+			return &singleton;
+		}
+
+		/*Hook Explosion sink*/
+		static void Register()
+		{
+			logger::info("Sinking On Explosion Hook");
+			REL::Relocation<uintptr_t> pcPtr{RE::VTABLE_Explosion[0]};
+			ExplosionHandler::_func = pcPtr.write_vfunc(0x0AC, ExplosionHandler::Thunk);
+			logger::info("Sinking complete.");
+		}
+
+	protected:
 	};
 };

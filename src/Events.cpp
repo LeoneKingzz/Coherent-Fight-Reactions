@@ -728,252 +728,6 @@ namespace Events_Space
 				ignoredamage = false;
 			}
 
-
-		}else if (target && hitData){
-
-			if (const auto sourceHandle = hitData->sourceRef; sourceHandle)
-			{
-				if (const auto sourcePtr = sourceHandle.get(); sourcePtr)
-				{
-					if (const auto sourceRef = sourcePtr.get(); sourceRef)
-					{
-						// logger::info("{} attacked", sourceRef->GetName());
-
-						if (sourceRef->AsExplosion() && (sourceRef->AsExplosion()->actorCause || sourceRef->AsExplosion()->actorOwner || sourceRef->AsExplosion()->magicCaster))
-						{
-							// logger::info("Explosion Branch Active");
-							if (sourceRef->AsExplosion()->actorCause && sourceRef->AsExplosion()->actorCause.get() && sourceRef->AsExplosion()->actorCause.get()->actor)
-							{
-								if (const auto blameActorHandle = sourceRef->AsExplosion()->actorCause.get()->actor; blameActorHandle)
-								{
-									if(const auto blameActorPtr = blameActorHandle.get(); blameActorPtr){
-										if(const auto blameActor = blameActorPtr.get(); blameActor){
-
-											if (Events::GetFactionReaction(target, blameActor) == RE::FIGHT_REACTION::kNeutral){
-												// logger::info("Neutral Branch Active");
-												if (!target->IsHostileToActor(blameActor) && target->AsActorValueOwner()->GetActorValue(RE::ActorValue::kAggression) <= 1){
-
-													if (blameActor->IsPlayerRef() || (CFRs_PlayerAlliesFaction && blameActor->IsInFaction(CFRs_PlayerAlliesFaction)) || (CurrentFollowerFaction && blameActor->IsInFaction(CurrentFollowerFaction)))
-													{
-														if (const auto CFRs_FriendlyFire_Off = skyrim_cast<RE::TESGlobal *>(HdSingle->LookupForm(0x804, "Coherent Fight Reactions.esp")); CFRs_FriendlyFire_Off)
-														{
-															if (CFRs_FriendlyFire_Off->value == 1.0f){
-                                                                // aggressor is in player team
-																ignoredamage = true;
-															}
-														}
-													}
-													else{
-														if (CurrentFollowerFaction && CFRs_PlayerAlliesFaction && !target->IsPlayerRef() && !target->IsInFaction(CFRs_PlayerAlliesFaction) && !target->IsInFaction(CurrentFollowerFaction)){
-															// do nothing; aggressor and target aren't the player team.
-														}
-														else{
-															// target is in the player team.
-															ignoredamage = true;
-														}
-													}
-												}
-											}
-											else if (Events::GetFactionReaction(target, blameActor) >= RE::FIGHT_REACTION::kAlly){
-												// logger::info("Allied Branch Active");
-												if (!target->IsHostileToActor(blameActor))
-												{
-													if (blameActor->IsPlayerRef() || (CFRs_PlayerAlliesFaction && blameActor->IsInFaction(CFRs_PlayerAlliesFaction)) || (CurrentFollowerFaction && blameActor->IsInFaction(CurrentFollowerFaction)))
-													{
-														if (const auto CFRs_FriendlyFire_Off = skyrim_cast<RE::TESGlobal *>(HdSingle->LookupForm(0x804, "Coherent Fight Reactions.esp")); CFRs_FriendlyFire_Off)
-														{
-															if (CFRs_FriendlyFire_Off->value == 1.0f){
-
-																ignoredamage = true;
-															}
-														}
-													}
-												}
-											}
-
-											if (ignoredamage && Settings::GetSingleton()->general.bDebugMode){
-												logger::info("{} ignored explosion from {} ", target->GetName(), blameActor->GetName());
-											}
-										}
-									}
-								}
-
-							}else if (sourceRef->AsExplosion()->actorOwner)
-							{
-								if (const auto blameActorHandle = sourceRef->AsExplosion()->actorOwner; blameActorHandle)
-								{
-									if (const auto blameActorPtr = blameActorHandle.get(); blameActorPtr)
-									{
-										if (const auto blameActor = blameActorPtr.get(); blameActor)
-										{
-											if (Events::GetFactionReaction(target, blameActor) == RE::FIGHT_REACTION::kNeutral){
-												// logger::info("Neutral Branch Active");
-												if (!target->IsHostileToActor(blameActor) && target->AsActorValueOwner()->GetActorValue(RE::ActorValue::kAggression) <= 1){
-
-													if (blameActor->IsPlayerRef() || (CFRs_PlayerAlliesFaction && blameActor->IsInFaction(CFRs_PlayerAlliesFaction)) || (CurrentFollowerFaction && blameActor->IsInFaction(CurrentFollowerFaction)))
-													{
-														if (const auto CFRs_FriendlyFire_Off = skyrim_cast<RE::TESGlobal *>(HdSingle->LookupForm(0x804, "Coherent Fight Reactions.esp")); CFRs_FriendlyFire_Off)
-														{
-															if (CFRs_FriendlyFire_Off->value == 1.0f){
-																// aggressor is in player team
-																ignoredamage = true;
-															}
-														}
-													}
-													else{
-														if (CurrentFollowerFaction && CFRs_PlayerAlliesFaction && !target->IsPlayerRef() && !target->IsInFaction(CFRs_PlayerAlliesFaction) && !target->IsInFaction(CurrentFollowerFaction)){
-															// do nothing; aggressor and target aren't the player team.
-														}
-														else{
-															// target is in the player team.
-															ignoredamage = true;
-														}
-													}
-												}
-											}
-											else if (Events::GetFactionReaction(target, blameActor) >= RE::FIGHT_REACTION::kAlly){
-												// logger::info("Allied Branch Active");
-												if (!target->IsHostileToActor(blameActor))
-												{
-													if (blameActor->IsPlayerRef() || (CFRs_PlayerAlliesFaction && blameActor->IsInFaction(CFRs_PlayerAlliesFaction)) || (CurrentFollowerFaction && blameActor->IsInFaction(CurrentFollowerFaction)))
-													{
-														if (const auto CFRs_FriendlyFire_Off = skyrim_cast<RE::TESGlobal *>(HdSingle->LookupForm(0x804, "Coherent Fight Reactions.esp")); CFRs_FriendlyFire_Off)
-														{
-															if (CFRs_FriendlyFire_Off->value == 1.0f){
-
-																ignoredamage = true;
-															}
-														}
-													}
-												}
-											}
-
-											if (ignoredamage && Settings::GetSingleton()->general.bDebugMode){
-												logger::info("{} ignored explosion from {} ", target->GetName(), blameActor->GetName());
-											}
-										}
-									}
-								}
-
-							}else if (sourceRef->AsExplosion()->magicCaster && sourceRef->AsExplosion()->magicCaster->blameActor)
-							{
-								if (const auto blameActorHandle = sourceRef->AsExplosion()->magicCaster->blameActor; blameActorHandle)
-								{
-									if (const auto blameActorPtr = blameActorHandle.get(); blameActorPtr)
-									{
-										if (const auto blameActor = blameActorPtr.get(); blameActor)
-										{
-											if (Events::GetFactionReaction(target, blameActor) == RE::FIGHT_REACTION::kNeutral){
-												// logger::info("Neutral Branch Active");
-												if (!target->IsHostileToActor(blameActor) && target->AsActorValueOwner()->GetActorValue(RE::ActorValue::kAggression) <= 1){
-
-													if (blameActor->IsPlayerRef() || (CFRs_PlayerAlliesFaction && blameActor->IsInFaction(CFRs_PlayerAlliesFaction)) || (CurrentFollowerFaction && blameActor->IsInFaction(CurrentFollowerFaction)))
-													{
-														if (const auto CFRs_FriendlyFire_Off = skyrim_cast<RE::TESGlobal *>(HdSingle->LookupForm(0x804, "Coherent Fight Reactions.esp")); CFRs_FriendlyFire_Off)
-														{
-															if (CFRs_FriendlyFire_Off->value == 1.0f){
-																// aggressor is in player team
-																ignoredamage = true;
-															}
-														}
-													}
-													else{
-														if (CurrentFollowerFaction && CFRs_PlayerAlliesFaction && !target->IsPlayerRef() && !target->IsInFaction(CFRs_PlayerAlliesFaction) && !target->IsInFaction(CurrentFollowerFaction)){
-															// do nothing; aggressor and target aren't the player team.
-														}
-														else{
-															// target is in the player team.
-															ignoredamage = true;
-														}
-													}
-												}
-											}
-											else if (Events::GetFactionReaction(target, blameActor) >= RE::FIGHT_REACTION::kAlly){
-												// logger::info("Allied Branch Active");
-
-												if (!target->IsHostileToActor(blameActor))
-												{
-													if (blameActor->IsPlayerRef() || (CFRs_PlayerAlliesFaction && blameActor->IsInFaction(CFRs_PlayerAlliesFaction)) || (CurrentFollowerFaction && blameActor->IsInFaction(CurrentFollowerFaction)))
-													{
-														if (const auto CFRs_FriendlyFire_Off = skyrim_cast<RE::TESGlobal *>(HdSingle->LookupForm(0x804, "Coherent Fight Reactions.esp")); CFRs_FriendlyFire_Off)
-														{
-															if (CFRs_FriendlyFire_Off->value == 1.0f){
-
-																ignoredamage = true;
-															}
-														}
-													}
-												}
-											}
-
-											if (ignoredamage && Settings::GetSingleton()->general.bDebugMode){
-												logger::info("{} ignored explosion from {} ", target->GetName(), blameActor->GetName());
-											}
-										}
-									}
-								}
-							}
-						}else if(sourceRef->Is(RE::FormType::PlacedHazard) && sourceRef->As<RE::Hazard>() && sourceRef->As<RE::Hazard>()->GetHazardRuntimeData().ownerActor)
-						{
-							// logger::info("Hazard Branch Active");
-							if (const auto blameActorHandle = sourceRef->As<RE::Hazard>()->GetHazardRuntimeData().ownerActor; blameActorHandle)
-							{
-								if (const auto blameActorPtr = blameActorHandle.get(); blameActorPtr)
-								{
-									if (const auto blameActor = blameActorPtr.get(); blameActor)
-									{
-										if (Events::GetFactionReaction(target, blameActor) == RE::FIGHT_REACTION::kNeutral){
-											// logger::info("Neutral Branch Active");
-											if (!target->IsHostileToActor(blameActor) && target->AsActorValueOwner()->GetActorValue(RE::ActorValue::kAggression) <= 1){
-
-												if (blameActor->IsPlayerRef() || (CFRs_PlayerAlliesFaction && blameActor->IsInFaction(CFRs_PlayerAlliesFaction)) || (CurrentFollowerFaction && blameActor->IsInFaction(CurrentFollowerFaction)))
-												{
-													if (const auto CFRs_FriendlyFire_Off = skyrim_cast<RE::TESGlobal *>(HdSingle->LookupForm(0x804, "Coherent Fight Reactions.esp")); CFRs_FriendlyFire_Off)
-													{
-														if (CFRs_FriendlyFire_Off->value == 1.0f){
-															// aggressor is in player team
-															ignoredamage = true;
-														}
-													}
-												}
-												else{
-													if (CurrentFollowerFaction && CFRs_PlayerAlliesFaction && !target->IsPlayerRef() && !target->IsInFaction(CFRs_PlayerAlliesFaction) && !target->IsInFaction(CurrentFollowerFaction)){
-														// do nothing; aggressor and target aren't the player team.
-													}
-													else{
-														// target is in the player team.
-														ignoredamage = true;
-													}
-												}
-											}
-										}
-										else if (Events::GetFactionReaction(target, blameActor) >= RE::FIGHT_REACTION::kAlly){
-											// logger::info("Allied Branch Active");
-											if (!target->IsHostileToActor(blameActor))
-											{
-												if (blameActor->IsPlayerRef() || (CFRs_PlayerAlliesFaction && blameActor->IsInFaction(CFRs_PlayerAlliesFaction)) || (CurrentFollowerFaction && blameActor->IsInFaction(CurrentFollowerFaction)))
-												{
-													if (const auto CFRs_FriendlyFire_Off = skyrim_cast<RE::TESGlobal *>(HdSingle->LookupForm(0x804, "Coherent Fight Reactions.esp")); CFRs_FriendlyFire_Off)
-													{
-														if (CFRs_FriendlyFire_Off->value == 1.0f){
-
-															ignoredamage = true;
-														}
-													}
-												}
-											}
-										}
-
-										if (ignoredamage && Settings::GetSingleton()->general.bDebugMode){
-											logger::info("{} ignored hazard from {} ", target->GetName(), blameActor->GetName());
-										}
-									}
-								}
-							}
-						}
-					}
-				}
-			}
 		}
 
 		return ignoredamage;
@@ -1130,6 +884,204 @@ namespace Events_Space
 		return _func(a_this, a_data);
 	}
 
+	bool HitEventHandler::PreProcessExplosion(RE::Actor *target, RE::Actor *blameActor){
+		auto HdSingle = RE::TESDataHandler::GetSingleton();
+
+		bool ignoredamage = false;
+
+		const auto CurrentFollowerFaction = RE::TESForm::LookupByEditorID<RE::TESFaction>("CurrentFollowerFaction");
+		const auto CFRs_PlayerAlliesFaction = RE::TESForm::LookupByEditorID<RE::TESFaction>("CFRs_PlayerAlliesFaction");
+		const auto CFRs_PlayerFriendsFaction = RE::TESForm::LookupByEditorID<RE::TESFaction>("CFRs_PlayerFriendsFaction");
+		const auto CFRs_NPCNeutralsFaction = RE::TESForm::LookupByEditorID<RE::TESFaction>("CFRs_NPCNeutralsFaction");
+
+		if (Events::GetFactionReaction(target, blameActor) == RE::FIGHT_REACTION::kNeutral)
+		{
+			// logger::info("Neutral Branch Active");
+			if (!target->IsHostileToActor(blameActor) && target->AsActorValueOwner()->GetActorValue(RE::ActorValue::kAggression) <= 1)
+			{
+
+				if (blameActor->IsPlayerRef() || (CFRs_PlayerAlliesFaction && blameActor->IsInFaction(CFRs_PlayerAlliesFaction)) || (CurrentFollowerFaction && blameActor->IsInFaction(CurrentFollowerFaction)))
+				{
+					if (const auto CFRs_FriendlyFire_Off = skyrim_cast<RE::TESGlobal *>(HdSingle->LookupForm(0x804, "Coherent Fight Reactions.esp")); CFRs_FriendlyFire_Off)
+					{
+						if (CFRs_FriendlyFire_Off->value == 1.0f)
+						{
+							// aggressor is in player team
+							ignoredamage = true;
+						}
+					}
+				}
+				else
+				{
+					if (CurrentFollowerFaction && CFRs_PlayerAlliesFaction && !target->IsPlayerRef() && !target->IsInFaction(CFRs_PlayerAlliesFaction) && !target->IsInFaction(CurrentFollowerFaction))
+					{
+						// do nothing; aggressor and target aren't the player team.
+					}
+					else
+					{
+						// target is in the player team.
+						ignoredamage = true;
+					}
+				}
+			}
+		}
+		else if (Events::GetFactionReaction(target, blameActor) >= RE::FIGHT_REACTION::kAlly)
+		{
+			// logger::info("Allied Branch Active");
+			if (!target->IsHostileToActor(blameActor))
+			{
+				if (blameActor->IsPlayerRef() || (CFRs_PlayerAlliesFaction && blameActor->IsInFaction(CFRs_PlayerAlliesFaction)) || (CurrentFollowerFaction && blameActor->IsInFaction(CurrentFollowerFaction)))
+				{
+					if (const auto CFRs_FriendlyFire_Off = skyrim_cast<RE::TESGlobal *>(HdSingle->LookupForm(0x804, "Coherent Fight Reactions.esp")); CFRs_FriendlyFire_Off)
+					{
+						if (CFRs_FriendlyFire_Off->value == 1.0f)
+						{
+
+							ignoredamage = true;
+						}
+					}
+				}
+			}
+		}
+
+		if (ignoredamage && Settings::GetSingleton()->general.bDebugMode)
+		{
+			logger::info("{} ignored explosion from {} ", target->GetName(), blameActor->GetName());
+		}
+	}
+
+	void ExplosionCollision::ExplosionHandler::Thunk(RE::Explosion *a_this, RE::hkpAllCdPointCollector *a_AllCdPointCollector){
+		
+		logger::info("Explosion Thunk linked");
+
+		if (a_this && a_AllCdPointCollector)
+		{
+			logger::info("Explosion Thunk Active");
+
+			if (a_this->actorCause || a_this->actorOwner || a_this->magicCaster)
+			{
+				// logger::info("Explosion Branch Active");
+				if (a_this->actorCause && a_this->actorCause.get() && a_this->actorCause.get()->actor)
+				{
+					if (const auto blameActorHandle = a_this->actorCause.get()->actor; blameActorHandle)
+					{
+						if (const auto blameActorPtr = blameActorHandle.get(); blameActorPtr)
+						{
+							if (const auto blameActor = blameActorPtr.get(); blameActor)
+							{
+								for (auto &hit : a_AllCdPointCollector->hits)
+								{
+									auto refrA = RE::TESHavokUtilities::FindCollidableRef(*hit.rootCollidableA);
+									auto refrB = RE::TESHavokUtilities::FindCollidableRef(*hit.rootCollidableB);
+									if (refrA && refrA->Is(RE::FormType::ActorCharacter))
+									{
+										if (HitEventHandler::GetSingleton()->PreProcessExplosion(refrA->As<RE::Actor>(), blameActor))
+										{
+											if (auto a_explosion_collidable = const_cast<RE::hkpCollidable *>(hit.rootCollidableB); a_explosion_collidable)
+											{
+												uint32_t a_collisionFilterInfo = blameActor->GetCollisionFilterInfo(a_collisionFilterInfo);
+												a_explosion_collidable->broadPhaseHandle.collisionFilterInfo &= (0x0000FFFF);
+												a_explosion_collidable->broadPhaseHandle.collisionFilterInfo |= (a_collisionFilterInfo << 16);
+											}
+										}
+									}
+									if (refrB && refrB->Is(RE::FormType::ActorCharacter))
+									{
+										if (auto a_explosion_collidable = const_cast<RE::hkpCollidable *>(hit.rootCollidableA); a_explosion_collidable)
+										{
+											uint32_t a_collisionFilterInfo = blameActor->GetCollisionFilterInfo(a_collisionFilterInfo);
+											a_explosion_collidable->broadPhaseHandle.collisionFilterInfo &= (0x0000FFFF);
+											a_explosion_collidable->broadPhaseHandle.collisionFilterInfo |= (a_collisionFilterInfo << 16);
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+				else if (a_this->actorOwner)
+				{
+					if (const auto blameActorHandle = a_this->actorOwner; blameActorHandle)
+					{
+						if (const auto blameActorPtr = blameActorHandle.get(); blameActorPtr)
+						{
+							if (const auto blameActor = blameActorPtr.get(); blameActor)
+							{
+								for (auto &hit : a_AllCdPointCollector->hits)
+								{
+									auto refrA = RE::TESHavokUtilities::FindCollidableRef(*hit.rootCollidableA);
+									auto refrB = RE::TESHavokUtilities::FindCollidableRef(*hit.rootCollidableB);
+									if (refrA && refrA->Is(RE::FormType::ActorCharacter))
+									{
+										if (HitEventHandler::GetSingleton()->PreProcessExplosion(refrA->As<RE::Actor>(), blameActor))
+										{
+											if (auto a_explosion_collidable = const_cast<RE::hkpCollidable *>(hit.rootCollidableB); a_explosion_collidable)
+											{
+												uint32_t a_collisionFilterInfo = blameActor->GetCollisionFilterInfo(a_collisionFilterInfo);
+												a_explosion_collidable->broadPhaseHandle.collisionFilterInfo &= (0x0000FFFF);
+												a_explosion_collidable->broadPhaseHandle.collisionFilterInfo |= (a_collisionFilterInfo << 16);
+											}
+										}
+									}
+									if (refrB && refrB->Is(RE::FormType::ActorCharacter))
+									{
+										if (auto a_explosion_collidable = const_cast<RE::hkpCollidable *>(hit.rootCollidableA); a_explosion_collidable)
+										{
+											uint32_t a_collisionFilterInfo = blameActor->GetCollisionFilterInfo(a_collisionFilterInfo);
+											a_explosion_collidable->broadPhaseHandle.collisionFilterInfo &= (0x0000FFFF);
+											a_explosion_collidable->broadPhaseHandle.collisionFilterInfo |= (a_collisionFilterInfo << 16);
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+				else if (a_this->magicCaster && a_this->magicCaster->blameActor)
+				{
+					if (const auto blameActorHandle = a_this->magicCaster->blameActor; blameActorHandle)
+					{
+						if (const auto blameActorPtr = blameActorHandle.get(); blameActorPtr)
+						{
+							if (const auto blameActor = blameActorPtr.get(); blameActor)
+							{
+								for (auto &hit : a_AllCdPointCollector->hits)
+								{
+									for (auto &hit : a_AllCdPointCollector->hits)
+									{
+										auto refrA = RE::TESHavokUtilities::FindCollidableRef(*hit.rootCollidableA);
+										auto refrB = RE::TESHavokUtilities::FindCollidableRef(*hit.rootCollidableB);
+										if (refrA && refrA->Is(RE::FormType::ActorCharacter))
+										{
+											if (HitEventHandler::GetSingleton()->PreProcessExplosion(refrA->As<RE::Actor>(), blameActor))
+											{
+												if (auto a_explosion_collidable = const_cast<RE::hkpCollidable *>(hit.rootCollidableB); a_explosion_collidable)
+												{
+													uint32_t a_collisionFilterInfo = blameActor->GetCollisionFilterInfo(a_collisionFilterInfo);
+													a_explosion_collidable->broadPhaseHandle.collisionFilterInfo &= (0x0000FFFF);
+													a_explosion_collidable->broadPhaseHandle.collisionFilterInfo |= (a_collisionFilterInfo << 16);
+												}
+											}
+										}
+										if (refrB && refrB->Is(RE::FormType::ActorCharacter))
+										{
+											if (auto a_explosion_collidable = const_cast<RE::hkpCollidable *>(hit.rootCollidableA); a_explosion_collidable)
+											{
+												uint32_t a_collisionFilterInfo = blameActor->GetCollisionFilterInfo(a_collisionFilterInfo);
+												a_explosion_collidable->broadPhaseHandle.collisionFilterInfo &= (0x0000FFFF);
+												a_explosion_collidable->broadPhaseHandle.collisionFilterInfo |= (a_collisionFilterInfo << 16);
+											}
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+		return _func(a_this, a_AllCdPointCollector);
+	}
 
 	void Events::install(){
 
