@@ -615,6 +615,8 @@ namespace Events_Space
 
 		if (aggressor && target)
 		{
+			logger::info("{} attacked {} ", aggressor->GetName(), target->GetName());
+
 			if ((!target->IsHostileToActor(aggressor) && (target->AsActorValueOwner() && target->AsActorValueOwner()->GetActorValue(RE::ActorValue::kAggression) <= 1) && target->IsPlayerTeammate()) || (target->IsCommandedActor() && target->GetCommandingActor().get() && ((target->GetCommandingActor().get()->IsPlayerRef()) || (target->GetCommandingActor().get()->IsPlayerTeammate()))))
 			{
 				if (CFRs_PlayerAlliesFaction && !target->IsInFaction(CFRs_PlayerAlliesFaction))
