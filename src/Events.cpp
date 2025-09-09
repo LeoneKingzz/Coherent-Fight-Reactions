@@ -960,23 +960,10 @@ namespace Events_Space
 		{
 			logger::info("Explosion Thunk Active");
 
-			if (a_this->actorCause || a_this->actorOwner || a_this->magicCaster)
+			if (a_this->actorOwner || a_this->magicCaster)
 			{
-				// logger::info("Explosion Branch Active");
-				if (a_this->actorCause && a_this->actorCause.get() && a_this->actorCause.get()->actor)
-				{
-					if (const auto blameActorHandle = a_this->actorCause.get()->actor; blameActorHandle)
-					{
-						if (const auto blameActorPtr = blameActorHandle.get(); blameActorPtr)
-						{
-							if (const auto blameActor = blameActorPtr.get(); blameActor)
-							{
-								logger::info("{} caused an explosion : {} ", blameActor->GetName(), a_this->GetName());
-							}
-						}
-					}
-				}
-				else if (a_this->actorOwner)
+				
+				if (a_this->actorOwner)
 				{
 					if (const auto blameActorHandle = a_this->actorOwner; blameActorHandle)
 					{
@@ -989,7 +976,8 @@ namespace Events_Space
 						}
 					}
 				}
-				else if (a_this->magicCaster && a_this->magicCaster->blameActor)
+
+				if (a_this->magicCaster && a_this->magicCaster->blameActor)
 				{
 					if (const auto blameActorHandle = a_this->magicCaster->blameActor; blameActorHandle)
 					{
