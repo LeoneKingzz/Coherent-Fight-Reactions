@@ -965,6 +965,7 @@ namespace Events_Space
 				
 				if (a_this->actorOwner)
 				{
+					logger::info("Owner identified");
 					if (const auto blameActorHandle = a_this->actorOwner; blameActorHandle)
 					{
 						if (const auto blameActorPtr = blameActorHandle.get(); blameActorPtr)
@@ -977,15 +978,20 @@ namespace Events_Space
 					}
 				}
 
-				if (a_this->magicCaster && a_this->magicCaster->blameActor)
+				if (a_this->magicCaster)
 				{
-					if (const auto blameActorHandle = a_this->magicCaster->blameActor; blameActorHandle)
+					logger::info("Caster identified");
+					if (a_this->magicCaster->blameActor)
 					{
-						if (const auto blameActorPtr = blameActorHandle.get(); blameActorPtr)
+						logger::info("Caster blame actor identified");
+						if (const auto blameActorHandle = a_this->magicCaster->blameActor; blameActorHandle)
 						{
-							if (const auto blameActor = blameActorPtr.get(); blameActor)
+							if (const auto blameActorPtr = blameActorHandle.get(); blameActorPtr)
 							{
-								logger::info("{} caused an explosion : {} ", blameActor->GetName(), a_this->GetName());
+								if (const auto blameActor = blameActorPtr.get(); blameActor)
+								{
+									logger::info("{} caused an explosion : {} ", blameActor->GetName(), a_this->GetName());
+								}
 							}
 						}
 					}
