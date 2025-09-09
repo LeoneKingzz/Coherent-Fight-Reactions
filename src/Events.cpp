@@ -960,13 +960,13 @@ namespace Events_Space
 		{
 			logger::info("Explosion Thunk Active");
 
-			if (a_this->actorOwner || a_this->magicCaster)
+			if (a_this->GetExplosionRuntimeData().actorOwner || a_this->GetExplosionRuntimeData().magicCaster)
 			{
-				
-				if (a_this->actorOwner)
+
+				if (a_this->GetExplosionRuntimeData().actorOwner)
 				{
 					logger::info("Owner identified");
-					if (const auto blameActorHandle = a_this->actorOwner; blameActorHandle)
+					if (const auto blameActorHandle = a_this->GetExplosionRuntimeData().actorOwner; blameActorHandle)
 					{
 						if (const auto blameActorPtr = blameActorHandle.get(); blameActorPtr)
 						{
@@ -978,13 +978,13 @@ namespace Events_Space
 					}
 				}
 
-				if (a_this->magicCaster)
+				if (a_this->GetExplosionRuntimeData().magicCaster)
 				{
 					logger::info("Caster identified");
-					if (a_this->magicCaster->blameActor)
+					if (a_this->GetExplosionRuntimeData().magicCaster->blameActor)
 					{
 						logger::info("Caster blame actor identified");
-						if (const auto blameActorHandle = a_this->magicCaster->blameActor; blameActorHandle)
+						if (const auto blameActorHandle = a_this->GetExplosionRuntimeData().magicCaster->blameActor; blameActorHandle)
 						{
 							if (const auto blameActorPtr = blameActorHandle.get(); blameActorPtr)
 							{
