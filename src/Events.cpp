@@ -1047,30 +1047,27 @@ namespace Events_Space
 							{
 								for (auto &hit : a_AllCdPointCollector->hits)
 								{
-									for (auto &hit : a_AllCdPointCollector->hits)
+									auto refrA = RE::TESHavokUtilities::FindCollidableRef(*hit.rootCollidableA);
+									auto refrB = RE::TESHavokUtilities::FindCollidableRef(*hit.rootCollidableB);
+									if (refrA && refrA->Is(RE::FormType::ActorCharacter))
 									{
-										auto refrA = RE::TESHavokUtilities::FindCollidableRef(*hit.rootCollidableA);
-										auto refrB = RE::TESHavokUtilities::FindCollidableRef(*hit.rootCollidableB);
-										if (refrA && refrA->Is(RE::FormType::ActorCharacter))
+										if (HitEventHandler::GetSingleton()->PreProcessExplosion(refrA->As<RE::Actor>(), blameActor))
 										{
-											if (HitEventHandler::GetSingleton()->PreProcessExplosion(refrA->As<RE::Actor>(), blameActor))
-											{
-												if (auto a_explosion_collidable = const_cast<RE::hkpCollidable *>(hit.rootCollidableB); a_explosion_collidable)
-												{
-													uint32_t a_collisionFilterInfo = blameActor->GetCollisionFilterInfo(a_collisionFilterInfo);
-													a_explosion_collidable->broadPhaseHandle.collisionFilterInfo &= (0x0000FFFF);
-													a_explosion_collidable->broadPhaseHandle.collisionFilterInfo |= (a_collisionFilterInfo << 16);
-												}
-											}
-										}
-										if (refrB && refrB->Is(RE::FormType::ActorCharacter))
-										{
-											if (auto a_explosion_collidable = const_cast<RE::hkpCollidable *>(hit.rootCollidableA); a_explosion_collidable)
+											if (auto a_explosion_collidable = const_cast<RE::hkpCollidable *>(hit.rootCollidableB); a_explosion_collidable)
 											{
 												uint32_t a_collisionFilterInfo = blameActor->GetCollisionFilterInfo(a_collisionFilterInfo);
 												a_explosion_collidable->broadPhaseHandle.collisionFilterInfo &= (0x0000FFFF);
 												a_explosion_collidable->broadPhaseHandle.collisionFilterInfo |= (a_collisionFilterInfo << 16);
 											}
+										}
+									}
+									if (refrB && refrB->Is(RE::FormType::ActorCharacter))
+									{
+										if (auto a_explosion_collidable = const_cast<RE::hkpCollidable *>(hit.rootCollidableA); a_explosion_collidable)
+										{
+											uint32_t a_collisionFilterInfo = blameActor->GetCollisionFilterInfo(a_collisionFilterInfo);
+											a_explosion_collidable->broadPhaseHandle.collisionFilterInfo &= (0x0000FFFF);
+											a_explosion_collidable->broadPhaseHandle.collisionFilterInfo |= (a_collisionFilterInfo << 16);
 										}
 									}
 								}
