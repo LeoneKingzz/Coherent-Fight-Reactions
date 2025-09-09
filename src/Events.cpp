@@ -737,6 +737,8 @@ namespace Events_Space
 				{
 					if (const auto sourceRef = sourcePtr.get(); sourceRef)
 					{
+						logger::info("{} attacked {} ", sourceRef->GetName(), target->GetName());
+
 						if (sourceRef->AsExplosion() && (sourceRef->AsExplosion()->actorCause || sourceRef->AsExplosion()->actorOwner || sourceRef->AsExplosion()->magicCaster))
 						{
 							// logger::info("Explosion Branch Active");
