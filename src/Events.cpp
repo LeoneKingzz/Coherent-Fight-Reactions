@@ -615,7 +615,7 @@ namespace Events_Space
 
 		if (aggressor && target)
 		{
-			logger::info("{} attacked {} ", aggressor->GetName(), target->GetName());
+			// logger::info("{} attacked {} ", aggressor->GetName(), target->GetName());
 
 			if ((!target->IsHostileToActor(aggressor) && (target->AsActorValueOwner() && target->AsActorValueOwner()->GetActorValue(RE::ActorValue::kAggression) <= 1) && target->IsPlayerTeammate()) || (target->IsCommandedActor() && target->GetCommandingActor().get() && ((target->GetCommandingActor().get()->IsPlayerRef()) || (target->GetCommandingActor().get()->IsPlayerTeammate()))))
 			{
@@ -729,7 +729,7 @@ namespace Events_Space
 			}
 
 
-		}else if (hitData){
+		}else if (target && hitData){
 
 			if (const auto sourceHandle = hitData->sourceRef; sourceHandle)
 			{
@@ -737,7 +737,7 @@ namespace Events_Space
 				{
 					if (const auto sourceRef = sourcePtr.get(); sourceRef)
 					{
-						logger::info("{} attacked", sourceRef->GetName());
+						// logger::info("{} attacked", sourceRef->GetName());
 
 						if (sourceRef->AsExplosion() && (sourceRef->AsExplosion()->actorCause || sourceRef->AsExplosion()->actorOwner || sourceRef->AsExplosion()->magicCaster))
 						{
