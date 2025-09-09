@@ -729,7 +729,7 @@ namespace Events_Space
 			}
 
 
-		}else if (target && hitData){
+		}else if (hitData){
 
 			if (const auto sourceHandle = hitData->sourceRef; sourceHandle)
 			{
@@ -737,7 +737,7 @@ namespace Events_Space
 				{
 					if (const auto sourceRef = sourcePtr.get(); sourceRef)
 					{
-						logger::info("{} attacked {} ", sourceRef->GetName(), target->GetName());
+						logger::info("{} attacked", sourceRef->GetName());
 
 						if (sourceRef->AsExplosion() && (sourceRef->AsExplosion()->actorCause || sourceRef->AsExplosion()->actorOwner || sourceRef->AsExplosion()->magicCaster))
 						{
