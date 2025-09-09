@@ -1067,6 +1067,10 @@ namespace Events_Space
 											a_data->magicItem = new_item;
 											a_data->effect = neweffect;
 
+											a_data->explosionPoint.x = 0.0f;
+											a_data->explosionPoint.y = 0.0f;
+											a_data->explosionPoint.z = 0.0f;
+
 											logger::info("eX: {:.2f} eY: {:.2f} eZ: {:.2f}", a_data->explosionPoint.x, a_data->explosionPoint.y, a_data->explosionPoint.z);
 										}
 									}
@@ -1112,6 +1116,10 @@ namespace Events_Space
 											neweffect->baseEffect = new_itemEffect;
 											a_data->magicItem = new_item;
 											a_data->effect = neweffect;
+
+											a_data->explosionPoint.x = 0.0f;
+											a_data->explosionPoint.y = 0.0f;
+											a_data->explosionPoint.z = 0.0f;
 
 											logger::info("eX: {:.2f} eY: {:.2f} eZ: {:.2f}", a_data->explosionPoint.x, a_data->explosionPoint.y, a_data->explosionPoint.z);
 										}
