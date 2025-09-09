@@ -948,6 +948,8 @@ namespace Events_Space
 		{
 			logger::info("{} ignored explosion from {} ", target->GetName(), blameActor->GetName());
 		}
+
+		return ignoredamage;
 	}
 
 	void ExplosionCollision::ExplosionHandler::Thunk(RE::Explosion *a_this, RE::hkpAllCdPointCollector *a_AllCdPointCollector){
