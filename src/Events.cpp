@@ -980,6 +980,7 @@ namespace Events_Space
 							logger::info("damage: {}", a_this->GetExplosionRuntimeData().damage);
 
 							a_this->GetExplosionRuntimeData().actorOwner.get() = nullptr;
+							a_this->GetExplosionRuntimeData().actorCause = nullptr;
 						}
 					}
 				}
