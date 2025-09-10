@@ -956,6 +956,16 @@ namespace Events_Space
 
 		if (a_this)
 		{
+			if (const auto UnknownActorHandle = a_this->GetExplosionRuntimeData().unkF4; UnknownActorHandle)
+			{
+				if (const auto UnknownActorPtr = UnknownActorHandle.get(); UnknownActorPtr)
+				{
+					if (const auto UnknownActor = UnknownActorPtr.get(); UnknownActor)
+					{
+						logger::info("unknownActor: {}", UnknownActor->GetName());
+					}
+				}
+			}
 
 			if (a_this->GetExplosionRuntimeData().actorOwner || a_this->GetExplosionRuntimeData().magicCaster)
 			{
@@ -987,17 +997,6 @@ namespace Events_Space
 								if (a_this->GetExplosionRuntimeData().radius)
 								{
 									logger::info("radius: {}", a_this->GetExplosionRuntimeData().radius);
-								}
-
-								if (const auto UnknownActorHandle = a_this->GetExplosionRuntimeData().unkF4; UnknownActorHandle)
-								{
-									if (const auto UnknownActorPtr = UnknownActorHandle.get(); UnknownActorPtr)
-									{
-										if (const auto UnknownActor = UnknownActorPtr.get(); UnknownActor)
-										{
-											logger::info("unknownActor: {}", UnknownActor->GetName());
-										}
-									}
 								}
 							}
 						}
