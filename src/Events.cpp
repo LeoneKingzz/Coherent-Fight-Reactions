@@ -980,23 +980,10 @@ namespace Events_Space
 							{
 								logger::info("{} caused an explosion", blameActor->GetName());
 
-								if(a_this->GetExplosionRuntimeData().damage){
+								if(a_this->GetExplosionRuntimeData().damage && a_this->GetExplosionRuntimeData().damage <= 0.0f){
 									logger::info("damage: {}", a_this->GetExplosionRuntimeData().damage);
-								}
 
-								if (a_this->GetExplosionRuntimeData().unk138)
-								{
-									logger::info("unk138: {}", a_this->GetExplosionRuntimeData().unk138);
-								}
-
-								if (a_this->GetExplosionRuntimeData().unkB4)
-								{
-									logger::info("unkB4: {}", a_this->GetExplosionRuntimeData().unkB4);
-								}
-
-								if (a_this->GetExplosionRuntimeData().radius)
-								{
-									logger::info("radius: {}", a_this->GetExplosionRuntimeData().radius);
+									a_this->GetExplosionRuntimeData().actorOwner.get() = nullptr;
 								}
 							}
 						}
