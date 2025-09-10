@@ -956,55 +956,30 @@ namespace Events_Space
 
 		if (a_this)
 		{
-			if (const auto UnknownActorHandle = a_this->GetExplosionRuntimeData().unkF4; UnknownActorHandle)
+			// if (const auto UnknownActorHandle = a_this->GetExplosionRuntimeData().unkF4; UnknownActorHandle)
+			// {
+			// 	if (const auto UnknownActorPtr = UnknownActorHandle.get(); UnknownActorPtr)
+			// 	{
+			// 		if (const auto UnknownActor = UnknownActorPtr.get(); UnknownActor)
+			// 		{
+			// 			logger::info("unknownActor: {}", UnknownActor->GetName());
+			// 		}
+			// 	}
+			// }
+
+			if (const auto blameActorHandle = a_this->GetExplosionRuntimeData().actorOwner; blameActorHandle)
 			{
-				if (const auto UnknownActorPtr = UnknownActorHandle.get(); UnknownActorPtr)
+				if (const auto blameActorPtr = blameActorHandle.get(); blameActorPtr)
 				{
-					if (const auto UnknownActor = UnknownActorPtr.get(); UnknownActor)
+					if (const auto blameActor = blameActorPtr.get(); blameActor)
 					{
-						logger::info("unknownActor: {}", UnknownActor->GetName());
-					}
-				}
-			}
+						logger::info("{} caused an explosion", blameActor->GetName());
 
-			if (a_this->GetExplosionRuntimeData().actorOwner || a_this->GetExplosionRuntimeData().magicCaster)
-			{
-
-				if (a_this->GetExplosionRuntimeData().actorOwner)
-				{
-					if (const auto blameActorHandle = a_this->GetExplosionRuntimeData().actorOwner; blameActorHandle)
-					{
-						if (const auto blameActorPtr = blameActorHandle.get(); blameActorPtr)
+						if (a_this->GetExplosionRuntimeData().damage && a_this->GetExplosionRuntimeData().damage <= 0.0f)
 						{
-							if (const auto blameActor = blameActorPtr.get(); blameActor)
-							{
-								logger::info("{} caused an explosion", blameActor->GetName());
+							logger::info("damage: {}", a_this->GetExplosionRuntimeData().damage);
 
-								if(a_this->GetExplosionRuntimeData().damage && a_this->GetExplosionRuntimeData().damage <= 0.0f){
-									logger::info("damage: {}", a_this->GetExplosionRuntimeData().damage);
-
-									a_this->GetExplosionRuntimeData().actorOwner.get() = nullptr;
-								}
-							}
-						}
-					}
-				}
-
-				if (a_this->GetExplosionRuntimeData().magicCaster)
-				{
-					// logger::info("Caster identified");
-					if (a_this->GetExplosionRuntimeData().magicCaster->blameActor)
-					{
-						// logger::info("Caster blame actor identified");
-						if (const auto blameActorHandle = a_this->GetExplosionRuntimeData().magicCaster->blameActor; blameActorHandle)
-						{
-							if (const auto blameActorPtr = blameActorHandle.get(); blameActorPtr)
-							{
-								if (const auto blameActor = blameActorPtr.get(); blameActor)
-								{
-									logger::info("{} caused an explosion", blameActor->GetName());
-								}
-							}
+							a_this->GetExplosionRuntimeData().actorOwner.get() = nullptr;
 						}
 					}
 				}
@@ -1274,4 +1249,27 @@ namespace Events_Space
 // 	{
 // 		aggressor->AddToFaction(CFRs_NPCNeutralsFaction, 0);
 // 	}
+// }
+
+// if (a_this->GetExplosionRuntimeData().actorOwner)
+// {
+
+// 	// if (a_this->GetExplosionRuntimeData().magicCaster)
+// 	// {
+// 	// 	// logger::info("Caster identified");
+// 	// 	if (a_this->GetExplosionRuntimeData().magicCaster->blameActor)
+// 	// 	{
+// 	// 		// logger::info("Caster blame actor identified");
+// 	// 		if (const auto blameActorHandle = a_this->GetExplosionRuntimeData().magicCaster->blameActor; blameActorHandle)
+// 	// 		{
+// 	// 			if (const auto blameActorPtr = blameActorHandle.get(); blameActorPtr)
+// 	// 			{
+// 	// 				if (const auto blameActor = blameActorPtr.get(); blameActor)
+// 	// 				{
+// 	// 					logger::info("{} caused an explosion", blameActor->GetName());
+// 	// 				}
+// 	// 			}
+// 	// 		}
+// 	// 	}
+// 	// }
 // }
