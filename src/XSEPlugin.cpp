@@ -37,5 +37,5 @@ void Load(){
 
 void PreLoad(){
 	Events_Space::MagicApplyHandler::Register(true, true);
-	// Events_Space::ExplosionCollision::Register();
+	Events_Space::ExplosionCollision::Register();
 }
