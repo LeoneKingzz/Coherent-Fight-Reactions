@@ -1043,7 +1043,7 @@ namespace Events_Space
 		return ignorehit;
 	}
 
-	void ExplosionCollision::ExplosionHandler::Thunk(RE::Explosion *a_this, RE::ActorCause *a_cause)
+	void ExplosionCollision::ExplosionHandler::Thunk(RE::Explosion *a_this)
 	{
 
 		if (a_this)
@@ -1080,7 +1080,7 @@ namespace Events_Space
 				}
 			}
 		}
-		return _func(a_this, a_cause);
+		return _func(a_this);
 	}
 
 	void Events::install(){
