@@ -44,6 +44,7 @@ namespace Events_Space
 		bool PreProcessHit(RE::Actor *target, RE::HitData *hitData);
 		bool PreProcessMagic(RE::Actor *target, RE::Actor *aggressor, RE::Effect * a_effect);
 		bool PreProcessExplosion(RE::Actor *target, RE::Actor *blameActor);
+		bool PreProcessResolve(RE::HitData *a_hitData, bool a_ignoreBlocking);
 
 	protected:
 		struct Hooks
@@ -62,9 +63,26 @@ namespace Events_Space
 				static inline REL::Relocation<decltype(thunk)> func;
 			};
 
+			struct ProcessHitResolve
+			{
+				static bool thunk(RE::HitData *a_hitData, bool a_ignoreBlocking)
+				{
+					auto handler = GetSingleton();
+					if (handler->PreProcessResolve(a_hitData, a_ignoreBlocking))
+					{
+						return false;
+					}
+					return func(a_hitData, a_ignoreBlocking);
+				}
+				static inline REL::Relocation<decltype(thunk)> func;
+			};
+
+
 			static void Physical_Install()
 			{
 				stl::write_thunk_call<ProcessHitEvent>(REL::RelocationID(37673, 38627).address() + REL::Relocate(0x3C0, 0x4A8, 0x3C0)); // 1.5.97 140628C20
+
+				stl::write_thunk_call<ProcessHitResolve>(REL::RelocationID(42832, 44001).address() + REL::Relocate(0x37C, 0x358, 0x3CF));
 			}
 		};
 

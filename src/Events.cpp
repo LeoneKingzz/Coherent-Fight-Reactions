@@ -949,12 +949,63 @@ namespace Events_Space
 			}
 		}
 
-		if (ignoredamage && Settings::GetSingleton()->general.bDebugMode)
+		if (ignoredamage)
 		{
 			logger::info("{} ignored explosion from {} ", target->GetName(), blameActor->GetName());
 		}
 
 		return ignoredamage;
+	}
+
+	bool HitEventHandler::PreProcessResolve(RE::HitData *a_hitData, bool a_ignoreBlocking){
+
+		bool ignorehit = false;
+
+		if(a_hitData){
+			if (const auto sourceRefHandle = a_hitData->sourceRef; sourceRefHandle){
+				logger::info("Source Ref Identified");
+
+				if (a_hitData->flags && a_hitData->flags.any(RE::HitData::Flag::kExplosion)){
+					logger::info("Source Ref is explosion");
+
+					if (const auto sourceRefPtr = sourceRefHandle.get(); sourceRefPtr){
+						
+						if (const auto sourceRef = sourceRefPtr.get(); sourceRef)
+						{
+							if(sourceRef->AsExplosion()){
+								logger::info("Source Ref succesfully converted to explosion");
+
+								if (const auto blameActorHandle = sourceRef->AsExplosion()->GetExplosionRuntimeData().actorOwner; blameActorHandle)
+								{
+									if (const auto blameActorPtr = blameActorHandle.get(); blameActorPtr)
+									{
+										if (const auto blameActor = blameActorPtr.get(); blameActor)
+										{
+											logger::info("{} caused an explosion", blameActor->GetName());
+
+											if(const auto targetHandle = a_hitData->target; targetHandle){
+
+												if(const auto targetPtr = targetHandle.get(); targetPtr){
+
+													if(const auto target = targetPtr.get(); target){
+														if (HitEventHandler::GetSingleton()->PreProcessExplosion(target, blameActor)){
+															ignorehit = true;
+														}
+													}
+
+												}
+											}
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+
+		return ignorehit;
 	}
 
 	void ExplosionCollision::ExplosionHandler::Thunk(RE::Explosion *a_this, RE::hkpAllCdPointCollector *a_AllCdPointCollector)
@@ -969,18 +1020,6 @@ namespace Events_Space
 					if (const auto blameActor = blameActorPtr.get(); blameActor)
 					{
 						logger::info("{} caused an explosion", blameActor->GetName());
-
-						// if (a_this->GetExplosionRuntimeData().damage && a_this->GetExplosionRuntimeData().damage <= 0.0f)
-						// {
-						// 	logger::info("damage: {}", a_this->GetExplosionRuntimeData().damage);
-
-						// 	a_this->GetExplosionRuntimeData().actorOwner.get() = nullptr;
-							
-						// 	if(a_this->GetExplosionRuntimeData().actorCause){
-						// 		a_this->GetExplosionRuntimeData().actorCause = nullptr;
-						// 	}
-							
-						// }
 
 						if (a_AllCdPointCollector)
 						{
