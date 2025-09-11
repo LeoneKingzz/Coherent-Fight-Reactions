@@ -972,6 +972,7 @@ namespace Events_Space
 						
 						if (const auto sourceRef = sourceRefPtr.get(); sourceRef)
 						{
+							logger::info("Source Ref deferenced");
 							if(sourceRef->AsExplosion()){
 								logger::info("Source Ref succesfully converted to explosion");
 
