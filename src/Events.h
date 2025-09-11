@@ -370,7 +370,7 @@ namespace Events_Space
 		{
 			logger::info("Sinking On Explosion Hook");
 			REL::Relocation<uintptr_t> pcPtr{RE::VTABLE_Explosion[0]};
-			ExplosionHandler::_func = pcPtr.write_vfunc(0xA4, ExplosionHandler::Thunk);
+			ExplosionHandler::_func = pcPtr.write_vfunc(0xA2, ExplosionHandler::Thunk);
 			logger::info("Sinking complete.");
 		}
 
