@@ -83,7 +83,7 @@ namespace Events_Space
 			{
 				stl::write_thunk_call<ProcessHitEvent>(REL::RelocationID(37673, 38627).address() + REL::Relocate(0x3C0, 0x4A8, 0x3C0)); // 1.5.97 140628C20
 
-				stl::write_thunk_call<ProcessHitResolve>(REL::RelocationID(42832, 44001).address() + REL::Relocate(0x37C, 0x358, 0x3CF));
+				// stl::write_thunk_call<ProcessHitResolve>(REL::RelocationID(42832, 44001).address() + REL::Relocate(0x37C, 0x358, 0x3CF));
 			}
 		};
 
