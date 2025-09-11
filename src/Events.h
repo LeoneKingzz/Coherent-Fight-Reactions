@@ -70,7 +70,7 @@ namespace Events_Space
 					auto handler = GetSingleton();
 					if (handler->PreProcessResolve(a_hitData, a_ignoreBlocking))
 					{
-						return false;
+						// return false;
 					}
 					return func(a_hitData, a_ignoreBlocking);
 				}

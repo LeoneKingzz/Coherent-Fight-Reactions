@@ -962,56 +962,82 @@ namespace Events_Space
 		bool ignorehit = false;
 
 		if(a_hitData){
-			logger::info("hitdata identified");
-			if (const auto sourceRefHandle = a_hitData->sourceRef; sourceRefHandle){
-				logger::info("Source Ref Identified");
 
-				if (a_hitData->flags && a_hitData->flags.any(RE::HitData::Flag::kExplosion)){
-					logger::info("Source Ref is explosion");
+			if (const auto targetHandle = a_hitData->target; targetHandle)
+			{
 
-					if (const auto sourceRefPtr = sourceRefHandle.get(); sourceRefPtr){
-						
-						if (const auto sourceRef = sourceRefPtr.get(); sourceRef)
-						{
-							logger::info("Source Ref deferenced");
-							if(sourceRef->AsExplosion()){
-								logger::info("Source Ref succesfully converted to explosion");
+				if (const auto targetPtr = targetHandle.get(); targetPtr)
+				{
 
-								if (const auto blameActorHandle = sourceRef->AsExplosion()->GetExplosionRuntimeData().actorOwner; blameActorHandle)
-								{
-									if (const auto blameActorPtr = blameActorHandle.get(); blameActorPtr)
-									{
-										if (const auto blameActor = blameActorPtr.get(); blameActor)
-										{
-											logger::info("{} caused an explosion", blameActor->GetName());
-
-											if(const auto targetHandle = a_hitData->target; targetHandle){
-
-												if(const auto targetPtr = targetHandle.get(); targetPtr){
-
-													if(const auto target = targetPtr.get(); target){
-														if (HitEventHandler::GetSingleton()->PreProcessExplosion(target, blameActor)){
-															ignorehit = true;
-															if(a_hitData->totalDamage){
-																logger::info("totalDamage: {:.2f}", a_hitData->totalDamage);
-															}
-															if (a_hitData->stagger)
-															{
-																logger::info("stagger: {}", a_hitData->stagger);
-															}
-														}
-													}
-
-												}
-											}
-										}
-									}
-								}
-							}
-						}
+					if (const auto target = targetPtr.get(); target)
+					{
+						logger::info("{} is the target {} ", target->GetName());
 					}
 				}
 			}
+
+			if (const auto aggressorHandle = a_hitData->aggressor; aggressorHandle)
+			{
+
+				if (const auto aggressorPtr = aggressorHandle.get(); aggressorPtr)
+				{
+
+					if (const auto aggressor = aggressorPtr.get(); aggressor)
+					{
+						logger::info("{} is the aggressor {} ", aggressor->GetName());
+					}
+				}
+			}
+
+			// if (const auto sourceRefHandle = a_hitData->sourceRef; sourceRefHandle){
+			// 	logger::info("Source Ref Identified");
+
+			// 	if (a_hitData->flags && a_hitData->flags.any(RE::HitData::Flag::kExplosion)){
+			// 		logger::info("Source Ref is explosion");
+
+			// 		if (const auto sourceRefPtr = sourceRefHandle.get(); sourceRefPtr){
+						
+			// 			if (const auto sourceRef = sourceRefPtr.get(); sourceRef)
+			// 			{
+			// 				logger::info("Source Ref deferenced");
+			// 				if(sourceRef->AsExplosion()){
+			// 					logger::info("Source Ref succesfully converted to explosion");
+
+			// 					if (const auto blameActorHandle = sourceRef->AsExplosion()->GetExplosionRuntimeData().actorOwner; blameActorHandle)
+			// 					{
+			// 						if (const auto blameActorPtr = blameActorHandle.get(); blameActorPtr)
+			// 						{
+			// 							if (const auto blameActor = blameActorPtr.get(); blameActor)
+			// 							{
+			// 								logger::info("{} caused an explosion", blameActor->GetName());
+
+			// 								if(const auto targetHandle = a_hitData->target; targetHandle){
+
+			// 									if(const auto targetPtr = targetHandle.get(); targetPtr){
+
+			// 										if(const auto target = targetPtr.get(); target){
+			// 											if (HitEventHandler::GetSingleton()->PreProcessExplosion(target, blameActor)){
+			// 												ignorehit = true;
+			// 												if(a_hitData->totalDamage){
+			// 													logger::info("totalDamage: {:.2f}", a_hitData->totalDamage);
+			// 												}
+			// 												if (a_hitData->stagger)
+			// 												{
+			// 													logger::info("stagger: {}", a_hitData->stagger);
+			// 												}
+			// 											}
+			// 										}
+
+			// 									}
+			// 								}
+			// 							}
+			// 						}
+			// 					}
+			// 				}
+			// 			}
+			// 		}
+			// 	}
+			// }
 		}
 
 		return ignorehit;
