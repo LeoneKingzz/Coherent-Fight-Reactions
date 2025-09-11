@@ -147,7 +147,7 @@ namespace Events_Space
 				case RE::ACTOR_COMBAT_STATE::kNone:
 					break;
 
-					Events::GetSingleton()->RegisterforUpdate(Protagonist, std::make_tuple(true, std::chrono::steady_clock::now(), 8000ms, "NeutralFaction_Update"));
+					// Events::GetSingleton()->RegisterforUpdate(Protagonist, std::make_tuple(true, std::chrono::steady_clock::now(), 8000ms, "NeutralFaction_Update"));
 
 				default:
 					break;
@@ -423,6 +423,7 @@ namespace Events_Space
 		auto HdSingle = RE::TESDataHandler::GetSingleton();
 
 		bool ignoredamage = false;
+		bool neutraltarget = false;
 
 		const auto CurrentFollowerFaction = RE::TESForm::LookupByEditorID<RE::TESFaction>("CurrentFollowerFaction");
 		const auto CFRs_PlayerAlliesFaction = RE::TESForm::LookupByEditorID<RE::TESFaction>("CFRs_PlayerAlliesFaction");
@@ -471,18 +472,7 @@ namespace Events_Space
 
 			}
 			
-			if (CFRs_NPCNeutralsFaction)
-			{
-				if (target->IsInFaction(CFRs_NPCNeutralsFaction))
-				{
-					Events::RemoveFromFaction(target, CFRs_NPCNeutralsFaction);
-				}
-
-				if (aggressor->IsInFaction(CFRs_NPCNeutralsFaction))
-				{
-					Events::RemoveFromFaction(aggressor, CFRs_NPCNeutralsFaction);
-				}
-			}
+			
 
 			if (Events::GetFactionReaction(target, aggressor) == RE::FIGHT_REACTION::kNeutral)
 			{
@@ -507,18 +497,7 @@ namespace Events_Space
 					{
 						if (CurrentFollowerFaction && CFRs_PlayerAlliesFaction &&  !target->IsPlayerRef() && !target->IsInFaction(CFRs_PlayerAlliesFaction) && !target->IsInFaction(CurrentFollowerFaction))
 						{
-							// if (CFRs_NPCNeutralsFaction)
-							// {
-							// 	if (!target->IsInFaction(CFRs_NPCNeutralsFaction) && GFunc_Space::IsInScene(target, 0.0f))
-							// 	{
-							// 		target->AddToFaction(CFRs_NPCNeutralsFaction, 0);
-							// 	}
-
-							// 	if (!aggressor->IsInFaction(CFRs_NPCNeutralsFaction) && GFunc_Space::IsInScene(aggressor, 0.0f))
-							// 	{
-							// 		aggressor->AddToFaction(CFRs_NPCNeutralsFaction, 0);
-							// 	}
-							// }
+							// target and aggressor aren't player team
 
 						}else{
 							ignoredamage = true;
@@ -592,10 +571,23 @@ namespace Events_Space
 						ignoredamage = false;
 					}
 
-					// if (ignoredamage && a_effect->baseEffect->data.explosion)
-					// {
-					// 	//a_effect->baseEffect->data.explosion.get;
-					// }
+					if (ignoredamage && neutraltarget &&  a_effect->baseEffect->data.explosion)
+					{
+						if (CFRs_NPCNeutralsFaction)
+						{
+							if (!target->IsInFaction(CFRs_NPCNeutralsFaction) && GFunc_Space::IsInScene(target, 0.0f))
+							{
+								target->AddToFaction(CFRs_NPCNeutralsFaction, 0);
+								Events::GetSingleton()->RegisterforUpdate(target, std::make_tuple(true, std::chrono::steady_clock::now(), 1000ms, "NeutralFaction_Update"));
+							}
+
+							if (!aggressor->IsInFaction(CFRs_NPCNeutralsFaction) && GFunc_Space::IsInScene(aggressor, 0.0f))
+							{
+								aggressor->AddToFaction(CFRs_NPCNeutralsFaction, 0);
+								Events::GetSingleton()->RegisterforUpdate(aggressor, std::make_tuple(true, std::chrono::steady_clock::now(), 1000ms, "NeutralFaction_Update"));
+							}
+						}
+					}
 				}
 			}
 		}
@@ -661,18 +653,7 @@ namespace Events_Space
 				Events::RemoveFromFaction(aggressor, CFRs_PlayerAlliesFaction);
 			}
 
-			if (CFRs_NPCNeutralsFaction)
-			{
-				if (target->IsInFaction(CFRs_NPCNeutralsFaction))
-				{
-					Events::RemoveFromFaction(target, CFRs_NPCNeutralsFaction);
-				}
-
-				if (aggressor->IsInFaction(CFRs_NPCNeutralsFaction))
-				{
-					Events::RemoveFromFaction(aggressor, CFRs_NPCNeutralsFaction);
-				}
-			}
+			
 
 			if (Events::GetFactionReaction(target, aggressor) == RE::FIGHT_REACTION::kNeutral)
 			{
@@ -1137,51 +1118,52 @@ namespace Events_Space
 
 	void Events::Process_Updates(RE::Actor *a_actor, GFunc_Space::Time::time_point time_now)
 	{
-		for (auto it = _Timer.begin(); it != _Timer.end(); ++it)
+		if (!a_actor){
+			return;
+		}
+		const auto &it = _Timer.find(a_actor);
+		
+		if (it != _Timer.end())
 		{
-			if (it->first == a_actor)
+			if (!it->second.empty())
 			{
-				if (!it->second.empty())
+				for (auto data : it->second)
 				{
-					for (auto data : it->second)
+					bool update;
+					std::chrono::steady_clock::time_point time_initial;
+					std::chrono::milliseconds time_required;
+					std::string function;
+					std::tie(update, time_initial, time_required, function) = data;
+					if (update)
 					{
-						bool update;
-						std::chrono::steady_clock::time_point time_initial;
-						std::chrono::milliseconds time_required;
-						std::string function;
-						std::tie(update, time_initial, time_required, function) = data;
-						if (update)
+						if (duration_cast<std::chrono::milliseconds>(time_now - time_initial).count() >= time_required.count())
 						{
-							if (duration_cast<std::chrono::milliseconds>(time_now - time_initial).count() >= time_required.count())
+							auto H = RE::TESDataHandler::GetSingleton();
+							switch (hash(function.c_str(), function.size()))
 							{
-								auto H = RE::TESDataHandler::GetSingleton();
-								switch (hash(function.c_str(), function.size()))
+							case "NeutralFaction_Update"_h:
+								if (const auto CFRs_NPCNeutralsFaction = RE::TESForm::LookupByEditorID<RE::TESFaction>("CFRs_NPCNeutralsFaction"); CFRs_NPCNeutralsFaction && a_actor->IsInFaction(CFRs_NPCNeutralsFaction))
 								{
-								case "NeutralFaction_Update"_h:
-									if (auto CFRs_NPCNeutralsFaction = RE::TESForm::LookupByEditorID<RE::TESFaction>("CFRs_NPCNeutralsFaction"); CFRs_NPCNeutralsFaction && a_actor->IsInFaction(CFRs_NPCNeutralsFaction))
-									{
-										Events::RemoveFromFaction(a_actor, CFRs_NPCNeutralsFaction);
-									}
-
-									break;
-
-								default:
-									break;
+									Events::RemoveFromFaction(a_actor, CFRs_NPCNeutralsFaction);
 								}
-								std::vector<std::tuple<bool, GFunc_Space::Time::time_point, GFunc_Space::ms, std::string>>::iterator position = std::find(it->second.begin(), it->second.end(), data);
-								if (position != it->second.end())
-								{
-									it->second.erase(position);
-								}
+
+								break;
+
+							default:
+								break;
+							}
+							std::vector<std::tuple<bool, GFunc_Space::Time::time_point, GFunc_Space::ms, std::string>>::iterator position = std::find(it->second.begin(), it->second.end(), data);
+							if (position != it->second.end())
+							{
+								it->second.erase(position);
 							}
 						}
 					}
 				}
-				else
-				{
-					_Timer.erase(it);
-				}
-				break;
+			}
+			else
+			{
+				_Timer.erase(it);
 			}
 		}
 	}
