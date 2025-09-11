@@ -1058,12 +1058,14 @@ namespace Events_Space
 
 						if (a_AllCdPointCollector)
 						{
+							logger::info("Collidable Point Collector Active");
 							for (auto &hit : a_AllCdPointCollector->hits)
 							{
 								auto refrA = RE::TESHavokUtilities::FindCollidableRef(*hit.rootCollidableA);
 								auto refrB = RE::TESHavokUtilities::FindCollidableRef(*hit.rootCollidableB);
 								if (refrA && refrA->Is(RE::FormType::ActorCharacter) && a_this == refrB)
 								{
+									logger::info("Refr A Identified");
 									if(HitEventHandler::GetSingleton()->PreProcessExplosion(refrA->As<RE::Actor>(), blameActor)){
 										uint32_t a_collisionFilterInfo = refrA->As<RE::Actor>()->GetCollisionFilterInfo(a_collisionFilterInfo);
 										const_cast<RE::hkpCollidable *>(hit.rootCollidableB)->broadPhaseHandle.collisionFilterInfo &= (0x0000FFFF);
@@ -1072,6 +1074,7 @@ namespace Events_Space
 								}
 								if (refrB && refrB->Is(RE::FormType::ActorCharacter) && a_this == refrA)
 								{
+									logger::info("Refr B Identified");
 									if (HitEventHandler::GetSingleton()->PreProcessExplosion(refrB->As<RE::Actor>(), blameActor))
 									{
 										uint32_t a_collisionFilterInfo = refrB->As<RE::Actor>()->GetCollisionFilterInfo(a_collisionFilterInfo);
