@@ -31,7 +31,7 @@ void Init()
 }
 
 void Load(){
-	//Events_Space::Events::install_protected();
+	Events_Space::Events::install_protected();
 	Events_Space::HitEventHandler::InstallHooks();
 }
 
