@@ -71,6 +71,7 @@ namespace Events_Space
 					if (handler->PreProcessResolve(a_hitData, a_ignoreBlocking))
 					{
 						// return false;
+						return func(a_hitData, a_ignoreBlocking);
 					}
 					return func(a_hitData, a_ignoreBlocking);
 				}
