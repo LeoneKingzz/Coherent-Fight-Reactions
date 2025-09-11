@@ -591,6 +591,11 @@ namespace Events_Space
 
 						ignoredamage = false;
 					}
+
+					// if (ignoredamage && a_effect->baseEffect->data.explosion)
+					// {
+					// 	//a_effect->baseEffect->data.explosion.get;
+					// }
 				}
 			}
 		}
@@ -952,21 +957,11 @@ namespace Events_Space
 		return ignoredamage;
 	}
 
-	void ExplosionCollision::ExplosionHandler::Thunk(RE::Explosion *a_this){
+	void ExplosionCollision::ExplosionHandler::Thunk(RE::Explosion *a_this, RE::hkpAllCdPointCollector *a_AllCdPointCollector)
+	{
 
 		if (a_this)
 		{
-			// if (const auto UnknownActorHandle = a_this->GetExplosionRuntimeData().unkF4; UnknownActorHandle)
-			// {
-			// 	if (const auto UnknownActorPtr = UnknownActorHandle.get(); UnknownActorPtr)
-			// 	{
-			// 		if (const auto UnknownActor = UnknownActorPtr.get(); UnknownActor)
-			// 		{
-			// 			logger::info("unknownActor: {}", UnknownActor->GetName());
-			// 		}
-			// 	}
-			// }
-
 			if (const auto blameActorHandle = a_this->GetExplosionRuntimeData().actorOwner; blameActorHandle)
 			{
 				if (const auto blameActorPtr = blameActorHandle.get(); blameActorPtr)
@@ -975,22 +970,48 @@ namespace Events_Space
 					{
 						logger::info("{} caused an explosion", blameActor->GetName());
 
-						if (a_this->GetExplosionRuntimeData().damage && a_this->GetExplosionRuntimeData().damage <= 0.0f)
-						{
-							logger::info("damage: {}", a_this->GetExplosionRuntimeData().damage);
+						// if (a_this->GetExplosionRuntimeData().damage && a_this->GetExplosionRuntimeData().damage <= 0.0f)
+						// {
+						// 	logger::info("damage: {}", a_this->GetExplosionRuntimeData().damage);
 
-							a_this->GetExplosionRuntimeData().actorOwner.get() = nullptr;
+						// 	a_this->GetExplosionRuntimeData().actorOwner.get() = nullptr;
 							
-							if(a_this->GetExplosionRuntimeData().actorCause){
-								a_this->GetExplosionRuntimeData().actorCause = nullptr;
+						// 	if(a_this->GetExplosionRuntimeData().actorCause){
+						// 		a_this->GetExplosionRuntimeData().actorCause = nullptr;
+						// 	}
+							
+						// }
+
+						if (a_AllCdPointCollector)
+						{
+							for (auto &hit : a_AllCdPointCollector->hits)
+							{
+								auto refrA = RE::TESHavokUtilities::FindCollidableRef(*hit.rootCollidableA);
+								auto refrB = RE::TESHavokUtilities::FindCollidableRef(*hit.rootCollidableB);
+								if (refrA && refrA->Is(RE::FormType::ActorCharacter) && a_this == refrB)
+								{
+									if(HitEventHandler::GetSingleton()->PreProcessExplosion(refrA->As<RE::Actor>(), blameActor)){
+										uint32_t a_collisionFilterInfo = refrA->As<RE::Actor>()->GetCollisionFilterInfo(a_collisionFilterInfo);
+										const_cast<RE::hkpCollidable *>(hit.rootCollidableB)->broadPhaseHandle.collisionFilterInfo &= (0x0000FFFF);
+										const_cast<RE::hkpCollidable *>(hit.rootCollidableB)->broadPhaseHandle.collisionFilterInfo |= (a_collisionFilterInfo << 16);
+									}
+								}
+								if (refrB && refrB->Is(RE::FormType::ActorCharacter) && a_this == refrA)
+								{
+									if (HitEventHandler::GetSingleton()->PreProcessExplosion(refrB->As<RE::Actor>(), blameActor))
+									{
+										uint32_t a_collisionFilterInfo = refrB->As<RE::Actor>()->GetCollisionFilterInfo(a_collisionFilterInfo);
+										const_cast<RE::hkpCollidable *>(hit.rootCollidableA)->broadPhaseHandle.collisionFilterInfo &= (0x0000FFFF);
+										const_cast<RE::hkpCollidable *>(hit.rootCollidableA)->broadPhaseHandle.collisionFilterInfo |= (a_collisionFilterInfo << 16);
+									}
+								}
 							}
-							
 						}
 					}
 				}
 			}
 		}
-		return _func(a_this);
+		return _func(a_this, a_AllCdPointCollector);
 	}
 
 	void Events::install(){
@@ -1277,4 +1298,15 @@ namespace Events_Space
 // 	// 		}
 // 	// 	}
 // 	// }
+// }
+
+// if (const auto UnknownActorHandle = a_this->GetExplosionRuntimeData().unkF4; UnknownActorHandle)
+// {
+// 	if (const auto UnknownActorPtr = UnknownActorHandle.get(); UnknownActorPtr)
+// 	{
+// 		if (const auto UnknownActor = UnknownActorPtr.get(); UnknownActor)
+// 		{
+// 			logger::info("unknownActor: {}", UnknownActor->GetName());
+// 		}
+// 	}
 // }

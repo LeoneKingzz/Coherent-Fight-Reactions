@@ -334,7 +334,7 @@ namespace Events_Space
 	private:
 		struct ExplosionHandler
 		{
-			static void Thunk(RE::Explosion *a_this);
+			static void Thunk(RE::Explosion *a_this, RE::hkpAllCdPointCollector *a_AllCdPointCollector);
 
 			inline static REL::Relocation<decltype(&Thunk)> _func;
 		};
