@@ -1043,7 +1043,7 @@ namespace Events_Space
 		return ignorehit;
 	}
 
-	void ExplosionCollision::ExplosionHandler::Thunk(RE::Explosion *a_this, RE::hkpAllCdPointCollector *a_AllCdPointCollector)
+	void ExplosionCollision::ExplosionHandler::Thunk(RE::Explosion *a_this, RE::ActorCause *a_cause)
 	{
 
 		if (a_this)
@@ -1056,39 +1056,31 @@ namespace Events_Space
 					{
 						logger::info("{} caused an explosion", blameActor->GetName());
 
-						if (a_AllCdPointCollector)
+						bool notarget = true;
+						RE::Actor * target = nullptr;
+
+						if (const auto UnknownActorHandle = a_this->GetExplosionRuntimeData().unkF4; UnknownActorHandle)
 						{
-							logger::info("Collidable Point Collector Active");
-							for (auto &hit : a_AllCdPointCollector->hits)
+							if (const auto UnknownActorPtr = UnknownActorHandle.get(); UnknownActorPtr)
 							{
-								auto refrA = RE::TESHavokUtilities::FindCollidableRef(*hit.rootCollidableA);
-								auto refrB = RE::TESHavokUtilities::FindCollidableRef(*hit.rootCollidableB);
-								if (refrA && refrA->Is(RE::FormType::ActorCharacter) && a_this == refrB)
+								if (const auto UnknownActor = UnknownActorPtr.get(); UnknownActor)
 								{
-									logger::info("Refr A Identified");
-									if(HitEventHandler::GetSingleton()->PreProcessExplosion(refrA->As<RE::Actor>(), blameActor)){
-										uint32_t a_collisionFilterInfo = refrA->As<RE::Actor>()->GetCollisionFilterInfo(a_collisionFilterInfo);
-										const_cast<RE::hkpCollidable *>(hit.rootCollidableB)->broadPhaseHandle.collisionFilterInfo &= (0x0000FFFF);
-										const_cast<RE::hkpCollidable *>(hit.rootCollidableB)->broadPhaseHandle.collisionFilterInfo |= (a_collisionFilterInfo << 16);
-									}
-								}
-								if (refrB && refrB->Is(RE::FormType::ActorCharacter) && a_this == refrA)
-								{
-									logger::info("Refr B Identified");
-									if (HitEventHandler::GetSingleton()->PreProcessExplosion(refrB->As<RE::Actor>(), blameActor))
-									{
-										uint32_t a_collisionFilterInfo = refrB->As<RE::Actor>()->GetCollisionFilterInfo(a_collisionFilterInfo);
-										const_cast<RE::hkpCollidable *>(hit.rootCollidableA)->broadPhaseHandle.collisionFilterInfo &= (0x0000FFFF);
-										const_cast<RE::hkpCollidable *>(hit.rootCollidableA)->broadPhaseHandle.collisionFilterInfo |= (a_collisionFilterInfo << 16);
-									}
+									logger::info("unknownActor: {}", UnknownActor->GetName());
+									notarget = false;
+									target  = UnknownActor;
 								}
 							}
+						}
+
+						if(!notarget || (target && target == blameActor)){
+
+							return;
 						}
 					}
 				}
 			}
 		}
-		return _func(a_this, a_AllCdPointCollector);
+		return _func(a_this, a_cause);
 	}
 
 	void Events::install(){
