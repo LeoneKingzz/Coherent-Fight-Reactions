@@ -971,7 +971,7 @@ namespace Events_Space
 
 					if (const auto target = targetPtr.get(); target)
 					{
-						logger::info("{} is the target {} ", target->GetName());
+						logger::info("{} is the target", target->GetName());
 					}
 				}
 			}
@@ -984,7 +984,7 @@ namespace Events_Space
 
 					if (const auto aggressor = aggressorPtr.get(); aggressor)
 					{
-						logger::info("{} is the aggressor {} ", aggressor->GetName());
+						logger::info("{} is the aggressor", aggressor->GetName());
 					}
 				}
 			}
