@@ -221,8 +221,19 @@ namespace Events_Space
 			static inline REL::Relocation<decltype(thunk)> func;
 		};
 
+		struct PlayerCharacter_Update
+		{
+			static void thunk(RE::PlayerCharacter *a_player, float a_delta)
+			{
+				func(a_player, a_delta);
+				GetSingleton()->Update(a_player, g_deltaTime);
+			}
+			static inline REL::Relocation<decltype(thunk)> func;
+		};
+
 		static void Install_Update(){
 			stl::write_vfunc<RE::Character, 0xAD, Actor_Update>();
+			stl::write_vfunc<RE::PlayerCharacter, 0xAD, PlayerCharacter_Update>();
 		}
 
 		std::unordered_map<RE::Actor *, std::vector<std::tuple<bool, std::chrono::steady_clock::time_point, std::chrono::milliseconds, std::string>>> _Timer;

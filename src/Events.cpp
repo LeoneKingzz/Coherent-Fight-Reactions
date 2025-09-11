@@ -476,7 +476,7 @@ namespace Events_Space
 
 			if (Events::GetFactionReaction(target, aggressor) == RE::FIGHT_REACTION::kNeutral)
 			{
-				// logger::info("Neutral Branch Active");
+				neutraltarget = true;
 
 				if (!target->IsHostileToActor(aggressor) && target->AsActorValueOwner()->GetActorValue(RE::ActorValue::kAggression) <= 1)
 				{
@@ -505,8 +505,7 @@ namespace Events_Space
 					}
 				}
 			}
-			else if (Events::GetFactionReaction(target, aggressor) >= RE::FIGHT_REACTION::kAlly)
-			{
+			else if (Events::GetFactionReaction(target, aggressor) >= RE::FIGHT_REACTION::kAlly){
 				// logger::info("Allied Branch Active");
 
 				if (!target->IsHostileToActor(aggressor))
@@ -606,7 +605,7 @@ namespace Events_Space
 		const auto CurrentFollowerFaction = RE::TESForm::LookupByEditorID<RE::TESFaction>("CurrentFollowerFaction");
 		const auto CFRs_PlayerAlliesFaction = RE::TESForm::LookupByEditorID<RE::TESFaction>("CFRs_PlayerAlliesFaction");
 		const auto CFRs_PlayerFriendsFaction = RE::TESForm::LookupByEditorID<RE::TESFaction>("CFRs_PlayerFriendsFaction");
-		const auto CFRs_NPCNeutralsFaction = RE::TESForm::LookupByEditorID<RE::TESFaction>("CFRs_NPCNeutralsFaction");
+		// const auto CFRs_NPCNeutralsFaction = RE::TESForm::LookupByEditorID<RE::TESFaction>("CFRs_NPCNeutralsFaction");
 
 		
 
@@ -878,7 +877,7 @@ namespace Events_Space
 		const auto CurrentFollowerFaction = RE::TESForm::LookupByEditorID<RE::TESFaction>("CurrentFollowerFaction");
 		const auto CFRs_PlayerAlliesFaction = RE::TESForm::LookupByEditorID<RE::TESFaction>("CFRs_PlayerAlliesFaction");
 		const auto CFRs_PlayerFriendsFaction = RE::TESForm::LookupByEditorID<RE::TESFaction>("CFRs_PlayerFriendsFaction");
-		const auto CFRs_NPCNeutralsFaction = RE::TESForm::LookupByEditorID<RE::TESFaction>("CFRs_NPCNeutralsFaction");
+		// const auto CFRs_NPCNeutralsFaction = RE::TESForm::LookupByEditorID<RE::TESFaction>("CFRs_NPCNeutralsFaction");
 
 		if (Events::GetFactionReaction(target, blameActor) == RE::FIGHT_REACTION::kNeutral)
 		{
@@ -1110,7 +1109,7 @@ namespace Events_Space
 
 	void Events::Update(RE::Actor* a_actor, [[maybe_unused]] float a_delta)
 	{
-		if (a_actor->GetActorRuntimeData().currentProcess && a_actor->GetActorRuntimeData().currentProcess->InHighProcess() && a_actor->Is3DLoaded()){
+		if (a_actor && a_actor->GetActorRuntimeData().currentProcess && a_actor->GetActorRuntimeData().currentProcess->InHighProcess() && a_actor->Is3DLoaded()){
 
 			GetSingleton()->Process_Updates(a_actor, std::chrono::steady_clock::now());
 		}
@@ -1313,19 +1312,6 @@ namespace Events_Space
 // if (sourceRef->AsProjectile() && sourceRef->AsProjectile()->GetProjectileRuntimeData().ammoSource && sourceRef->AsProjectile()->GetProjectileRuntimeData().weaponSource)
 // {
 // 	sourceRef->AsProjectile()->GetProjectileRuntimeData().castingSource;
-// }
-
-// if (CFRs_NPCNeutralsFaction)
-// {
-// 	if (!target->IsInFaction(CFRs_NPCNeutralsFaction) && GFunc_Space::IsInScene(target, 0.0f))
-// 	{
-// 		target->AddToFaction(CFRs_NPCNeutralsFaction, 0);
-// 	}
-
-// 	if (!aggressor->IsInFaction(CFRs_NPCNeutralsFaction) && GFunc_Space::IsInScene(aggressor, 0.0f))
-// 	{
-// 		aggressor->AddToFaction(CFRs_NPCNeutralsFaction, 0);
-// 	}
 // }
 
 // if (a_this->GetExplosionRuntimeData().actorOwner)
