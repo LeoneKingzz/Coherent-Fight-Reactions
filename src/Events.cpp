@@ -990,6 +990,13 @@ namespace Events_Space
 													if(const auto target = targetPtr.get(); target){
 														if (HitEventHandler::GetSingleton()->PreProcessExplosion(target, blameActor)){
 															ignorehit = true;
+															if(a_hitData->totalDamage){
+																logger::info("totalDamage: {:.2f}", a_hitData->totalDamage);
+															}
+															if (a_hitData->stagger)
+															{
+																logger::info("stagger: {}", a_hitData->stagger);
+															}
 														}
 													}
 
