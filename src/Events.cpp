@@ -962,6 +962,7 @@ namespace Events_Space
 		bool ignorehit = false;
 
 		if(a_hitData){
+			logger::info("hitdata identified");
 			if (const auto sourceRefHandle = a_hitData->sourceRef; sourceRefHandle){
 				logger::info("Source Ref Identified");
 
