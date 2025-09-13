@@ -1082,7 +1082,7 @@ namespace Events_Space
 																if(blameActor == aggressor){
 																	
 																	if (!(sourceRef->AsExplosion()->GetExplosionRuntimeData().damage && a_hitData->totalDamage) 
-																	|| (sourceRef->AsExplosion()->GetExplosionRuntimeData().damage <= 20.0f || a_hitData->totalDamage <= 20.0f))
+																	|| (sourceRef->AsExplosion()->GetExplosionRuntimeData().damage <= 20.0f && a_hitData->totalDamage <= 20.0f))
 																	{
 																		if (HitEventHandler::GetSingleton()->PreProcessExplosion(a_subject, aggressor))
 																		{
