@@ -1081,7 +1081,7 @@ namespace Events_Space
 							// logger::info("aggressor defined");
 							if (const auto aggressor = aggressorPtr.get(); aggressor)
 							{
-								if (aggressor == a_target){
+								if (aggressor == a_target && !aggressor->IsHostileToActor(a_subject)){
 									// logger::info("aggressor is target and is reasonable");
 									if (const auto sourceRefHandle = a_hitData->sourceRef; sourceRefHandle){
 										// logger::info("Source Ref Identified");
