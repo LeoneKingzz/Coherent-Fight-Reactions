@@ -1091,25 +1091,89 @@ namespace Events_Space
 									&& aggressor->AsActorValueOwner()->GetActorValue(RE::ActorValue::kAggression) <= 1){
 										logger::info("aggressor is target and is reasonable");
 
+										if (a_hitData->stagger)
+										{
+											logger::info("stagger: {}", a_hitData->stagger);
+										}
+
+										if (a_hitData->pushBack)
+										{
+											logger::info("pushBack: {}", a_hitData->pushBack);
+										}
+
 										if (a_hitData->totalDamage)
 										{
 											logger::info("totalDamage: {:.2f}", a_hitData->totalDamage);
+										}
 
-											if (a_hitData->totalDamage <= 10.0f)
+										if (a_hitData->physicalDamage)
+										{
+											logger::info("Physical: {:.2f}", a_hitData->physicalDamage);
+										}
+
+										if (a_hitData->resistedPhysicalDamage)
+										{
+											logger::info("resistedPhysicalDamage: {:.2f}", a_hitData->resistedPhysicalDamage);
+										}
+
+										if (a_hitData->resistedTypedDamage)
+										{
+											logger::info("resistedTypedDamage: {:.2f}", a_hitData->resistedTypedDamage);
+										}
+
+										if (a_hitData->flags && a_hitData->flags.any(RE::HitData::Flag::kPredictDamage))
+										{
+											logger::info("Predicted Damage. Any flag");
+										}
+
+										if (a_hitData->flags && a_hitData->flags.all(RE::HitData::Flag::kPredictDamage))
+										{
+											logger::info("Predicted Damage. All flag");
+										}
+
+										if (const auto sourceRefHandle = a_hitData->sourceRef; sourceRefHandle){
+											logger::info("Source Ref Identified");
+
+											if (const auto sourceRefPtr = sourceRefHandle.get(); sourceRefPtr)
 											{
-												switch (Events::GetFactionReaction(a_subject, aggressor))
+												if (const auto sourceRef = sourceRefPtr.get(); sourceRef)
 												{
-												case RE::FIGHT_REACTION::kNeutral:
-												case RE::FIGHT_REACTION::kFriend:
-												case RE::FIGHT_REACTION::kAlly:
+													logger::info("Source Ref deferenced");
+													if (sourceRef->AsExplosion())
+													{
+														logger::info("Source Ref succesfully converted to explosion");
 
-													reaction = RE::FIGHT_REACTION::kAlly;
-													break;
+														if (const auto blameActorHandle = sourceRef->AsExplosion()->GetExplosionRuntimeData().actorOwner; blameActorHandle)
+														{
+															if (const auto blameActorPtr = blameActorHandle.get(); blameActorPtr)
+															{
+																if (const auto blameActor = blameActorPtr.get(); blameActor)
+																{
+																	logger::info("{} caused an explosion", blameActor->GetName());
 
-												default:
-													break;
+																	if (sourceRef->AsExplosion()->GetExplosionRuntimeData().damage)
+																	{
+																		logger::info("ExplosionDamage: {:.2f}", sourceRef->AsExplosion()->GetExplosionRuntimeData().damage);
+																	}
+																}
+															}
+														}
+													}
 												}
 											}
+										}
+
+										switch (Events::GetFactionReaction(a_subject, aggressor))
+										{
+										case RE::FIGHT_REACTION::kNeutral:
+										case RE::FIGHT_REACTION::kFriend:
+										case RE::FIGHT_REACTION::kAlly:
+
+											reaction = RE::FIGHT_REACTION::kAlly;
+											break;
+
+										default:
+											break;
 										}
 									}
 								}
