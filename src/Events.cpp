@@ -1075,16 +1075,21 @@ namespace Events_Space
 			{
 				if (process->middleHigh)
 				{
+					logger::info("Middle process active");
 					if (const auto a_hitData = process->middleHigh->lastHitData; a_hitData)
 					{
+						logger::info("hitdata is present");
 						if (const auto aggressorHandle = a_hitData->aggressor; aggressorHandle)
 						{
+							logger::info("aggressor is present");
 							if(const auto aggressorPtr = aggressorHandle.get(); aggressorPtr)
 							{
+								logger::info("aggressor defined");
 								if(const auto aggressor = aggressorPtr.get(); aggressor){
 
 									if(aggressor == a_target && !aggressor->IsHostileToActor(a_subject) 
 									&& aggressor->AsActorValueOwner()->GetActorValue(RE::ActorValue::kAggression) <= 1){
+										logger::info("aggressor is target and is reasonable");
 
 										if (a_hitData->flags && a_hitData->flags.any(RE::HitData::Flag::kExplosion))
 										{
