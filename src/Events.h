@@ -381,11 +381,11 @@ namespace Events_Space
 	protected:
 		struct ExplosionHandler
 		{
-			static bool thunk(RE::Explosion *a_this)
+			static void thunk(RE::Explosion *a_this)
 			{
 				if (GetSingleton()->Analyse(a_this))
 				{
-					return false;
+					return;
 				}
 
 				return func(a_this);
@@ -395,7 +395,7 @@ namespace Events_Space
 
 		static void Install()
 		{
-			stl::write_vfunc<RE::Explosion, 0x1B, ExplosionHandler>();
+			stl::write_vfunc<RE::Explosion, 0x66, ExplosionHandler>();
 		}
 	};
 };
