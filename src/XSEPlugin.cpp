@@ -31,11 +31,11 @@ void Init()
 }
 
 void Load(){
-	Events_Space::Events::install_protected();
+	// Events_Space::Events::install_protected();
 	Events_Space::HitEventHandler::InstallHooks();
 }
 
 void PreLoad(){
 	Events_Space::MagicApplyHandler::Register(true, true);
-	// Events_Space::ExplosionCollision::Register();
+	Events_Space::ExplosionCollision::Register();
 }

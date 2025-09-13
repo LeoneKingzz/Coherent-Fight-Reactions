@@ -570,23 +570,23 @@ namespace Events_Space
 						ignoredamage = false;
 					}
 
-					if (ignoredamage && neutraltarget &&  a_effect->baseEffect->data.explosion)
-					{
-						if (CFRs_NPCNeutralsFaction)
-						{
-							if (!target->IsInFaction(CFRs_NPCNeutralsFaction) && GFunc_Space::IsInScene(target, 0.0f))
-							{
-								target->AddToFaction(CFRs_NPCNeutralsFaction, 0);
-								Events::GetSingleton()->RegisterforUpdate(target, std::make_tuple(true, std::chrono::steady_clock::now(), 1000ms, "NeutralFaction_Update"));
-							}
+					// if (ignoredamage && neutraltarget &&  a_effect->baseEffect->data.explosion)
+					// {
+					// 	if (CFRs_NPCNeutralsFaction)
+					// 	{
+					// 		if (!target->IsInFaction(CFRs_NPCNeutralsFaction) && GFunc_Space::IsInScene(target, 0.0f))
+					// 		{
+					// 			target->AddToFaction(CFRs_NPCNeutralsFaction, 0);
+					// 			Events::GetSingleton()->RegisterforUpdate(target, std::make_tuple(true, std::chrono::steady_clock::now(), 1000ms, "NeutralFaction_Update"));
+					// 		}
 
-							if (!aggressor->IsInFaction(CFRs_NPCNeutralsFaction) && GFunc_Space::IsInScene(aggressor, 0.0f))
-							{
-								aggressor->AddToFaction(CFRs_NPCNeutralsFaction, 0);
-								Events::GetSingleton()->RegisterforUpdate(aggressor, std::make_tuple(true, std::chrono::steady_clock::now(), 1000ms, "NeutralFaction_Update"));
-							}
-						}
-					}
+					// 		if (!aggressor->IsInFaction(CFRs_NPCNeutralsFaction) && GFunc_Space::IsInScene(aggressor, 0.0f))
+					// 		{
+					// 			aggressor->AddToFaction(CFRs_NPCNeutralsFaction, 0);
+					// 			Events::GetSingleton()->RegisterforUpdate(aggressor, std::make_tuple(true, std::chrono::steady_clock::now(), 1000ms, "NeutralFaction_Update"));
+					// 		}
+					// 	}
+					// }
 				}
 			}
 		}
@@ -1023,8 +1023,9 @@ namespace Events_Space
 		return ignorehit;
 	}
 
-	void ExplosionCollision::ExplosionHandler::Thunk(RE::Explosion *a_this)
+	bool ExplosionCollision::Analyse(RE::Explosion *a_this)
 	{
+		bool result = false;
 
 		if (a_this)
 		{
@@ -1038,6 +1039,7 @@ namespace Events_Space
 
 						bool notarget = true;
 						RE::Actor * target = nullptr;
+						// a_this->GetMagicTarget()
 
 						if (const auto UnknownActorHandle = a_this->GetExplosionRuntimeData().unkF4; UnknownActorHandle)
 						{
@@ -1054,13 +1056,13 @@ namespace Events_Space
 
 						if(!notarget || (target && target == blameActor)){
 
-							return;
+							result = true;
 						}
 					}
 				}
 			}
 		}
-		return _func(a_this);
+		return result;
 	}
 
 	void Events::install(){

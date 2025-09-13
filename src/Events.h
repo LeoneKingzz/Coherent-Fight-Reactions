@@ -362,12 +362,6 @@ namespace Events_Space
 	class ExplosionCollision
 	{
 	private:
-		struct ExplosionHandler
-		{
-			static void Thunk(RE::Explosion *a_this);
-
-			inline static REL::Relocation<decltype(&Thunk)> _func;
-		};
 
 	public:
 		static ExplosionCollision *GetSingleton()
@@ -376,15 +370,32 @@ namespace Events_Space
 			return &singleton;
 		}
 
+		bool Analyse(RE::Explosion *a_this);
+
 		/*Hook Explosion sink*/
 		static void Register()
 		{
-			logger::info("Sinking On Explosion Hook");
-			REL::Relocation<uintptr_t> pcPtr{RE::VTABLE_Explosion[0]};
-			ExplosionHandler::_func = pcPtr.write_vfunc(0xA4, ExplosionHandler::Thunk);
-			logger::info("Sinking complete.");
+			Install();
 		}
 
 	protected:
+		struct ExplosionHandler
+		{
+			static bool thunk(RE::Explosion *a_this)
+			{
+				if (GetSingleton()->Analyse(a_this))
+				{
+					return false;
+				}
+
+				func(a_this);
+			}
+			static inline REL::Relocation<decltype(thunk)> func;
+		};
+
+		static void Install()
+		{
+			stl::write_vfunc<RE::Explosion, 0x1B, ExplosionHandler>();
+		}
 	};
 };
