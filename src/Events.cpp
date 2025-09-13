@@ -569,24 +569,6 @@ namespace Events_Space
 
 						ignoredamage = false;
 					}
-
-					// if (ignoredamage && neutraltarget &&  a_effect->baseEffect->data.explosion)
-					// {
-					// 	if (CFRs_NPCNeutralsFaction)
-					// 	{
-					// 		if (!target->IsInFaction(CFRs_NPCNeutralsFaction) && GFunc_Space::IsInScene(target, 0.0f))
-					// 		{
-					// 			target->AddToFaction(CFRs_NPCNeutralsFaction, 0);
-					// 			Events::GetSingleton()->RegisterforUpdate(target, std::make_tuple(true, std::chrono::steady_clock::now(), 1000ms, "NeutralFaction_Update"));
-					// 		}
-
-					// 		if (!aggressor->IsInFaction(CFRs_NPCNeutralsFaction) && GFunc_Space::IsInScene(aggressor, 0.0f))
-					// 		{
-					// 			aggressor->AddToFaction(CFRs_NPCNeutralsFaction, 0);
-					// 			Events::GetSingleton()->RegisterforUpdate(aggressor, std::make_tuple(true, std::chrono::steady_clock::now(), 1000ms, "NeutralFaction_Update"));
-					// 		}
-					// 	}
-					// }
 				}
 			}
 		}
@@ -929,7 +911,7 @@ namespace Events_Space
 			}
 		}
 
-		if (ignoredamage)
+		if (ignoredamage && Settings::GetSingleton()->general.bDebugMode)
 		{
 			logger::info("{} ignored explosion from {} ", target->GetName(), blameActor->GetName());
 		}
@@ -1407,6 +1389,24 @@ namespace Events_Space
 // 		if (const auto UnknownActor = UnknownActorPtr.get(); UnknownActor)
 // 		{
 // 			logger::info("unknownActor: {}", UnknownActor->GetName());
+// 		}
+// 	}
+// }
+
+// if (ignoredamage && neutraltarget &&  a_effect->baseEffect->data.explosion)
+// {
+// 	if (CFRs_NPCNeutralsFaction)
+// 	{
+// 		if (!target->IsInFaction(CFRs_NPCNeutralsFaction) && GFunc_Space::IsInScene(target, 0.0f))
+// 		{
+// 			target->AddToFaction(CFRs_NPCNeutralsFaction, 0);
+// 			Events::GetSingleton()->RegisterforUpdate(target, std::make_tuple(true, std::chrono::steady_clock::now(), 1000ms, "NeutralFaction_Update"));
+// 		}
+
+// 		if (!aggressor->IsInFaction(CFRs_NPCNeutralsFaction) && GFunc_Space::IsInScene(aggressor, 0.0f))
+// 		{
+// 			aggressor->AddToFaction(CFRs_NPCNeutralsFaction, 0);
+// 			Events::GetSingleton()->RegisterforUpdate(aggressor, std::make_tuple(true, std::chrono::steady_clock::now(), 1000ms, "NeutralFaction_Update"));
 // 		}
 // 	}
 // }
