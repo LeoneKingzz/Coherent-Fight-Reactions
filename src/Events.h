@@ -388,7 +388,7 @@ namespace Events_Space
 					return false;
 				}
 
-				func(a_this);
+				return func(a_this);
 			}
 			static inline REL::Relocation<decltype(thunk)> func;
 		};
