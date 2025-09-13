@@ -1065,6 +1065,64 @@ namespace Events_Space
 		return result;
 	}
 
+	RE::FIGHT_REACTION ExplosionCollision::Process_Hit(RE::Actor *a_subject, RE::Actor *a_target, RE::FIGHT_REACTION a_reaction)
+	{
+		RE::FIGHT_REACTION reaction = a_reaction;
+
+		if(!a_subject->IsInCombat())
+		{
+			if(const auto process = a_subject->GetActorRuntimeData().currentProcess; process)
+			{
+				if (process->middleHigh)
+				{
+					if (const auto a_hitData = process->middleHigh->lastHitData; a_hitData)
+					{
+						if (const auto aggressorHandle = a_hitData->aggressor; aggressorHandle)
+						{
+							if(const auto aggressorPtr = aggressorHandle.get(); aggressorPtr)
+							{
+								if(const auto aggressor = aggressorPtr.get(); aggressor){
+
+									if(aggressor == a_target && !aggressor->IsHostileToActor(a_subject) 
+									&& aggressor->AsActorValueOwner()->GetActorValue(RE::ActorValue::kAggression) <= 1){
+
+										if (a_hitData->flags && a_hitData->flags.any(RE::HitData::Flag::kExplosion))
+										{
+											logger::info("Hit is an explosion");
+
+											if (a_hitData->totalDamage)
+											{
+												logger::info("totalDamage: {:.2f}", a_hitData->totalDamage);
+
+												if (a_hitData->totalDamage <= 10.0f)
+												{
+													switch (Events::GetFactionReaction(a_subject, aggressor))
+													{
+													case RE::FIGHT_REACTION::kNeutral:
+													case RE::FIGHT_REACTION::kFriend:
+													case RE::FIGHT_REACTION::kAlly:
+
+														reaction = RE::FIGHT_REACTION::kAlly;
+														break;
+
+													default:
+														break;
+													}
+												}
+											}
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+
+		return reaction;
+	}
+
 	void Events::install(){
 
 		auto eventSink = OurEventSink::GetSingleton();

@@ -371,6 +371,7 @@ namespace Events_Space
 		}
 
 		bool Analyse(RE::Explosion *a_this);
+		RE::FIGHT_REACTION Process_Hit(RE::Actor *a_subject, RE::Actor *a_target, RE::FIGHT_REACTION a_reaction);
 
 		/*Hook Explosion sink*/
 		static void Register()
@@ -393,9 +394,26 @@ namespace Events_Space
 			static inline REL::Relocation<decltype(thunk)> func;
 		};
 
+		struct GetFactionFightReaction
+		{
+			static RE::FIGHT_REACTION thunk(RE::Actor *a_subject, RE::Actor *a_player)
+			{
+				const auto fightReaction = func(a_subject, a_player);
+				if (a_subject && a_player)
+				{
+					return GetSingleton()->Process_Hit(a_subject, a_player, fightReaction);
+				}
+				return fightReaction;
+			}
+			static inline REL::Relocation<decltype(thunk)> func;
+		};
+
 		static void Install()
 		{
 			stl::write_vfunc<RE::Explosion, 0x66, ExplosionHandler>();
+
+			REL::Relocation<std::uintptr_t> target{RELOCATION_ID(37672, 38626), OFFSET(0x187, 0x182)};
+			stl::write_thunk_call<GetFactionFightReaction>(target.address());
 		}
 	};
 };
