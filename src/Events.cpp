@@ -1091,28 +1091,23 @@ namespace Events_Space
 									&& aggressor->AsActorValueOwner()->GetActorValue(RE::ActorValue::kAggression) <= 1){
 										logger::info("aggressor is target and is reasonable");
 
-										if (a_hitData->flags && a_hitData->flags.any(RE::HitData::Flag::kExplosion))
+										if (a_hitData->totalDamage)
 										{
-											logger::info("Hit is an explosion");
+											logger::info("totalDamage: {:.2f}", a_hitData->totalDamage);
 
-											if (a_hitData->totalDamage)
+											if (a_hitData->totalDamage <= 10.0f)
 											{
-												logger::info("totalDamage: {:.2f}", a_hitData->totalDamage);
-
-												if (a_hitData->totalDamage <= 10.0f)
+												switch (Events::GetFactionReaction(a_subject, aggressor))
 												{
-													switch (Events::GetFactionReaction(a_subject, aggressor))
-													{
-													case RE::FIGHT_REACTION::kNeutral:
-													case RE::FIGHT_REACTION::kFriend:
-													case RE::FIGHT_REACTION::kAlly:
+												case RE::FIGHT_REACTION::kNeutral:
+												case RE::FIGHT_REACTION::kFriend:
+												case RE::FIGHT_REACTION::kAlly:
 
-														reaction = RE::FIGHT_REACTION::kAlly;
-														break;
+													reaction = RE::FIGHT_REACTION::kAlly;
+													break;
 
-													default:
-														break;
-													}
+												default:
+													break;
 												}
 											}
 										}
