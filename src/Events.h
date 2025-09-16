@@ -375,6 +375,8 @@ namespace Events_Space
 		bool Analyse(RE::Explosion *a_this);
 		RE::FIGHT_REACTION Process_Hit(RE::Actor *a_subject, RE::Actor *a_target, RE::FIGHT_REACTION a_reaction);
 		bool Process_HitHandle(RE::TESObjectREFR *a_target, RE::TESObjectREFR *a_source, RE::HitData *a_hitData);
+		bool Analyse_Hits(RE::hkpAllCdPointCollector *a_AllCdPointCollector);
+		bool Analyse_Hits1(RE::TESObjectREFR *a_source, RE::TESObjectREFR *a_target);
 
 		/*Hook Explosion sink*/
 		static void Register()
@@ -438,6 +440,19 @@ namespace Events_Space
 			static inline REL::Relocation<decltype(thunk)> func;
 		};
 
+		struct HitHandle3{
+
+			static bool thunk(RE::hkpAllCdPointCollector *a_collector, RE::bhkWorld *a_world, RE::NiPoint3 &a_origin, RE::NiPoint3 &a_direction, float a_length)
+			{
+				if (GetSingleton()->Analyse_Hits(a_collector))
+				{
+					return false;
+				}
+				return func(a_collector, a_world, a_origin, a_direction, a_length);
+			}
+			static inline REL::Relocation<decltype(thunk)> func;
+		};
+
 		static void Install()
 		{
 			// stl::write_vfunc<RE::Explosion, 0x66, ExplosionHandler>();
@@ -445,11 +460,14 @@ namespace Events_Space
 			// REL::Relocation<std::uintptr_t> target{RELOCATION_ID(37672, 38626), OFFSET(0x187, 0x182)};
 			// stl::write_thunk_call<GetFactionFightReaction>(target.address());
 
-			REL::Relocation<std::uintptr_t> hook2{RELOCATION_ID(37673, 38627), OFFSET(0x1B7, 0x1C6)};
-			stl::write_thunk_call<HitHandle1>(hook2.address());
+			// REL::Relocation<std::uintptr_t> hook2{RELOCATION_ID(37673, 38627), OFFSET(0x1B7, 0x1C6)};
+			// stl::write_thunk_call<HitHandle1>(hook2.address());
 
-			REL::Relocation<std::uintptr_t> hook3{RELOCATION_ID(37674, 38628), OFFSET(0xEB, 0x110)};
-			stl::write_thunk_call<HitHandle2>(hook3.address());
+			// REL::Relocation<std::uintptr_t> hook3{RELOCATION_ID(37674, 38628), OFFSET(0xEB, 0x110)};
+			// stl::write_thunk_call<HitHandle2>(hook3.address());
+
+			REL::Relocation<std::uintptr_t> hook4{RELOCATION_ID(37674, 38628), OFFSET(0x26A, 0x294)};
+			stl::write_thunk_call<HitHandle3>(hook4.address());
 		}
 	};
 };

@@ -1262,6 +1262,95 @@ namespace Events_Space
 		return ignoredamage;
 	}
 
+	bool ExplosionCollision::Analyse_Hits(RE::hkpAllCdPointCollector *a_AllCdPointCollector)
+	{
+		bool result = false;
+
+		if (a_AllCdPointCollector)
+		{
+
+			for (auto &hit : a_AllCdPointCollector->hits)
+			{
+				auto refrA = RE::TESHavokUtilities::FindCollidableRef(*hit.rootCollidableA);
+				auto refrB = RE::TESHavokUtilities::FindCollidableRef(*hit.rootCollidableB);
+				if (refrA && refrA->Is(RE::FormType::ActorCharacter))
+				{
+					logger::info("Refr A is actor");
+					if (refrB && (refrB->Is(RE::FormType::Explosion) || refrB->AsExplosion()))
+					{
+						logger::info("Refr B is Explosion");
+
+						if(GetSingleton()->Analyse_Hits1(refrB, refrA)){
+							result = true;
+						}
+					}
+				}
+
+				if (refrB && refrB->Is(RE::FormType::ActorCharacter))
+				{
+					logger::info("Refr B is actor");
+					if (refrA && (refrA->Is(RE::FormType::Explosion) || refrA->AsExplosion()))
+					{
+						logger::info("Refr A is Explosion");
+
+						if(GetSingleton()->Analyse_Hits1(refrA, refrB)){
+							result = true;
+						}
+					}
+				}
+			}
+		}
+		return result;
+	}
+
+	bool ExplosionCollision::Analyse_Hits1(RE::TESObjectREFR *a_source, RE::TESObjectREFR *a_target)
+	{
+		bool ignore = false;
+
+		if(a_source){
+
+			logger::info("Source Ref deferenced");
+			if (a_source->AsExplosion())
+			{
+				logger::info("Source Ref succesfully converted to explosion");
+				if (const auto blameActorHandle = a_source->AsExplosion()->GetExplosionRuntimeData().actorOwner; blameActorHandle)
+				{
+					if (const auto blameActorPtr = blameActorHandle.get(); blameActorPtr)
+					{
+						if (const auto blameActor = blameActorPtr.get(); blameActor)
+						{
+							logger::info("{} caused an explosion", blameActor->GetName());
+
+							if (a_target && a_target->Is(RE::FormType::ActorCharacter))
+							{
+								if (const auto target = a_target->As<RE::Actor>(); target)
+								{
+									logger::info("{} is the target", target->GetName());
+
+									if (!blameActor->IsHostileToActor(target))
+									{
+										logger::info("no hostility");
+
+										if (!(a_source->AsExplosion()->GetExplosionRuntimeData().damage) || (a_source->AsExplosion()->GetExplosionRuntimeData().damage <= 20.0f))
+										{
+											logger::info("low dmg");
+											if (HitEventHandler::GetSingleton()->PreProcessExplosion(target, blameActor))
+											{
+												ignore = true;
+											}
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+
+		return ignore;
+	}
+
 	void Events::install(){
 
 		auto eventSink = OurEventSink::GetSingleton();
