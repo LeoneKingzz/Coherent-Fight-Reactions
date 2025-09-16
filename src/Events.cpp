@@ -1110,50 +1110,156 @@ namespace Events_Space
 
 	bool ExplosionCollision::Process_HitHandle(RE::TESObjectREFR *a_target, RE::TESObjectREFR *a_source, RE::HitData *a_hitData)
 	{
-		bool ignore = false;
+		bool ignoredamage = false;
 
-		if(a_source){
+		if(a_hitData){
+			logger::info("hitdata present");
 
-			logger::info("Source Ref deferenced");
-			if (a_source->AsExplosion())
+			auto aggressor = a_hitData->aggressor ? a_hitData->aggressor.get().get() : nullptr;
+
+			auto HdSingle = RE::TESDataHandler::GetSingleton();
+
+			
+
+			const auto CurrentFollowerFaction = RE::TESForm::LookupByEditorID<RE::TESFaction>("CurrentFollowerFaction");
+			const auto CFRs_PlayerAlliesFaction = RE::TESForm::LookupByEditorID<RE::TESFaction>("CFRs_PlayerAlliesFaction");
+			const auto CFRs_PlayerFriendsFaction = RE::TESForm::LookupByEditorID<RE::TESFaction>("CFRs_PlayerFriendsFaction");
+			// const auto CFRs_NPCNeutralsFaction = RE::TESForm::LookupByEditorID<RE::TESFaction>("CFRs_NPCNeutralsFaction");
+
+			if (a_source)
 			{
-				logger::info("Source Ref succesfully converted to explosion");
-				if (const auto blameActorHandle = a_source->AsExplosion()->GetExplosionRuntimeData().actorOwner; blameActorHandle)
+				logger::info("Source Ref deferenced");
+
+				if (a_source->Is(RE::FormType::Explosion))
 				{
-					if (const auto blameActorPtr = blameActorHandle.get(); blameActorPtr)
+					logger::info("source ref is explosion");
+				}
+
+				logger::info("{} is the source name ", a_source->GetName());
+
+				if (a_source->GetOwner())
+				{
+					logger::info("source ref is explosion");
+					logger::info("{} is the source owner ", a_source->GetOwner()->GetName());
+				}
+
+				if (a_source->GetActorOwner())
+				{
+					logger::info("source ref is actor");
+					logger::info("{} is the actor owner ", a_source->GetActorOwner()->GetName());
+				}
+			}
+
+			if (aggressor && a_target && a_target->Is(RE::FormType::ActorCharacter))
+			{
+				const auto target = a_target->As<RE::Actor>();
+				logger::info("{} attacked {} ", aggressor->GetName(), target->GetName());
+
+				if ((!target->IsHostileToActor(aggressor) && (target->AsActorValueOwner() && target->AsActorValueOwner()->GetActorValue(RE::ActorValue::kAggression) <= 1) && target->IsPlayerTeammate()) || (target->IsCommandedActor() && target->GetCommandingActor().get() && ((target->GetCommandingActor().get()->IsPlayerRef()) || (target->GetCommandingActor().get()->IsPlayerTeammate()))))
+				{
+					if (CFRs_PlayerAlliesFaction && !target->IsInFaction(CFRs_PlayerAlliesFaction))
 					{
-						if (const auto blameActor = blameActorPtr.get(); blameActor)
+						target->AddToFaction(CFRs_PlayerAlliesFaction, 0);
+					}
+					if (target->AsActorValueOwner()->GetActorValue(RE::ActorValue::kAssistance) != 2)
+					{
+						target->AsActorValueOwner()->SetActorValue(RE::ActorValue::kAssistance, 2);
+					}
+					if ((target->formFlags & RE::TESObjectREFR::RecordFlags::kIgnoreFriendlyHits) == 0)
+					{
+						target->formFlags |= RE::TESObjectREFR::RecordFlags::kIgnoreFriendlyHits;
+					}
+				}
+				else if (CFRs_PlayerAlliesFaction && target->IsInFaction(CFRs_PlayerAlliesFaction))
+				{
+					Events::RemoveFromFaction(target, CFRs_PlayerAlliesFaction);
+				}
+				if ((!aggressor->IsHostileToActor(target) && (aggressor->AsActorValueOwner() && aggressor->AsActorValueOwner()->GetActorValue(RE::ActorValue::kAggression) <= 1) && aggressor->IsPlayerTeammate()) || (aggressor->IsCommandedActor() && aggressor->GetCommandingActor().get() && ((aggressor->GetCommandingActor().get()->IsPlayerRef()) || (aggressor->GetCommandingActor().get()->IsPlayerTeammate()))))
+				{
+					if (CFRs_PlayerAlliesFaction && !aggressor->IsInFaction(CFRs_PlayerAlliesFaction))
+					{
+						aggressor->AddToFaction(CFRs_PlayerAlliesFaction, 0);
+					}
+					if (aggressor->AsActorValueOwner()->GetActorValue(RE::ActorValue::kAssistance) != 2)
+					{
+						aggressor->AsActorValueOwner()->SetActorValue(RE::ActorValue::kAssistance, 2);
+					}
+					if ((aggressor->formFlags & RE::TESObjectREFR::RecordFlags::kIgnoreFriendlyHits) == 0)
+					{
+						aggressor->formFlags |= RE::TESObjectREFR::RecordFlags::kIgnoreFriendlyHits;
+					}
+				}
+				else if (CFRs_PlayerAlliesFaction && aggressor->IsInFaction(CFRs_PlayerAlliesFaction))
+				{
+					Events::RemoveFromFaction(aggressor, CFRs_PlayerAlliesFaction);
+				}
+
+				if (Events::GetFactionReaction(target, aggressor) == RE::FIGHT_REACTION::kNeutral)
+				{
+					// logger::info("Neutral Branch Active");
+
+					if (!target->IsHostileToActor(aggressor) && target->AsActorValueOwner()->GetActorValue(RE::ActorValue::kAggression) <= 1)
+					{
+
+						if (aggressor->IsPlayerRef() || (CFRs_PlayerAlliesFaction && aggressor->IsInFaction(CFRs_PlayerAlliesFaction)) || (CurrentFollowerFaction && aggressor->IsInFaction(CurrentFollowerFaction)))
 						{
-							logger::info("{} caused an explosion", blameActor->GetName());
-
-							if (a_target && a_target->Is(RE::FormType::ActorCharacter))
+							if (const auto CFRs_FriendlyFire_Off = skyrim_cast<RE::TESGlobal *>(HdSingle->LookupForm(0x804, "Coherent Fight Reactions.esp")); CFRs_FriendlyFire_Off)
 							{
-								if (const auto target = a_target->As<RE::Actor>(); target)
+								if (CFRs_FriendlyFire_Off->value == 1.0f)
 								{
-									logger::info("{} is the target", target->GetName());
 
-									if (!blameActor->IsHostileToActor(target))
-									{
-										logger::info("no hostility");
+									ignoredamage = true;
+								}
+							}
+						}
+						else
+						{
+							if (CurrentFollowerFaction && CFRs_PlayerAlliesFaction && !target->IsPlayerRef() && !target->IsInFaction(CFRs_PlayerAlliesFaction) && !target->IsInFaction(CurrentFollowerFaction))
+							{
+								// do nothing
+							}
+							else
+							{
+								ignoredamage = true;
+							}
+						}
+					}
+				}
+				else if (Events::GetFactionReaction(target, aggressor) >= RE::FIGHT_REACTION::kAlly)
+				{
+					// logger::info("Allied Branch Active");
 
-										if (!(a_source->AsExplosion()->GetExplosionRuntimeData().damage && a_hitData->totalDamage) || (a_source->AsExplosion()->GetExplosionRuntimeData().damage <= 20.0f && a_hitData->totalDamage <= 20.0f))
-										{
-											logger::info("low dmg");
-											if (HitEventHandler::GetSingleton()->PreProcessExplosion(target, blameActor))
-											{
-												ignore = true;
-											}
-										}
-									}
+					if (!target->IsHostileToActor(aggressor))
+					{
+						if (aggressor->IsPlayerRef() || (CFRs_PlayerAlliesFaction && aggressor->IsInFaction(CFRs_PlayerAlliesFaction)) || (CurrentFollowerFaction && aggressor->IsInFaction(CurrentFollowerFaction)))
+						{
+							if (const auto CFRs_FriendlyFire_Off = skyrim_cast<RE::TESGlobal *>(HdSingle->LookupForm(0x804, "Coherent Fight Reactions.esp")); CFRs_FriendlyFire_Off)
+							{
+								if (CFRs_FriendlyFire_Off->value == 1.0f)
+								{
+
+									ignoredamage = true;
 								}
 							}
 						}
 					}
 				}
+
+				if (ignoredamage && Actor_GetCombatState(target) != RE::ACTOR_COMBAT_STATE::kCombat)
+				{
+					if (Settings::GetSingleton()->general.bDebugMode)
+					{
+						logger::info("{} ignored attack from {} ", target->GetName(), aggressor->GetName());
+					}
+				}
+				else
+				{
+					ignoredamage = false;
+				}
 			}
 		}
 
-		return ignore;
+		return ignoredamage;
 	}
 
 	void Events::install(){
@@ -1475,3 +1581,48 @@ namespace Events_Space
 // 		}
 // 	}
 // }
+
+// bool ignore = false;
+
+// if(a_source){
+
+// 	logger::info("Source Ref deferenced");
+// 	if (a_source->AsExplosion())
+// 	{
+// 		logger::info("Source Ref succesfully converted to explosion");
+// 		if (const auto blameActorHandle = a_source->AsExplosion()->GetExplosionRuntimeData().actorOwner; blameActorHandle)
+// 		{
+// 			if (const auto blameActorPtr = blameActorHandle.get(); blameActorPtr)
+// 			{
+// 				if (const auto blameActor = blameActorPtr.get(); blameActor)
+// 				{
+// 					logger::info("{} caused an explosion", blameActor->GetName());
+
+// 					if (a_target && a_target->Is(RE::FormType::ActorCharacter))
+// 					{
+// 						if (const auto target = a_target->As<RE::Actor>(); target)
+// 						{
+// 							logger::info("{} is the target", target->GetName());
+
+// 							if (!blameActor->IsHostileToActor(target))
+// 							{
+// 								logger::info("no hostility");
+
+// 								if (!(a_source->AsExplosion()->GetExplosionRuntimeData().damage && a_hitData->totalDamage) || (a_source->AsExplosion()->GetExplosionRuntimeData().damage <= 20.0f && a_hitData->totalDamage <= 20.0f))
+// 								{
+// 									logger::info("low dmg");
+// 									if (HitEventHandler::GetSingleton()->PreProcessExplosion(target, blameActor))
+// 									{
+// 										ignore = true;
+// 									}
+// 								}
+// 							}
+// 						}
+// 					}
+// 				}
+// 			}
+// 		}
+// 	}
+// }
+
+// return ignore;
