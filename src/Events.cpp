@@ -1245,7 +1245,7 @@ namespace Events_Space
 					}
 				}
 
-				if (ignoredamage && Actor_GetCombatState(target) != RE::ACTOR_COMBAT_STATE::kCombat)
+				if (ignoredamage)
 				{
 					if (Settings::GetSingleton()->general.bDebugMode)
 					{
