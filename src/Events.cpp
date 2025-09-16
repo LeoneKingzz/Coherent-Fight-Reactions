@@ -1112,50 +1112,36 @@ namespace Events_Space
 	{
 		bool ignore = false;
 
-		if(a_hitData){
+		if(a_source){
 
-			if (const auto sourceRefHandle = a_hitData->sourceRef; sourceRefHandle)
+			logger::info("Source Ref deferenced");
+			if (a_source->AsExplosion())
 			{
-				logger::info("Source Ref Identified");
-				if (const auto sourceRefPtr = sourceRefHandle.get(); sourceRefPtr)
+				logger::info("Source Ref succesfully converted to explosion");
+				if (const auto blameActorHandle = a_source->AsExplosion()->GetExplosionRuntimeData().actorOwner; blameActorHandle)
 				{
-					if (const auto sourceRef = sourceRefPtr.get(); sourceRef)
+					if (const auto blameActorPtr = blameActorHandle.get(); blameActorPtr)
 					{
-						logger::info("Source Ref deferenced");
-						if (sourceRef->AsExplosion())
+						if (const auto blameActor = blameActorPtr.get(); blameActor)
 						{
-							logger::info("Source Ref succesfully converted to explosion");
-							if (const auto blameActorHandle = sourceRef->AsExplosion()->GetExplosionRuntimeData().actorOwner; blameActorHandle)
+							logger::info("{} caused an explosion", blameActor->GetName());
+
+							if (a_target && a_target->Is(RE::FormType::ActorCharacter))
 							{
-								if (const auto blameActorPtr = blameActorHandle.get(); blameActorPtr)
+								if (const auto target = a_target->As<RE::Actor>(); target)
 								{
-									if (const auto blameActor = blameActorPtr.get(); blameActor)
+									logger::info("{} is the target", target->GetName());
+
+									if (!blameActor->IsHostileToActor(target))
 									{
-										logger::info("{} caused an explosion", blameActor->GetName());
+										logger::info("no hostility");
 
-										if (const auto targetHandle = a_hitData->target; targetHandle)
+										if (!(a_source->AsExplosion()->GetExplosionRuntimeData().damage && a_hitData->totalDamage) || (a_source->AsExplosion()->GetExplosionRuntimeData().damage <= 20.0f && a_hitData->totalDamage <= 20.0f))
 										{
-
-											if (const auto targetPtr = targetHandle.get(); targetPtr)
+											logger::info("low dmg");
+											if (HitEventHandler::GetSingleton()->PreProcessExplosion(target, blameActor))
 											{
-
-												if (const auto target = targetPtr.get(); target)
-												{
-													logger::info("{} is the target", target->GetName());
-
-													if (!blameActor->IsHostileToActor(target))
-													{
-														logger::info("no hostility");
-
-														if (!(sourceRef->AsExplosion()->GetExplosionRuntimeData().damage && a_hitData->totalDamage) || (sourceRef->AsExplosion()->GetExplosionRuntimeData().damage <= 20.0f && a_hitData->totalDamage <= 20.0f))
-														{
-															if (HitEventHandler::GetSingleton()->PreProcessExplosion(target, blameActor))
-															{
-																ignore = true;
-															}
-														}
-													}
-												}
+												ignore = true;
 											}
 										}
 									}
