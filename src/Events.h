@@ -449,7 +449,7 @@ namespace Events_Space
 			stl::write_thunk_call<HitHandle1>(hook2.address());
 
 			REL::Relocation<std::uintptr_t> hook3{RELOCATION_ID(37674, 38628), OFFSET(0xEB, 0x110)};
-			stl::write_thunk_call<HitHandle1>(hook3.address());
+			stl::write_thunk_call<HitHandle2>(hook3.address());
 		}
 	};
 };
