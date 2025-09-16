@@ -14,7 +14,7 @@ void MessageHandler(SKSE::MessagingInterface::Message *a_msg)
 		break;
 
 	case SKSE::MessagingInterface::kPostPostLoad:
-		//Events_Space::Events::GetSingleton()->init();
+		// Events_Space::Events::GetSingleton()->init();
 		break;
 
 	default:

@@ -1108,6 +1108,68 @@ namespace Events_Space
 		return reaction;
 	}
 
+	bool ExplosionCollision::Process_HitHandle(RE::TESObjectREFR *a_target, RE::TESObjectREFR *a_source, RE::HitData *a_hitData)
+	{
+		bool ignore = false;
+
+		if(a_hitData){
+
+			if (const auto sourceRefHandle = a_hitData->sourceRef; sourceRefHandle)
+			{
+				logger::info("Source Ref Identified");
+				if (const auto sourceRefPtr = sourceRefHandle.get(); sourceRefPtr)
+				{
+					if (const auto sourceRef = sourceRefPtr.get(); sourceRef)
+					{
+						logger::info("Source Ref deferenced");
+						if (sourceRef->AsExplosion())
+						{
+							logger::info("Source Ref succesfully converted to explosion");
+							if (const auto blameActorHandle = sourceRef->AsExplosion()->GetExplosionRuntimeData().actorOwner; blameActorHandle)
+							{
+								if (const auto blameActorPtr = blameActorHandle.get(); blameActorPtr)
+								{
+									if (const auto blameActor = blameActorPtr.get(); blameActor)
+									{
+										logger::info("{} caused an explosion", blameActor->GetName());
+
+										if (const auto targetHandle = a_hitData->target; targetHandle)
+										{
+
+											if (const auto targetPtr = targetHandle.get(); targetPtr)
+											{
+
+												if (const auto target = targetPtr.get(); target)
+												{
+													logger::info("{} is the target", target->GetName());
+
+													if (!blameActor->IsHostileToActor(target))
+													{
+														logger::info("no hostility");
+
+														if (!(sourceRef->AsExplosion()->GetExplosionRuntimeData().damage && a_hitData->totalDamage) || (sourceRef->AsExplosion()->GetExplosionRuntimeData().damage <= 20.0f && a_hitData->totalDamage <= 20.0f))
+														{
+															if (HitEventHandler::GetSingleton()->PreProcessExplosion(target, blameActor))
+															{
+																ignore = true;
+															}
+														}
+													}
+												}
+											}
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+
+		return ignore;
+	}
+
 	void Events::install(){
 
 		auto eventSink = OurEventSink::GetSingleton();
@@ -1216,7 +1278,8 @@ namespace Events_Space
 	{
 		_precision_API = reinterpret_cast<PRECISION_API::IVPrecision1*>(PRECISION_API::RequestPluginAPI());
 		if (_precision_API) {
-			_precision_API->AddPostHitCallback(SKSE::GetPluginHandle(), PrecisionWeaponsCallback_Post);
+			// _precision_API->AddPostHitCallback(SKSE::GetPluginHandle(), PrecisionWeaponsCallback_Post);
+			_precision_API->AddCollisionFilterComparisonCallback(SKSE::GetPluginHandle(), Add_Collision_Filter);
 			logger::info("Enabled compatibility with Precision");
 		}
 	}
@@ -1229,8 +1292,24 @@ namespace Events_Space
 		return;
 	}
 
+	PRECISION_API::CollisionFilterComparisonResult Events::Add_Collision_Filter(RE::bhkCollisionFilter *a_collisionFilter, uint32_t a_filterInfoA, uint32_t a_filterInfoB)
+	{
 
+		PRECISION_API::CollisionFilterComparisonResult returnData = PRECISION_API::CollisionFilterComparisonResult::Continue;
 
+		RE::COL_LAYER layerA = static_cast<RE::COL_LAYER>(a_filterInfoA & 0x7f);
+		RE::COL_LAYER layerB = static_cast<RE::COL_LAYER>(a_filterInfoB & 0x7f);
+
+		if (layerA != RE::COL_LAYER::kCharController && layerB != RE::COL_LAYER::kCharController)
+		{
+			// Neither collidee is a character controller
+			return returnData;
+		}
+
+		// a_collisionFilter->bipedBitfields;
+
+		return returnData;
+	}
 
 	void Settings::Load(){
 		constexpr auto path = "Data\\SKSE\\Plugins\\CoherentFightReactions.ini";

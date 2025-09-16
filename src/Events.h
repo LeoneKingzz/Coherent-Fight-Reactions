@@ -209,6 +209,8 @@ namespace Events_Space
 		PRECISION_API::IVPrecision1* _precision_API;
 		static void PrecisionWeaponsCallback_Post(const PRECISION_API::PrecisionHitData& a_precisionHitData, const RE::HitData& a_hitdata);
 
+		static PRECISION_API::CollisionFilterComparisonResult Add_Collision_Filter(RE::bhkCollisionFilter *a_collisionFilter, uint32_t a_filterInfoA, uint32_t a_filterInfoB);
+
 	protected:
 
 		struct Actor_Update
@@ -372,6 +374,7 @@ namespace Events_Space
 
 		bool Analyse(RE::Explosion *a_this);
 		RE::FIGHT_REACTION Process_Hit(RE::Actor *a_subject, RE::Actor *a_target, RE::FIGHT_REACTION a_reaction);
+		bool Process_HitHandle(RE::TESObjectREFR *a_target, RE::TESObjectREFR *a_source, RE::HitData *a_hitData);
 
 		/*Hook Explosion sink*/
 		static void Register()
@@ -408,12 +411,45 @@ namespace Events_Space
 			static inline REL::Relocation<decltype(thunk)> func;
 		};
 
+		struct HitHandle1{
+
+			static void thunk(RE::HitData *a_this, RE::TESObjectREFR *a_source, RE::TESObjectREFR *a_target, RE::InventoryEntryData *a_weapon, bool a_bIsOffhand)
+			{
+				if (GetSingleton()->Process_HitHandle(a_target, a_source, a_this))
+				{
+					return;
+				}
+				return func(a_this, a_source, a_target, a_weapon, a_bIsOffhand);
+			}
+			static inline REL::Relocation<decltype(thunk)> func;
+			
+		};
+
+		struct HitHandle2{
+
+			static void thunk(RE::HitData *a_this, RE::TESObjectREFR *a_source, RE::TESObjectREFR *a_target, RE::InventoryEntryData *a_weapon, bool a_bIsOffhand)
+			{
+				if (GetSingleton()->Process_HitHandle(a_target, a_source, a_this))
+				{
+					return;
+				}
+				return func(a_this, a_source, a_target, a_weapon, a_bIsOffhand);
+			}
+			static inline REL::Relocation<decltype(thunk)> func;
+		};
+
 		static void Install()
 		{
 			// stl::write_vfunc<RE::Explosion, 0x66, ExplosionHandler>();
 
-			REL::Relocation<std::uintptr_t> target{RELOCATION_ID(37672, 38626), OFFSET(0x187, 0x182)};
-			stl::write_thunk_call<GetFactionFightReaction>(target.address());
+			// REL::Relocation<std::uintptr_t> target{RELOCATION_ID(37672, 38626), OFFSET(0x187, 0x182)};
+			// stl::write_thunk_call<GetFactionFightReaction>(target.address());
+
+			REL::Relocation<std::uintptr_t> hook2{RELOCATION_ID(37673, 38627), OFFSET(0x1B7, 0x1C6)};
+			stl::write_thunk_call<HitHandle1>(hook2.address());
+
+			REL::Relocation<std::uintptr_t> hook3{RELOCATION_ID(37674, 38628), OFFSET(0xEB, 0x110)};
+			stl::write_thunk_call<HitHandle1>(hook3.address());
 		}
 	};
 };
