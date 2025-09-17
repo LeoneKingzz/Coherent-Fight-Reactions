@@ -387,11 +387,11 @@ namespace Events_Space
 	protected:
 		struct ExplosionHandler
 		{
-			static RE::ActorCause* thunk(RE::Explosion *a_this)
+			static void thunk(RE::Explosion *a_this)
 			{
 				if (GetSingleton()->Analyse(a_this))
 				{
-					return nullptr;
+					return;
 				}
 
 				return func(a_this);
