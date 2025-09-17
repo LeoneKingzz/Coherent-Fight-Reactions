@@ -387,14 +387,17 @@ namespace Events_Space
 	protected:
 		struct ExplosionHandler
 		{
-			static void thunk(RE::Explosion *a_this)
+			static void thunk(RE::Explosion *a_this, RE::ActorCause *a_cause)
 			{
 				if (GetSingleton()->Analyse(a_this))
 				{
-					return;
+					a_this->GetExplosionRuntimeData().actorOwner.reset();
+					RE::ActorCause* b_cause = new RE::ActorCause;
+
+					return func(a_this, b_cause);
 				}
 
-				return func(a_this);
+				return func(a_this, a_cause);
 			}
 			static inline REL::Relocation<decltype(thunk)> func;
 		};
