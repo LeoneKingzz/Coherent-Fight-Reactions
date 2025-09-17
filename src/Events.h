@@ -387,11 +387,11 @@ namespace Events_Space
 	protected:
 		struct ExplosionHandler
 		{
-			static void thunk(RE::Explosion *a_this)
+			static RE::Explosion *thunk(RE::Explosion *a_this)
 			{
 				if (GetSingleton()->Analyse(a_this))
 				{
-					return;
+					return nullptr;
 				}
 
 				return func(a_this);
@@ -455,7 +455,7 @@ namespace Events_Space
 
 		static void Install()
 		{
-			// stl::write_vfunc<RE::Explosion, 0x66, ExplosionHandler>();
+			stl::write_vfunc<RE::Explosion, 0x8E, ExplosionHandler>();
 
 			// REL::Relocation<std::uintptr_t> target{RELOCATION_ID(37672, 38626), OFFSET(0x187, 0x182)};
 			// stl::write_thunk_call<GetFactionFightReaction>(target.address());
@@ -466,8 +466,8 @@ namespace Events_Space
 			// REL::Relocation<std::uintptr_t> hook3{RELOCATION_ID(37674, 38628), OFFSET(0xEB, 0x110)};
 			// stl::write_thunk_call<HitHandle2>(hook3.address());
 
-			REL::Relocation<std::uintptr_t> hook4{RELOCATION_ID(37674, 38628), OFFSET(0x26A, 0x294)};
-			stl::write_thunk_call<HitHandle3>(hook4.address());
+			// REL::Relocation<std::uintptr_t> hook4{RELOCATION_ID(37674, 38628), OFFSET(0x26A, 0x294)};
+			// stl::write_thunk_call<HitHandle3>(hook4.address());
 		}
 	};
 };
