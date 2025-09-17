@@ -387,17 +387,14 @@ namespace Events_Space
 	protected:
 		struct ExplosionHandler
 		{
-			static void thunk(RE::Explosion *a_this, RE::ActorCause *a_cause)
+			static void thunk(RE::Explosion *a_this)
 			{
 				if (GetSingleton()->Analyse(a_this))
 				{
-					a_this->GetExplosionRuntimeData().actorOwner.reset();
-					RE::ActorCause* b_cause = new RE::ActorCause;
-
-					return func(a_this, b_cause);
+					return;
 				}
 
-				return func(a_this, a_cause);
+				return func(a_this);
 			}
 			static inline REL::Relocation<decltype(thunk)> func;
 		};
@@ -458,7 +455,7 @@ namespace Events_Space
 
 		static void Install()
 		{
-			stl::write_vfunc<RE::Explosion, 0x50, ExplosionHandler>();
+			stl::write_vfunc<RE::Explosion, 0xA4, ExplosionHandler>();
 
 			// REL::Relocation<std::uintptr_t> target{RELOCATION_ID(37672, 38626), OFFSET(0x187, 0x182)};
 			// stl::write_thunk_call<GetFactionFightReaction>(target.address());

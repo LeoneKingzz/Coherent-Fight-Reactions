@@ -1039,6 +1039,10 @@ namespace Events_Space
 						if(!notarget || (target && target == blameActor)){
 
 							result = true;
+							a_this->GetExplosionRuntimeData().actorOwner.reset();
+							a_this->GetExplosionRuntimeData().actorCause.reset();
+							a_this->GetExplosionRuntimeData().damage = 0.0f;
+							a_this->GetExplosionRuntimeData().radius = 0.0f;
 						}
 					}
 				}
