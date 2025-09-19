@@ -1005,45 +1005,21 @@ namespace Events_Space
 		return ignorehit;
 	}
 
-	bool ExplosionCollision::Analyse(RE::Explosion *a_this)
+	bool ExplosionCollision::Analyse(RE::ActorMagicCaster *a_this, RE::MagicItem *a_spell, RE::TESObjectREFR *a_target, bool a_hostileEffectivenessOnly, RE::Actor *a_blameActor)
 	{
 		bool result = false;
 
-		if (a_this)
+		if (a_this && a_this->actor && a_spell)
 		{
-			if (const auto blameActorHandle = a_this->GetExplosionRuntimeData().actorOwner; blameActorHandle)
+			for (const auto &inv_effect : a_spell->effects)
 			{
-				if (const auto blameActorPtr = blameActorHandle.get(); blameActorPtr)
+				if (inv_effect && inv_effect->baseEffect && inv_effect->baseEffect->data.explosion)
 				{
-					if (const auto blameActor = blameActorPtr.get(); blameActor)
+					if (inv_effect->baseEffect->data.flags && inv_effect->baseEffect->data.flags.any(RE::EffectSetting::EffectSettingData::Flag::kHostile))
 					{
-						logger::info("{} caused an explosion", blameActor->GetName());
-
-						bool notarget = true;
-						RE::Actor * target = nullptr;
-						// a_this->GetMagicTarget()
-
-						if (const auto UnknownActorHandle = a_this->GetExplosionRuntimeData().unkF4; UnknownActorHandle)
-						{
-							if (const auto UnknownActorPtr = UnknownActorHandle.get(); UnknownActorPtr)
-							{
-								if (const auto UnknownActor = UnknownActorPtr.get(); UnknownActor)
-								{
-									logger::info("unknownActor: {}", UnknownActor->GetName());
-									notarget = false;
-									target  = UnknownActor;
-								}
-							}
-						}
-
-						if(!notarget || (target && target == blameActor)){
-
-							result = true;
-							a_this->GetExplosionRuntimeData().actorOwner.reset();
-							a_this->GetExplosionRuntimeData().actorCause.reset();
-							a_this->GetExplosionRuntimeData().damage = 0.0f;
-							a_this->GetExplosionRuntimeData().radius = 0.0f;
-						}
+						result = true;
+						logger::info("Identified");
+						break;
 					}
 				}
 			}
