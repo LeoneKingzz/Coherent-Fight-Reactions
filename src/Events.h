@@ -372,7 +372,7 @@ namespace Events_Space
 			return &singleton;
 		}
 
-		bool Analyse(RE::ActorMagicCaster *a_this, RE::MagicItem *a_spell, RE::TESObjectREFR *a_target, bool a_hostileEffectivenessOnly, RE::Actor *a_blameActor);
+		
 		RE::FIGHT_REACTION Process_Hit(RE::Actor *a_subject, RE::Actor *a_target, RE::FIGHT_REACTION a_reaction);
 		bool Process_HitHandle(RE::TESObjectREFR *a_target, RE::TESObjectREFR *a_source, RE::HitData *a_hitData);
 		bool Analyse_Hits(RE::hkpAllCdPointCollector *a_AllCdPointCollector);
@@ -389,11 +389,7 @@ namespace Events_Space
 		{
 			static void thunk(RE::ActorMagicCaster* a_this, RE::MagicItem *a_spell, bool a_noHitEffectArt, RE::TESObjectREFR *a_target, float a_effectiveness, bool a_hostileEffectivenessOnly, float a_magnitudeOverride, RE::Actor *a_blameActor)
 			{
-				if (GetSingleton()->Analyse(a_this, a_spell,a_target, a_hostileEffectivenessOnly,a_blameActor))
-				{
-					return func(a_this, a_spell, a_noHitEffectArt, a_target, a_effectiveness, true, a_magnitudeOverride, a_blameActor);
-				}
-				return func(a_this, a_spell, a_noHitEffectArt, a_target, a_effectiveness, a_hostileEffectivenessOnly, a_magnitudeOverride, a_blameActor);
+				
 			}
 			static inline REL::Relocation<decltype(thunk)> func;
 		};
@@ -454,7 +450,7 @@ namespace Events_Space
 
 		static void Install()
 		{
-			stl::write_vfunc<RE::ActorMagicCaster, 0x1, ExplosionHandler>();
+			// stl::write_vfunc<RE::ActorMagicCaster, 0x1, ExplosionHandler>();
 
 			// REL::Relocation<std::uintptr_t> target{RELOCATION_ID(36658, 37666), OFFSET(0x130, 0x120)};
 			// stl::write_thunk_call<GetFactionFightReaction>(target.address());
@@ -468,5 +464,72 @@ namespace Events_Space
 			// REL::Relocation<std::uintptr_t> hook4{RELOCATION_ID(37674, 38628), OFFSET(0x26A, 0x294)};
 			// stl::write_thunk_call<HitHandle3>(hook4.address());
 		}
+	};
+
+	class CastingHandler
+	{
+	private:
+		struct Character
+		{
+			static void Thunk(RE::ActorMagicCaster *a_this, RE::MagicItem *a_spell, bool a_noHitEffectArt, RE::TESObjectREFR *a_target, float a_effectiveness, bool a_hostileEffectivenessOnly, float a_magnitudeOverride, RE::Actor *a_blameActor)
+			{
+				if (GetSingleton()->Analyse(a_this, a_spell, a_target, a_hostileEffectivenessOnly, a_blameActor))
+				{
+					return func(a_this, a_spell, a_noHitEffectArt, a_target, a_effectiveness, true, a_magnitudeOverride, a_blameActor);
+				}
+				return func(a_this, a_spell, a_noHitEffectArt, a_target, a_effectiveness, a_hostileEffectivenessOnly, a_magnitudeOverride, a_blameActor);
+			}
+
+			inline static REL::Relocation<decltype(&Thunk)> func;
+		};
+
+		struct Player
+		{
+			static void Thunk(RE::ActorMagicCaster *a_this, RE::MagicItem *a_spell, bool a_noHitEffectArt, RE::TESObjectREFR *a_target, float a_effectiveness, bool a_hostileEffectivenessOnly, float a_magnitudeOverride, RE::Actor *a_blameActor)
+			{
+				if (GetSingleton()->Analyse(a_this, a_spell, a_target, a_hostileEffectivenessOnly, a_blameActor))
+				{
+					return func(a_this, a_spell, a_noHitEffectArt, a_target, a_effectiveness, true, a_magnitudeOverride, a_blameActor);
+				}
+				return func(a_this, a_spell, a_noHitEffectArt, a_target, a_effectiveness, a_hostileEffectivenessOnly, a_magnitudeOverride, a_blameActor);
+			}
+
+			inline static REL::Relocation<decltype(&Thunk)> func;
+		};
+
+	public:
+		static CastingHandler *GetSingleton()
+		{
+			static CastingHandler singleton;
+			return &singleton;
+		}
+
+		bool Analyse(RE::ActorMagicCaster *a_this, RE::MagicItem *a_spell, RE::TESObjectREFR *a_target, bool a_hostileEffectivenessOnly, RE::Actor *a_blameActor);
+
+		/*Hook magic apply sink*/
+		static void Register(bool player, bool NPC)
+		{
+			if (player)
+			{
+				logger::info("Sinking casting hook for player");
+				REL::Relocation<uintptr_t> pcPtr{RE::VTABLE_PlayerCharacter[3]};
+				Player::func = pcPtr.write_vfunc(0x1, Player::Thunk);
+			}
+			if (NPC)
+			{
+				logger::info("Sinking casting hook for NPC");
+				REL::Relocation<uintptr_t> npcPtr{RE::VTABLE_Character[3]};
+				Character::func = npcPtr.write_vfunc(0x1, Character::Thunk);
+			}
+			logger::info("Sinking complete.");
+		}
+
+		static void RegisterForPlayer()
+		{
+			Register(true, false);
+		}
+
+	protected:
+		
 	};
 };

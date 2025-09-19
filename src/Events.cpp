@@ -1005,12 +1005,13 @@ namespace Events_Space
 		return ignorehit;
 	}
 
-	bool ExplosionCollision::Analyse(RE::ActorMagicCaster *a_this, RE::MagicItem *a_spell, RE::TESObjectREFR *a_target, bool a_hostileEffectivenessOnly, RE::Actor *a_blameActor)
+	bool CastingHandler::Analyse(RE::ActorMagicCaster *a_this, RE::MagicItem *a_spell, RE::TESObjectREFR *a_target, bool a_hostileEffectivenessOnly, RE::Actor *a_blameActor)
 	{
 		bool result = false;
 
 		if (a_this && a_this->actor && a_spell)
 		{
+			logger::info("hook active");
 			for (const auto &inv_effect : a_spell->effects)
 			{
 				if (inv_effect && inv_effect->baseEffect && inv_effect->baseEffect->data.explosion)
