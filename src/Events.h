@@ -1,6 +1,6 @@
 #include "lib/PrecisionAPI.h"
 #include "Coding.h"
-// #include <MinHook.h>
+#include <MinHook.h>
 //using std::string;
 static float& g_deltaTime = (*(float*)RELOCATION_ID(523660, 410199).address());
 
