@@ -455,7 +455,7 @@ namespace Events_Space
 
 		static void Install()
 		{
-			stl::write_vfunc<RE::Explosion, 0xA4, ExplosionHandler>();
+			// stl::write_vfunc<RE::Explosion, 0xA4, ExplosionHandler>();
 
 			REL::Relocation<std::uintptr_t> target{RELOCATION_ID(36658, 37666), OFFSET(0x130, 0x120)};
 			stl::write_thunk_call<GetFactionFightReaction>(target.address());
