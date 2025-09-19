@@ -457,8 +457,8 @@ namespace Events_Space
 		{
 			stl::write_vfunc<RE::Explosion, 0xA4, ExplosionHandler>();
 
-			// REL::Relocation<std::uintptr_t> target{RELOCATION_ID(37672, 38626), OFFSET(0x187, 0x182)};
-			// stl::write_thunk_call<GetFactionFightReaction>(target.address());
+			REL::Relocation<std::uintptr_t> target{RELOCATION_ID(36658, 37666), OFFSET(0x130, 0x120)};
+			stl::write_thunk_call<GetFactionFightReaction>(target.address());
 
 			// REL::Relocation<std::uintptr_t> hook2{RELOCATION_ID(37673, 38627), OFFSET(0x1B7, 0x1C6)};
 			// stl::write_thunk_call<HitHandle1>(hook2.address());
