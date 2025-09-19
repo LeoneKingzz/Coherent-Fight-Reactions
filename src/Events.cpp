@@ -1247,8 +1247,8 @@ namespace Events_Space
 	{
 		bool result = false;
 
-		auto refrA = RE::TESHavokUtilities::FindCollidableRef(a_collidableA);
-		auto refrB = RE::TESHavokUtilities::FindCollidableRef(a_collidableB);
+		const auto refrA = RE::TESHavokUtilities::FindCollidableRef(a_collidableA);
+		const auto refrB = RE::TESHavokUtilities::FindCollidableRef(a_collidableB);
 		if (refrA && refrA->Is(RE::FormType::ActorCharacter))
 		{
 			logger::info("Refr A is actor");
