@@ -512,13 +512,13 @@ namespace Events_Space
 			if (player)
 			{
 				logger::info("Sinking casting hook for player");
-				REL::Relocation<uintptr_t> pcPtr{RE::VTABLE_PlayerCharacter[3]};
+				REL::Relocation<uintptr_t> pcPtr{RE::VTABLE_PlayerCharacter[0]};
 				Player::func = pcPtr.write_vfunc(0x1, Player::Thunk);
 			}
 			if (NPC)
 			{
 				logger::info("Sinking casting hook for NPC");
-				REL::Relocation<uintptr_t> npcPtr{RE::VTABLE_Character[3]};
+				REL::Relocation<uintptr_t> npcPtr{RE::VTABLE_Character[0]};
 				Character::func = npcPtr.write_vfunc(0x1, Character::Thunk);
 			}
 			logger::info("Sinking complete.");
