@@ -451,8 +451,11 @@ namespace Events_Space
 		static void Install()
 		{
 			// stl::write_vfunc<RE::ActorMagicCaster, 0x1, ExplosionHandler>();
+            
+			MH_Initialize();
+			REL::Relocation<std::uintptr_t> target{RELOCATION_ID(36658, 37666)};
+			MH_CreateHook((LPVOID)target.address(), &GetFactionFightReaction::thunk, reinterpret_cast<LPVOID *>(&GetFactionFightReaction::func));
 
-			// REL::Relocation<std::uintptr_t> target{RELOCATION_ID(36658, 37666), OFFSET(0x130, 0x120)};
 			// stl::write_thunk_call<GetFactionFightReaction>(target.address());
 
 			// REL::Relocation<std::uintptr_t> hook2{RELOCATION_ID(37673, 38627), OFFSET(0x1B7, 0x1C6)};
