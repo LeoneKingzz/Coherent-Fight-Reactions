@@ -37,6 +37,6 @@ void Load(){
 
 void PreLoad(){
 	Events_Space::MagicApplyHandler::Register(true, true);
-	Events_Space::CastingHandler::Register(true, true);
+	Events_Space::CastingHandler::Register(true, false);
 	// Events_Space::ExplosionCollision::Register();
 }

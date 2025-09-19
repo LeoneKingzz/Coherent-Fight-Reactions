@@ -375,8 +375,7 @@ namespace Events_Space
 		
 		RE::FIGHT_REACTION Process_Hit(RE::Actor *a_subject, RE::Actor *a_target, RE::FIGHT_REACTION a_reaction);
 		bool Process_HitHandle(RE::TESObjectREFR *a_target, RE::TESObjectREFR *a_source, RE::HitData *a_hitData);
-		bool Analyse_Hits(RE::hkpAllCdPointCollector *a_AllCdPointCollector);
-		bool Analyse_Hits1(RE::TESObjectREFR *a_source, RE::TESObjectREFR *a_target);
+		
 
 		/*Hook Explosion sink*/
 		static void Register()
@@ -439,10 +438,10 @@ namespace Events_Space
 
 			static bool thunk(RE::hkpAllCdPointCollector *a_collector, RE::bhkWorld *a_world, RE::NiPoint3 &a_origin, RE::NiPoint3 &a_direction, float a_length)
 			{
-				if (GetSingleton()->Analyse_Hits(a_collector))
-				{
-					return false;
-				}
+				// if (GetSingleton()->Analyse_Hits(a_collector))
+				// {
+				// 	return false;
+				// }
 				return func(a_collector, a_world, a_origin, a_direction, a_length);
 			}
 			static inline REL::Relocation<decltype(thunk)> func;
@@ -485,13 +484,13 @@ namespace Events_Space
 
 		struct Player
 		{
-			static void Thunk(RE::ActorMagicCaster *a_this, RE::MagicItem *a_spell, bool a_noHitEffectArt, RE::TESObjectREFR *a_target, float a_effectiveness, bool a_hostileEffectivenessOnly, float a_magnitudeOverride, RE::Actor *a_blameActor)
+			static bool Thunk(RE::hkpCollidableCollidableFilter *a_this, const RE::hkpCollidable &a_collidableA, const RE::hkpCollidable &a_collidableB)
 			{
-				if (GetSingleton()->Analyse(a_this, a_spell, a_target, a_hostileEffectivenessOnly, a_blameActor))
+				if (GetSingleton()->Analyse_Hits(a_this, a_collidableA, a_collidableB))
 				{
-					return func(a_this, a_spell, a_noHitEffectArt, a_target, a_effectiveness, true, a_magnitudeOverride, a_blameActor);
+					return false;
 				}
-				return func(a_this, a_spell, a_noHitEffectArt, a_target, a_effectiveness, a_hostileEffectivenessOnly, a_magnitudeOverride, a_blameActor);
+				return func(a_this, a_collidableA, a_collidableB);
 			}
 
 			inline static REL::Relocation<decltype(&Thunk)> func;
@@ -506,13 +505,16 @@ namespace Events_Space
 
 		bool Analyse(RE::ActorMagicCaster *a_this, RE::MagicItem *a_spell, RE::TESObjectREFR *a_target, bool a_hostileEffectivenessOnly, RE::Actor *a_blameActor);
 
+		bool Analyse_Hits(RE::hkpCollidableCollidableFilter *a_this, const RE::hkpCollidable &a_collidableA, const RE::hkpCollidable &a_collidableB);
+		bool Analyse_Hits1(RE::TESObjectREFR *a_source, RE::TESObjectREFR *a_target);
+
 		/*Hook magic apply sink*/
 		static void Register(bool player, bool NPC)
 		{
 			if (player)
 			{
 				logger::info("Sinking casting hook for player");
-				REL::Relocation<uintptr_t> pcPtr{RE::VTABLE_PlayerCharacter[1]};
+				REL::Relocation<uintptr_t> pcPtr{RE::VTABLE_hkpCollidableCollidableFilter[0]};
 				Player::func = pcPtr.write_vfunc(0x1, Player::Thunk);
 			}
 			if (NPC)

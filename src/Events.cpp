@@ -1243,48 +1243,43 @@ namespace Events_Space
 		return ignoredamage;
 	}
 
-	bool ExplosionCollision::Analyse_Hits(RE::hkpAllCdPointCollector *a_AllCdPointCollector)
+	bool CastingHandler::Analyse_Hits(RE::hkpCollidableCollidableFilter *a_this, const RE::hkpCollidable &a_collidableA, const RE::hkpCollidable &a_collidableB)
 	{
 		bool result = false;
 
-		if (a_AllCdPointCollector)
+		auto refrA = RE::TESHavokUtilities::FindCollidableRef(a_collidableA);
+		auto refrB = RE::TESHavokUtilities::FindCollidableRef(a_collidableB);
+		if (refrA && refrA->Is(RE::FormType::ActorCharacter))
 		{
-
-			for (auto &hit : a_AllCdPointCollector->hits)
+			logger::info("Refr A is actor");
+			if (refrB && (refrB->Is(RE::FormType::Explosion) || refrB->AsExplosion()))
 			{
-				auto refrA = RE::TESHavokUtilities::FindCollidableRef(*hit.rootCollidableA);
-				auto refrB = RE::TESHavokUtilities::FindCollidableRef(*hit.rootCollidableB);
-				if (refrA && refrA->Is(RE::FormType::ActorCharacter))
-				{
-					logger::info("Refr A is actor");
-					if (refrB && (refrB->Is(RE::FormType::Explosion) || refrB->AsExplosion()))
-					{
-						logger::info("Refr B is Explosion");
+				logger::info("Refr B is Explosion");
 
-						if(GetSingleton()->Analyse_Hits1(refrB, refrA)){
-							result = true;
-						}
-					}
+				if (GetSingleton()->Analyse_Hits1(refrB, refrA))
+				{
+					result = true;
 				}
+			}
+		}
 
-				if (refrB && refrB->Is(RE::FormType::ActorCharacter))
+		if (refrB && refrB->Is(RE::FormType::ActorCharacter))
+		{
+			logger::info("Refr B is actor");
+			if (refrA && (refrA->Is(RE::FormType::Explosion) || refrA->AsExplosion()))
+			{
+				logger::info("Refr A is Explosion");
+
+				if (GetSingleton()->Analyse_Hits1(refrA, refrB))
 				{
-					logger::info("Refr B is actor");
-					if (refrA && (refrA->Is(RE::FormType::Explosion) || refrA->AsExplosion()))
-					{
-						logger::info("Refr A is Explosion");
-
-						if(GetSingleton()->Analyse_Hits1(refrA, refrB)){
-							result = true;
-						}
-					}
+					result = true;
 				}
 			}
 		}
 		return result;
 	}
 
-	bool ExplosionCollision::Analyse_Hits1(RE::TESObjectREFR *a_source, RE::TESObjectREFR *a_target)
+	bool CastingHandler::Analyse_Hits1(RE::TESObjectREFR *a_source, RE::TESObjectREFR *a_target)
 	{
 		bool ignore = false;
 
