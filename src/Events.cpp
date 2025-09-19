@@ -911,7 +911,7 @@ namespace Events_Space
 			}
 		}
 
-		if (ignoredamage && Settings::GetSingleton()->general.bDebugMode)
+		if (ignoredamage)
 		{
 			logger::info("{} ignored explosion from {} ", target->GetName(), blameActor->GetName());
 		}
@@ -1035,7 +1035,7 @@ namespace Events_Space
 		if (const auto process = a_subject->GetActorRuntimeData().currentProcess; process)
 		{
 			if (process->middleHigh){
-				// logger::info("Middle process active");
+				logger::info("Middle process active");
 				if (const auto a_hitData = process->middleHigh->lastHitData; a_hitData){
 					// logger::info("hitdata is present");
 					if (const auto aggressorHandle = a_hitData->aggressor; aggressorHandle){
