@@ -38,5 +38,16 @@ void Load(){
 void PreLoad(){
 	Events_Space::MagicApplyHandler::Register(true, true);
 	// Events_Space::CastingHandler::Register(true, false);
-	Events_Space::ExplosionCollision::Register();
+
+	if (Events_Space::ExplosionCollision::registery != nullptr)
+	{
+		// if the thread is there, then destroy and delete it
+		// if it is joinable and not running it has already finished, but needs to be joined before
+		// it can be destroyed savely
+		Events_Space::ExplosionCollision::registery->~thread();
+		delete Events_Space::ExplosionCollision::registery;
+		Events_Space::ExplosionCollision::registery = nullptr;
+	}
+	Events_Space::ExplosionCollision::registery = new std::thread(Events_Space::ExplosionCollision::Register);
+	Events_Space::ExplosionCollision::registery->detach();
 }
