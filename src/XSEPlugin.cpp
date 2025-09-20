@@ -39,6 +39,7 @@ void PreLoad(){
 	Events_Space::MagicApplyHandler::Register(true, true);
 	// Events_Space::CastingHandler::Register(true, false);
 
+	// thanks to KoeniglichePM
 	if (Events_Space::ExplosionCollision::registery != nullptr)
 	{
 		// if the thread is there, then destroy and delete it
