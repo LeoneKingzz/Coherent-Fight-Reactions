@@ -836,7 +836,7 @@ namespace Events_Space
 			}
 		}
 
-		if (ignoredamage)
+		if (ignoredamage && Settings::GetSingleton()->general.bDebugMode)
 		{
 			logger::info("{} ignored explosion from {} ", target->GetName(), blameActor->GetName());
 		}
