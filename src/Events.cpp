@@ -103,7 +103,7 @@ namespace Events_Space
 			}
 			
 			auto HdSingle = RE::TESDataHandler::GetSingleton();
-			if (const auto CFRs_FriendlyFire_Off = skyrim_cast<RE::TESGlobal *>(HdSingle->LookupForm(0x804, "Coherent Fight Reactions.esp")); CFRs_FriendlyFire_Off)
+			if (const auto CFRs_FriendlyFire_Off = skyrim_cast<RE::TESGlobal *>(HdSingle->LookupForm(0x803, "Coherent Fight Reactions.esp")); CFRs_FriendlyFire_Off)
 			{
 				if (CFRs_FriendlyFire_Off->value == 1.0f)
 				{
@@ -320,7 +320,7 @@ namespace Events_Space
 
 			if (a_actor->IsPlayerRef())
 			{
-				if (const auto CFRs_FriendlyFire_Off = skyrim_cast<RE::TESGlobal *>(H->LookupForm(0x804, "Coherent Fight Reactions.esp")); CFRs_FriendlyFire_Off)
+				if (const auto CFRs_FriendlyFire_Off = skyrim_cast<RE::TESGlobal *>(H->LookupForm(0x803, "Coherent Fight Reactions.esp")); CFRs_FriendlyFire_Off)
 				{
 					if (a_actor->IsSneaking() && !a_actor->IsInCombat())
 					{
@@ -474,7 +474,7 @@ namespace Events_Space
 
 				if (aggressor->IsPlayerRef() || (CFRs_PlayerAlliesFaction && aggressor->IsInFaction(CFRs_PlayerAlliesFaction)) || (CurrentFollowerFaction && aggressor->IsInFaction(CurrentFollowerFaction)))
 				{
-					if (const auto CFRs_FriendlyFire_Off = skyrim_cast<RE::TESGlobal *>(HdSingle->LookupForm(0x804, "Coherent Fight Reactions.esp")); CFRs_FriendlyFire_Off)
+					if (const auto CFRs_FriendlyFire_Off = skyrim_cast<RE::TESGlobal *>(HdSingle->LookupForm(0x803, "Coherent Fight Reactions.esp")); CFRs_FriendlyFire_Off)
 					{
 						if (CFRs_FriendlyFire_Off->value == 1.0f)
 						{
@@ -611,7 +611,7 @@ namespace Events_Space
 
 				if (aggressor->IsPlayerRef() || (CFRs_PlayerAlliesFaction && aggressor->IsInFaction(CFRs_PlayerAlliesFaction)) || (CurrentFollowerFaction && aggressor->IsInFaction(CurrentFollowerFaction)))
 				{
-					if (const auto CFRs_FriendlyFire_Off = skyrim_cast<RE::TESGlobal *>(HdSingle->LookupForm(0x804, "Coherent Fight Reactions.esp")); CFRs_FriendlyFire_Off)
+					if (const auto CFRs_FriendlyFire_Off = skyrim_cast<RE::TESGlobal *>(HdSingle->LookupForm(0x803, "Coherent Fight Reactions.esp")); CFRs_FriendlyFire_Off)
 					{
 						if (CFRs_FriendlyFire_Off->value == 1.0f)
 						{
@@ -813,7 +813,7 @@ namespace Events_Space
 
 			if (blameActor->IsPlayerRef() || (CFRs_PlayerAlliesFaction && blameActor->IsInFaction(CFRs_PlayerAlliesFaction)) || (CurrentFollowerFaction && blameActor->IsInFaction(CurrentFollowerFaction)))
 			{
-				if (const auto CFRs_FriendlyFire_Off = skyrim_cast<RE::TESGlobal *>(HdSingle->LookupForm(0x804, "Coherent Fight Reactions.esp")); CFRs_FriendlyFire_Off)
+				if (const auto CFRs_FriendlyFire_Off = skyrim_cast<RE::TESGlobal *>(HdSingle->LookupForm(0x803, "Coherent Fight Reactions.esp")); CFRs_FriendlyFire_Off)
 				{
 					if (CFRs_FriendlyFire_Off->value == 1.0f)
 					{
@@ -1105,7 +1105,7 @@ namespace Events_Space
 
 					if (aggressor->IsPlayerRef() || (CFRs_PlayerAlliesFaction && aggressor->IsInFaction(CFRs_PlayerAlliesFaction)) || (CurrentFollowerFaction && aggressor->IsInFaction(CurrentFollowerFaction)))
 					{
-						if (const auto CFRs_FriendlyFire_Off = skyrim_cast<RE::TESGlobal *>(HdSingle->LookupForm(0x804, "Coherent Fight Reactions.esp")); CFRs_FriendlyFire_Off)
+						if (const auto CFRs_FriendlyFire_Off = skyrim_cast<RE::TESGlobal *>(HdSingle->LookupForm(0x803, "Coherent Fight Reactions.esp")); CFRs_FriendlyFire_Off)
 						{
 							if (CFRs_FriendlyFire_Off->value == 1.0f)
 							{
