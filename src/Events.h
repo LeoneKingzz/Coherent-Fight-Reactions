@@ -401,12 +401,12 @@ namespace Events_Space
 
 		struct GetFactionFightReaction
 		{
-			static RE::FIGHT_REACTION thunk(RE::Actor *a_subject, RE::Actor *a_player)
+			static RE::FIGHT_REACTION thunk(RE::Actor *a_subject, RE::Actor *a_other)
 			{
-				const auto fightReaction = func(a_subject, a_player);
-				if (a_subject && a_player)
+				const auto fightReaction = func(a_subject, a_other);
+				if (a_subject && a_other)
 				{
-					return GetSingleton()->Process_Hit(a_subject, a_player, fightReaction);
+					return GetSingleton()->Process_Hit(a_subject, a_other, fightReaction);
 				}
 				return fightReaction;
 			}
