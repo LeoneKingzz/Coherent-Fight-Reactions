@@ -1,6 +1,7 @@
 #include "lib/PrecisionAPI.h"
 #include "Coding.h"
 #include <MinHook.h>
+#include <thread>
 //using std::string;
 static float& g_deltaTime = (*(float*)RELOCATION_ID(523660, 410199).address());
 
@@ -376,12 +377,16 @@ namespace Events_Space
 		
 		RE::FIGHT_REACTION Process_Hit(RE::Actor *a_subject, RE::Actor *a_target, RE::FIGHT_REACTION a_reaction);
 		bool Process_HitHandle(RE::TESObjectREFR *a_target, RE::TESObjectREFR *a_source, RE::HitData *a_hitData);
-		
+
+		static inline std::thread *registery = nullptr;
 
 		/*Hook Explosion sink*/
 		static void Register()
 		{
-			Install();
+			MH_Initialize();
+			REL::Relocation<std::uintptr_t> target{RELOCATION_ID(36658, 37666)};
+			MH_CreateHook((LPVOID)target.address(), &GetFactionFightReaction::thunk, reinterpret_cast<LPVOID *>(&GetFactionFightReaction::func));
+			MH_EnableHook((LPVOID)target.address());
 		}
 
 	protected:
@@ -448,26 +453,26 @@ namespace Events_Space
 			static inline REL::Relocation<decltype(thunk)> func;
 		};
 
-		static void Install()
-		{
-			// stl::write_vfunc<RE::ActorMagicCaster, 0x1, ExplosionHandler>();
+		// static void Install()
+		// {
+		// 	// stl::write_vfunc<RE::ActorMagicCaster, 0x1, ExplosionHandler>();
             
-			MH_Initialize();
-			REL::Relocation<std::uintptr_t> target{RELOCATION_ID(36658, 37666)};
-			MH_CreateHook((LPVOID)target.address(), &GetFactionFightReaction::thunk, reinterpret_cast<LPVOID *>(&GetFactionFightReaction::func));
-			MH_EnableHook((LPVOID)target.address());
+		// 	MH_Initialize();
+		// 	REL::Relocation<std::uintptr_t> target{RELOCATION_ID(36658, 37666)};
+		// 	MH_CreateHook((LPVOID)target.address(), &GetFactionFightReaction::thunk, reinterpret_cast<LPVOID *>(&GetFactionFightReaction::func));
+		// 	MH_EnableHook((LPVOID)target.address());
 
-			// stl::write_thunk_call<GetFactionFightReaction>(target.address());
+		// 	// stl::write_thunk_call<GetFactionFightReaction>(target.address());
 
-			// REL::Relocation<std::uintptr_t> hook2{RELOCATION_ID(37673, 38627), OFFSET(0x1B7, 0x1C6)};
-			// stl::write_thunk_call<HitHandle1>(hook2.address());
+		// 	// REL::Relocation<std::uintptr_t> hook2{RELOCATION_ID(37673, 38627), OFFSET(0x1B7, 0x1C6)};
+		// 	// stl::write_thunk_call<HitHandle1>(hook2.address());
 
-			// REL::Relocation<std::uintptr_t> hook3{RELOCATION_ID(37674, 38628), OFFSET(0xEB, 0x110)};
-			// stl::write_thunk_call<HitHandle2>(hook3.address());
+		// 	// REL::Relocation<std::uintptr_t> hook3{RELOCATION_ID(37674, 38628), OFFSET(0xEB, 0x110)};
+		// 	// stl::write_thunk_call<HitHandle2>(hook3.address());
 
-			// REL::Relocation<std::uintptr_t> hook4{RELOCATION_ID(37674, 38628), OFFSET(0x26A, 0x294)};
-			// stl::write_thunk_call<HitHandle3>(hook4.address());
-		}
+		// 	// REL::Relocation<std::uintptr_t> hook4{RELOCATION_ID(37674, 38628), OFFSET(0x26A, 0x294)};
+		// 	// stl::write_thunk_call<HitHandle3>(hook4.address());
+		// }
 	};
 
 	class CastingHandler
